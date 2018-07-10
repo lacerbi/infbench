@@ -42,6 +42,7 @@ defopts.StopGPSampling = 200 + 10*D;    % Training set size for switching to GP 
 defopts.AcqFun = @acqagp;               % AGP acquisition function
 defopts.SamplingMethod = 'parallel';    % MCMC sampler for approximate posterior
 defopts.Plot = 0;                       % Make diagnostic plots at each iteration
+defopts.FracExpand = 0.1;               % Expand search box by this amount
 defopts.ProposalFcn = @(x) agp_proposal(x,PLB,PUB); % Proposal fcn based on PLB and PUB (unused)
 
 for f = fields(defopts)'
@@ -176,7 +177,9 @@ while 1
     for iNew = 1:Nstep
         fprintf(' %d..',iNew);
         % Random uniform search inside search box
-        lb = min(X,PLB); ub = max(X,PUB);
+        width = max(X) - min(X);
+        lb = min(X) - width*options.FracExpand; ub = max(X) + width*options.FracExpand;
+        lb = max(LB,min(lb,PLB)); ub = min(UB,max(ub,PUB));
         [xnew,fval] = fminfill(@(x) options.AcqFun(x,vbmodel,gp,options),[],[],[],lb,ub,[],struct('FunEvals',floor(Nsearch/2)));
         
         % Random search sample from vbGMM

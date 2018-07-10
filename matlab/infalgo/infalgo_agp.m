@@ -43,7 +43,7 @@ probstruct.AddLogPrior = true;
 
 algo_timer = tic;
 [vbmodel,exitflag,output] = ...
-    agp_lite(@(x) infbench_func(x,probstruct),x0,PLB,PUB,algoptions);
+    agp_lite(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
 
 stats = output.stats;
