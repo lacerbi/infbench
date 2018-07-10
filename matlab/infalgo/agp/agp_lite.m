@@ -28,6 +28,7 @@ defopts.NsMax_gp = 0;                   % Max GP hyperparameter samples (0 = opt
 defopts.StopGPSampling = 200 + 10*D;    % Training set size for switching to GP hyperparameter optimization (if sampling)
 defopts.AcqFun = @acqagp;               % AGP acquisition function
 defopts.SamplingMethod = 'parallel';    % MCMC sampler for approximate posterior
+defopts.Plot = 0;                       % Make diagnostic plots at each iteration
 defopts.ProposalFcn = @(x) agp_proposal(x,PLB,PUB); % Proposal fcn based on PLB and PUB (unused)
 
 for f = fields(defopts)'
@@ -87,8 +88,6 @@ vbmodel = vbgmmfit(Xs',1,[],vbopts);
 % Starting GP hyperparameter vector
 hyp = [log(width(:));log(std(y));log(1e-3)];
 
-DEBUG = 0;  % Debug flag
-
 %% Main loop
 iter = 1;
 while 1
@@ -111,10 +110,19 @@ while 1
     lnpfun = @(x) log(vbgmmpdf(vbmodel,x'))';
     Xs = gplite_sample(gp,options.Ns,[],options.SamplingMethod,lnpfun);
      
-    if DEBUG
-        Xrnd = vbgmmrnd(vbmodel,1e4)';
-        cornerplot(Xrnd);    
-        cornerplot(Xs);
+    % Plot current approximate posterior and training points
+    if options.Plot
+        %Xrnd = vbgmmrnd(vbmodel,1e4)';
+        %cornerplot(Xrnd);    
+        for i = 1:D; names{i} = ['x_{' num2str(i) '}']; end
+        [~,ax] = cornerplot(Xs,names);
+        for i = 1:D-1
+            for j = i+1:D
+                axes(ax(j,i));  hold on;
+                scatter(X(:,i),X(:,j),'ok');
+            end
+        end
+        drawnow;
     end
     
     % Refit vbGMM
@@ -148,8 +156,8 @@ while 1
     
     % Select new points
     fprintf(' Active sampling...');
-    for i = 1:Nstep
-        fprintf(' %d..',i);
+    for iNew = 1:Nstep
+        fprintf(' %d..',iNew);
         % Random uniform search
         [xnew,fval] = fminfill(@(x) options.AcqFun(x,vbmodel,gp,options),[],[],[],PLB,PUB,[],struct('FunEvals',floor(Nsearch/2)));
         
@@ -171,7 +179,19 @@ while 1
         
         py = vbgmmpdf(vbmodel,xnew');   % Evaluate approximation at X    
         ynew_gp = ynew - log(py);       % Log difference
-        gp = gplite_post(gp,xnew,ynew_gp,[],1);   % Rank-1 update        
+        gp = gplite_post(gp,xnew,ynew_gp,[],1);   % Rank-1 update
+        
+        % Plot new candidate points
+        if options.Plot
+            for i = 1:D-1
+                for j = i+1:D
+                    axes(ax(j,i));  hold on;
+                    scatter(xnew(:,i),xnew(:,j),'or','MarkerFaceColor','r');
+                end
+            end
+            drawnow;
+        end
+
     end
     fprintf('\n');
     
@@ -208,7 +228,7 @@ lnZ_var = var(delta)/numel(delta);
 end
 
 %--------------------------------------------------------------------------
-function getGPhypprior(X)
+function hypprior = getGPhypprior(X)
 %GETGPHYPPRIOR Define empirical Bayes prior over GP hyperparameters.
 
 D = size(X,2);
