@@ -1,4 +1,4 @@
-function [vbmodel,exitflag,output] = agp_lite(fun,x0,PLB,PUB,options)
+function [vbmodel,exitflag,output] = agp_lite(fun,x0,LB,UB,PLB,PUB,options)
 %AGP_LITE Light implementation of AGP method for Bayesian inference.
 
 % This is a variant of the AGP algorithm proposed in:
@@ -19,6 +19,19 @@ end
 
 exitflag = 0;   % To be used in the future
 D = size(x0,2);
+
+% Check hard and plausible bounds
+if isempty(LB); LB = -Inf; end
+if isempty(UB); UB = Inf; end
+if isscalar(LB); LB = LB*ones(1,D); end
+if isscalar(UB); UB = UB*ones(1,D); end
+if isempty(PLB); PLB = LB; end
+if isempty(PUB); PUB = UB; end
+if isscalar(PLB); PLB = PLB*ones(1,D); end
+if isscalar(PUB); PUB = PUB*ones(1,D); end
+if any(~isfinite(PLB)) || any(~isfinite(PUB))
+    error('agp_lite:NotFinitePB','Plausible lower/upper bounds need to be finite.');
+end
 
 %% Algorithm options and defaults
 
@@ -65,6 +78,8 @@ cmaes_opts.DispFinal = 'off';
 cmaes_opts.SaveVariables = 'off';
 cmaes_opts.DispModulo = Inf;
 cmaes_opts.LogModulo = 0;
+cmaes_opts.LBounds = LB(:);
+cmaes_opts.UBounds = UB(:);
 cmaes_opts.CMA.active = 1;      % Use Active CMA (generally better)
 
 %% Initialization
@@ -73,6 +88,7 @@ cmaes_opts.CMA.active = 1;      % Use Active CMA (generally better)
 Nrnd = Ninit - size(x0,1);
 Xrnd = bsxfun(@plus,PLB,bsxfun(@times,PUB-PLB,rand(Nrnd,D)));
 X = [x0;Xrnd];
+X = bsxfun(@min,bsxfun(@max,LB,X),UB);  % Force X inside hard bounds
 y = zeros(Ninit,1);
 for i = 1:Ninit; y(i) = fun(X(i,:)); end
 
@@ -81,6 +97,7 @@ mu0 = 0.5*(PLB + PUB);
 width = 0.5*(PUB - PLB);
 sigma0 = width;
 Xs = bsxfun(@plus,bsxfun(@times,sigma0,randn(options.Ns,D)),mu0);
+Xs = bsxfun(@min,bsxfun(@max,LB,Xs),UB);  % Force Xs inside hard bounds
 
 % Fit single Gaussian to initial pdf as a VBGMM object
 vbmodel = vbgmmfit(Xs',1,[],vbopts);
@@ -107,7 +124,7 @@ while 1
     
     % Sample from GP plus log approximation
     fprintf(' Sampling from GP...');
-    lnpfun = @(x) log(vbgmmpdf(vbmodel,x'))';
+    lnpfun = @(x) lnprior(x,vbmodel,LB,UB);
     Xs = gplite_sample(gp,options.Ns,[],options.SamplingMethod,lnpfun);
      
     % Plot current approximate posterior and training points
@@ -158,17 +175,19 @@ while 1
     fprintf(' Active sampling...');
     for iNew = 1:Nstep
         fprintf(' %d..',iNew);
-        % Random uniform search
-        [xnew,fval] = fminfill(@(x) options.AcqFun(x,vbmodel,gp,options),[],[],[],PLB,PUB,[],struct('FunEvals',floor(Nsearch/2)));
+        % Random uniform search inside search box
+        lb = min(X,PLB); ub = max(X,PUB);
+        [xnew,fval] = fminfill(@(x) options.AcqFun(x,vbmodel,gp,options),[],[],[],lb,ub,[],struct('FunEvals',floor(Nsearch/2)));
         
         % Random search sample from vbGMM
         xrnd = vbgmmrnd(vbmodel,ceil(Nsearch/2))';
+        xrnd = bsxfun(@min,bsxfun(@max,LB,xrnd),UB);  % Force Xs inside hard bounds
         frnd = options.AcqFun(xrnd,vbmodel,gp,options);
         [frnd_min,idx] = min(frnd);        
         if frnd_min < fval; xnew = xrnd(idx,:); fval = frnd_min; end
 
         % Optimize from best point with CMA-ES
-        insigma = width(:)/sqrt(3);
+        insigma = (max(X) - min(X))'/sqrt(3);
         [xnew_cmaes,fval_cmaes] = cmaes_modded(func2str(options.AcqFun),xnew',insigma,cmaes_opts,vbmodel,gp,options,1);
         if fval_cmaes < fval; xnew = xnew_cmaes'; end
         
@@ -201,6 +220,18 @@ end
 output.X = X;
 output.y = y;
 output.stats = stats;
+
+end
+
+%--------------------------------------------------------------------------
+function lp = lnprior(x,vbmodel,LB,UB)
+%LNPRIOR Log prior and base function for approximate posterior.
+
+lp = log(vbgmmpdf(vbmodel,x'))';
+if any(isfinite(LB)) || any(isfinite(UB))
+    idx = any(bsxfun(@gt,x,UB),2) | any(bsxfun(@lt,x,LB),2);
+    lp(idx) = -Inf;
+end
 
 end
 
