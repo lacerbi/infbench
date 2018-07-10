@@ -42,6 +42,7 @@ defopts.StopGPSampling = 200 + 10*D;    % Training set size for switching to GP 
 defopts.AcqFun = @acqagp;               % AGP acquisition function
 defopts.SamplingMethod = 'parallel';    % MCMC sampler for approximate posterior
 defopts.Plot = 0;                       % Make diagnostic plots at each iteration
+defopts.NcompMax = 30;                  % Maximum number of mixture components
 defopts.FracExpand = 0.1;               % Expand search box by this amount
 defopts.ProposalFcn = @(x) agp_proposal(x,PLB,PUB); % Proposal fcn based on PLB and PUB (unused)
 
@@ -145,7 +146,7 @@ while 1
     
     % Refit vbGMM
     fprintf(' Refit vbGMM...\n');
-    vbmodel = vbgmmfit(Xs',[],[],vbopts);
+    vbmodel = vbgmmfit(Xs',options.NcompMax,[],vbopts);
 
     %Xrnd = vbgmmrnd(vbmodel,1e5)';
     %Mean = mean(Xrnd,1);
