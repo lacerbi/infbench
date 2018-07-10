@@ -4,6 +4,7 @@
 %      for Bayesian inference with expensive likelihood functions. 
 %      arXiv preprint arXiv:1703.09930. 
 
+options = [];
 options.Plot = 1;   % Plot posterior and search points each iteration
 
 fun = @rosenbrock_test;     % This is a shallow Rosenbrock function
@@ -14,3 +15,6 @@ PLB = [-1 -1];              % Plausible bounds identify initial region
 PUB = [1 1];
 
 [vbmodel,exitflag,output] = agp_lite(fun,x0,LB,UB,PLB,PUB,options);
+
+% Now try without the bounds...
+[vbmodel,exitflag,output] = agp_lite(fun,x0,[],[],PLB,PUB,options);
