@@ -1,7 +1,7 @@
 #!/bin/bash
 PROJECT="infbench"
 SHORTNAME=IB
-BASEDIR="${HOME}/vbmc/matlab/benchmark"
+BASEDIR="${HOME}/${PROJECT}/matlab/benchmark"
 SOURCEDIR="${BASEDIR}/"
 JOBSCRIPT="${BASEDIR}/scripts/job_goris2015mcmc.sh"
 

@@ -5,7 +5,7 @@ module purge
 
 # Use Intel compiler
 
-PROJECT="vbmc"
+PROJECT="infbench"
 
 module load matlab/2017a
 export MATLAB_PREFDIR=$(mktemp -d $SLURM_JOBTMP/matlab-XXXXXX)

@@ -1,7 +1,7 @@
 #!/bin/bash
 PROJECT="infbench"
 SHORTNAME=IB
-BASEDIR="${HOME}/vbmc/matlab/benchmark"
+BASEDIR="${HOME}/${PROJECT}/matlab"
 SOURCEDIR="${BASEDIR}/"
 JOBSCRIPT="${BASEDIR}/scripts/myjob.sh"
 
@@ -10,7 +10,7 @@ RUN=${1}
 INPUTFILE="${SCRATCH}/${PROJECT}/joblist-${1}.txt"
 MAXID=$(sed -n $= ${INPUTFILE})
 
-RUNTIME=16:00:00
+RUNTIME=24:00:00
 MAXRT=NaN
 VERBOSE=0
 MAXFUNMULT="[]"

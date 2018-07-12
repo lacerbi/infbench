@@ -13,7 +13,8 @@ else
 fi
 export MATLABPATH=${MATLABPATH}:/${HOME}/${PROJECT}/matlab:${HOME}/MATLAB
 #source ${HOME}/MATLAB/setpath.sh
-export MATLABPATH="${MATLABPATH}:${HOME}/vbmc/matlab:${HOME}/vbmc/matlab/gplite:${HOME}/vbmc/matlab/benchmark:${HOME}/vbmc/matlab/utils"
+export MATLABPATH="${MATLABPATH}:${HOME}/infbench/matlab:${HOME}/vbmc/matlab"
+#:${HOME}/vbmc/matlab/gplite:${HOME}/vbmc/matlab/utils"
 
 #PROBLEMFOLDER="'${HOME}/neurobench-problems'"
 PROBLEMFOLDER="[]"
