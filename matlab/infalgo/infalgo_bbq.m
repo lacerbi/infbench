@@ -5,6 +5,7 @@ BaseFolder = fileparts(mfilename('fullpath'));
 AlgoFolder = 'bbq';
 addpath(genpath([BaseFolder filesep() AlgoFolder]));
 
+algoptions.Debug = false;
 algoptions.ApproxMarginalize = false;    % Approximate marginalization of hyperparameters
 algoptions.Alpha = 0.8;     % Fractional offset, as in paper.
 
