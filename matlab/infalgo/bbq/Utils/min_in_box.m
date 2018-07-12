@@ -40,7 +40,8 @@ num_starts = num_exploits + num_continues;
 
 end_points = nan(num_starts,num_dims);
 end_exp_loss = nan(num_starts,1);
-parfor i = 1:num_starts
+%parfor i = 1:num_starts
+for i = 1:num_starts
     cur_start_pt = starts(i, :);
     try
         [end_points(i,:), end_exp_loss(i)] = ...
@@ -57,7 +58,8 @@ end
 explores = mvnrnd(prior.mean, prior.covariance, num_explores);
 explores = bound(explores, lower_bound, upper_bound);
 explore_loss = nan(num_explores, 1);
-parfor i = 1:num_explores
+%parfor i = 1:num_explores
+for i = 1:num_explores
     explore_loss(i) = objective_fn(explores(i, :));
 end
 end_points = [end_points; explores];

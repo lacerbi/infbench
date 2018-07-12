@@ -53,7 +53,7 @@ opt.debug = true;
 opt.parallel = false;
 opt.marginalise_scales = algoptions.ApproxMarginalize;
 
-if DEBUG
+if algoptions.Debug
     opt.num_retrains = 5;
     opt.train_gp_time = 20;
 end
@@ -66,7 +66,7 @@ prior.mean = probstruct.PriorMean;
 prior.covariance = diag(probstruct.PriorVar);
 
 algo_timer = tic;
-[mu, vvar, samples, diagnostics] = ...
+[mu, ln_var, samples, diagnostics] = ...
     sbq(@(x) infbench_func(x,probstruct), prior, opt);
 TotalTime = toc(algo_timer);
 
@@ -77,7 +77,9 @@ Niter = numel(probstruct.SaveTicks);
 Nmax = numel(mu);
 idx = probstruct.SaveTicks(probstruct.SaveTicks <= Nmax);
 mu = mu(idx);
-vvar = vvar(idx);
+
+% Convert log variance of the evidence to variance of the log evidence
+vvar = exp(ln_var(idx) - 2*mu);
 
 [history,post] = StoreAlgoResults(...
     probstruct,[],Niter,X,y,mu,vvar,[],[],TotalTime);
