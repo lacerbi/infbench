@@ -124,7 +124,7 @@ while 1
     y_gp = y - log(py(:));          % Log difference
     
     % At any given iteration only keep good points (necessary for stability)
-    idx = isfinite(y_gp)
+    idx = isfinite(y_gp);
     X_gp = X(idx,:);
     y_gp = y_gp(idx);    
     
