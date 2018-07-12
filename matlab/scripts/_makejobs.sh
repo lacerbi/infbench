@@ -162,10 +162,19 @@ case "${1}" in
                 IDS=$IDS_SINGLE
                 ;;
 
-	50)     ALGOS="{'wsabi'}" 
+	50)     ALGOS="{'wsabi'}"
+		IDS=${IDS_SINGLE} 
                 ;;
         51)     ALGOS="{'wsabi'}"
 		ALGOSET="{'mm'}"
+		IDS=${IDS_SINGLE}
+                ;;
+        55)     ALGOS="{'bbq'}"
+		IDS=${IDS_SINGLE}
+                ;;
+        56)     ALGOS="{'bbq'}"
+                ALGOSET="{'marginal'}"
+		IDS=${IDS_SINGLE}
                 ;;
 	60)     ALGOS="{'bmc'}"
                 ;;
@@ -189,6 +198,11 @@ case "${1}" in
                 ALGOS="{'wsabi','wsabi@mm','bmc','smc','ais'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_FIFTY
+                ;;
+	102b)   PROBS="{'goris2015'}"
+                ALGOS="{'bbq','bbq@marginal'}"
+                DIMS="{'S7','S8'}"
+                IDS=$IDS_CENTO
                 ;;
         103)    PROBS="{'goris2015'}"
                 ALGOS="{'vbmc@base'}"
