@@ -7,8 +7,13 @@ addpath(genpath([BaseFolder filesep() AlgoFolder]));
 
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.MaxIter = Inf;
-algoptions.Nsamples = 5e3;      % Number of samples per iteration
+algoptions.Nsamples = 5e3;                 % Number of samples per iteration
 algoptions.GPsamples = 80;
+algoptions.AcqFun = @acqagp;               % AGP acquisition function
+algoptions.SamplingMethod = 'parallel';    % MCMC sampler for approximate posterior
+algoptions.Plot = 0;                       % Make diagnostic plots at each iteration
+algoptions.NcompMax = 30;                  % Maximum number of mixture components
+algoptions.FracExpand = 0.1;               % Expand search box by this amount
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -20,7 +25,7 @@ end
 
 % Options from current problem
 switch algoset
-    case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'scatter';
+    case {0,'debug'}; algoset = 'debug'; algoptions.Plot = 1;
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'long'}; algoset = 'long'; algoptions.Nsamples = 2e4;
     case {3,'prop'}; algoset = 'prop'; algoptions.AcqFun = @acqagpprop;

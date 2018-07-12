@@ -113,21 +113,33 @@ while 1
     fprintf('Iter %d...', iter);
     N = size(X,1);
     
-    % Build GP approximation
     fprintf(' Building GP approximation...');
+    
+    % How many hyperparameter samples?
     Ns_gp = min(round(options.NsMax_gp/10),round(options.NsMax_gp / sqrt(N)));
     if N >= options.StopGPSampling; Ns_gp = 0; end
+    
+    % Compute difference wrt current posterior
     py = vbgmmpdf(vbmodel,X');      % Evaluate approximation at X    
     y_gp = y - log(py(:));          % Log difference
     
+    % At any given iteration only keep good points (necessary for stability)
+    idx = isfinite(y_gp)
+    X_gp = X(idx,:);
+    y_gp = y_gp(idx);    
+    
     % Train GP
-    hypprior = getGPhypprior(X);    % Get prior over GP hyperparameters
-    [gp,hyp] = gplite_train(hyp,Ns_gp,X,y_gp,gp_meanfun,hypprior,[],gpopts);
+    hypprior = getGPhypprior(X_gp);    % Get prior over GP hyperparameters
+    [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp_meanfun,hypprior,[],gpopts);
     
     % Sample from GP plus log approximation
     fprintf(' Sampling from GP...');
     lnpfun = @(x) lnprior(x,vbmodel,LB,UB);
-    Xs = gplite_sample(gp,options.Ns,[],options.SamplingMethod,lnpfun);
+    try
+        Xs = gplite_sample(gp,options.Ns,[],options.SamplingMethod,lnpfun);
+    catch
+        error('agp_lite:BadSampling','Unable to sample from approximate posterior due to numerical instabilities.');
+    end
      
     % Plot current approximate posterior and training points
     if options.Plot
@@ -231,7 +243,10 @@ end
 function lp = lnprior(x,vbmodel,LB,UB)
 %LNPRIOR Log prior and base function for approximate posterior.
 
+log_realmin = -708.3964185322641;   % Log of minimum nonzero double
+
 lp = log(vbgmmpdf(vbmodel,x'))';
+% lp = max(lp,log_realmin);  % Avoid infinities here
 if any(isfinite(LB)) || any(isfinite(UB))
     idx = any(bsxfun(@gt,x,UB),2) | any(bsxfun(@lt,x,LB),2);
     lp(idx) = -Inf;
