@@ -181,6 +181,14 @@ switch lower(type)
                 defaults.linewidth = 2;
                 defaults.linestyle = line_deterministic;
 
+            case 'bbq'
+                switch algoset
+                    case 'base'; defaults.color = [188 128 189]/255; defaults.marker = 'o'; defaults.name = 'bbq';
+                    case 'marginal'; defaults.color = [255 128 189]/255; defaults.marker = '*'; defaults.name = 'bbq*';
+                end
+                defaults.linewidth = 2;
+                defaults.linestyle = line_deterministic;
+                
             case {'agp','bape'}
 %                defaults.color = [128 177 211]/255;
                  defaults.color = [60 220 200]/255;
