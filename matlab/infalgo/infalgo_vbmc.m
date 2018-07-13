@@ -24,7 +24,7 @@ algoptions.ProposalFcn = @(X_) exp(infbench_lnprior(X_,probstruct));
 
 % Options from current problem
 switch algoset
-    case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'scatter';
+    case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'on';
     case {1,'base'}; algoset = 'base';           % Use defaults
         
     otherwise
