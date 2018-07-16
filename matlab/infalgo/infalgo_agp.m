@@ -43,6 +43,12 @@ UB = probstruct.UB;
 x0 = probstruct.InitPoint;
 D = size(x0,2);
 
+% AGP tends to diverge on unconstrained problems, try with hard bounds
+bounds_range = PUB - PLB;
+idx = ~isfinite(bounds_range);
+LB(idx) = PLB(idx) - 3*bounds_range(idx);
+UB(idx) = PUB(idx) + 3*bounds_range(idx);
+
 % Add log prior to function evaluation 
 % (AGP is agnostic of the prior)
 probstruct.AddLogPrior = true;

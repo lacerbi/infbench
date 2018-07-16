@@ -31,6 +31,7 @@ switch algoset
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'long'}; algoset = 'long'; algoptions.Nsamples = 2e4;
     case {3,'negquad'}; algoset = 'negquad'; algoptions.Meanfun = 'negquad';
+    case {4,'nqdebug'}; algoset = 'nqdebug'; algoptions.Meanfun = 'negquad'; algoptions.Plot = 1;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -42,6 +43,12 @@ LB = probstruct.LB;
 UB = probstruct.UB;
 x0 = probstruct.InitPoint;
 D = size(x0,2);
+
+% BAPE tends to diverge on unconstrained problems, try with hard bounds
+bounds_range = PUB - PLB;
+idx = ~isfinite(bounds_range);
+LB(idx) = PLB(idx) - 3*bounds_range(idx);
+UB(idx) = PUB(idx) + 3*bounds_range(idx);
 
 % Add log prior to function evaluation 
 % (BAPE is agnostic of the prior)
