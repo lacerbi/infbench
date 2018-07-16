@@ -2,9 +2,10 @@ function [history,post,algoptions] = infalgo_agp(algo,algoset,probstruct)
 
 % Add algorithm to MATLAB path
 BaseFolder = fileparts(mfilename('fullpath'));
-AlgoFolder = 'agp';
+AlgoFolder = 'bapegp';
 addpath(genpath([BaseFolder filesep() AlgoFolder]));
 
+algoptions.Algorithm = 'agp';
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.MaxIter = Inf;
 algoptions.Nsamples = 5e3;                 % Number of samples per iteration
@@ -48,7 +49,7 @@ probstruct.AddLogPrior = true;
 
 algo_timer = tic;
 [vbmodel,exitflag,output] = ...
-    agp_lite(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
+    bapegp(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
 
 stats = output.stats;

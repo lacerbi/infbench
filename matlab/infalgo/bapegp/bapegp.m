@@ -1,11 +1,15 @@
 function [vbmodel,exitflag,output] = bapegp(fun,x0,LB,UB,PLB,PUB,options)
 %BAPEGP Bayesian adaptive posterior estimation inference via Gaussian processes.
+%
+% This function implements both the BAPE [1] and AGP [2] posterior inference 
+% methods.
 
-% This function implements both the BAPE and AGP posterior inference methods.
-
-% This is a variant of the AGP algorithm proposed in:
-% Wang, H., & Li, J. (2017). Adaptive Gaussian process approximation for 
-% Bayesian inference with expensive likelihood functions. 
+% References:
+% 1. Kandasamy, K., Schneider, J., & Póczos, B. (2017). Query efficient 
+% posterior estimation in scientific experiments via Bayesian active learning. 
+% Artificial Intelligence, 243, 45-56.
+% 2. Wang, H., & Li, J. (2017). Adaptive Gaussian process approximation 
+% for Bayesian inference with expensive likelihood functions. 
 % arXiv preprint arXiv:1703.09930.
 
 % Code by Luigi Acerbi (2018).
@@ -48,7 +52,7 @@ defopts.NcompMax = 30;                  % Maximum number of mixture components
 defopts.Plot = 0;                       % Make diagnostic plots at each iteration
 defopts.FracExpand = 0.1;               % Expand search box by this amount
 defopts.ProposalFcn = @(x) agp_proposal(x,PLB,PUB); % Proposal fcn based on PLB and PUB (unused)
-defopts.Meanfun = 'const';              % GP mean function for BAPE
+defopts.Meanfun = 'const';              % GP mean function for BAPE (for AGP always zero)
 
 for f = fields(defopts)'
     if ~isfield(options,f{:}) || isempty(options.(f{:}))
@@ -122,8 +126,8 @@ width = 0.5*(PUB - PLB);
 switch lower(options.Algorithm)
     case 'bape'
         % Starting GP hyperparameter vector
-        hyp = [log(width(:));log(std(y));log(1e-3);mean(y)];    
-        hyp = [];
+        % hyp = [log(width(:));log(std(y));log(1e-3);mean(y)];    
+        hyp = [];   % Use standard GPlite start
     
     case 'agp'
         % Draw initial samples
@@ -156,7 +160,7 @@ while 1
         case 'bape'    
             y_gp = y;
         case 'agp'
-            % For AGP, compute difference wrt current posterior
+            % For AGP, fit difference wrt current posterior
             py = vbgmmpdf(vbmodel,X');      % Evaluate approximation at X    
             y_gp = y - log(py(:));          % Log difference
     end
@@ -164,18 +168,20 @@ while 1
     % At any given iteration only keep good points (necessary for stability)
     idx = isfinite(y_gp);
     X_gp = X(idx,:);
-    y_gp = y_gp(idx);    
+    y_gp = y_gp(idx);
     
     % Train GP
     hypprior = getGPhypprior(X_gp);    % Get prior over GP hyperparameters    
     [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp_meanfun,hypprior,[],gpopts);
     
-    % Sample from GP (plus log approximation for AGP)
+    % Sample from GP
     fprintf(' Sampling from GP...');
     switch lower(options.Algorithm)
         case 'bape'
-            lnpfun = [];
+            % Check bounds
+            lnpfun = @(x) lnprior(x,[],LB,UB);
         case 'agp'
+            % Add approximate log posterior and check bounds
             lnpfun = @(x) lnprior(x,vbmodel,LB,UB);
     end
     
@@ -295,8 +301,13 @@ function lp = lnprior(x,vbmodel,LB,UB)
 
 % log_realmin = -708.3964185322641;   % Log of minimum nonzero double
 
-lp = log(vbgmmpdf(vbmodel,x'))';
-% lp = max(lp,log_realmin);  % Avoid infinities here
+if ~isempty(vbmodel)
+    lp = log(vbgmmpdf(vbmodel,x'))';
+    % lp = max(lp,log_realmin);  % Avoid infinities here
+else
+    lp = zeros(size(x,1),1);
+end
+    
 if any(isfinite(LB)) || any(isfinite(UB))
     idx = any(bsxfun(@gt,x,UB),2) | any(bsxfun(@lt,x,LB),2);
     lp(idx) = -Inf;

@@ -5,7 +5,8 @@
 %      arXiv preprint arXiv:1703.09930. 
 
 options = [];
-options.Plot = 1;   % Plot posterior and search points each iteration
+options.Algorithm = 'agp';  % Select AGP algorithm
+options.Plot = 1;           % Plot posterior and search points each iteration
 
 fun = @rosenbrock_test;     % This is a shallow Rosenbrock function
 x0 = [0 0];                 % Starting point
@@ -14,7 +15,7 @@ UB = [5 5];
 PLB = [-1 -1];              % Plausible bounds identify initial region
 PUB = [1 1];
 
-[vbmodel,exitflag,output] = agp_lite(fun,x0,LB,UB,PLB,PUB,options);
+[vbmodel,exitflag,output] = bapegp(fun,x0,LB,UB,PLB,PUB,options);
 
 % Now try without the bounds...
-[vbmodel,exitflag,output] = agp_lite(fun,x0,[],[],PLB,PUB,options);
+[vbmodel,exitflag,output] = bapegp(fun,x0,[],[],PLB,PUB,options);

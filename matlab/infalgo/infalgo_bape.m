@@ -2,7 +2,7 @@ function [history,post,algoptions] = infalgo_bape(algo,algoset,probstruct)
 
 % Add algorithm to MATLAB path
 BaseFolder = fileparts(mfilename('fullpath'));
-AlgoFolder = 'agp';
+AlgoFolder = 'bapegp';
 addpath(genpath([BaseFolder filesep() AlgoFolder]));
 
 algoptions.Algorithm = 'bape';
@@ -16,8 +16,6 @@ algoptions.Plot = 0;                       % Make diagnostic plots at each itera
 algoptions.NcompMax = 30;                  % Maximum number of mixture components
 algoptions.FracExpand = 0.1;               % Expand search box by this amount
 algoptions.Meanfun = 'const';
-
-algoptions.Plot = 1;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -33,7 +31,6 @@ switch algoset
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'long'}; algoset = 'long'; algoptions.Nsamples = 2e4;
     case {3,'negquad'}; algoset = 'negquad'; algoptions.Meanfun = 'negquad';
-    case {4,'acqg'}; algoset = 'acqg'; algoptions.AcqFun = @acqagpg;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
