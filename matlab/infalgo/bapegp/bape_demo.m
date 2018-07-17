@@ -7,8 +7,6 @@
 options = [];
 options.Algorithm = 'bape'; % Select BAPE algorithm
 options.Plot = 1;           % Plot posterior and search points each iteration
-options.Meanfun = 'const';  % Constant GP mean function
-% options.Meanfun = 'negquad';  % Negative quadratic GP mean function
 
 fun = @rosenbrock_test;     % This is a shallow Rosenbrock function
 x0 = [0 0];                 % Starting point
