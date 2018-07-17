@@ -50,6 +50,27 @@ if nargout > 5
     Mode = gplite_fmin(gp,[],1);    % Max flag - finds maximum
 end
 
+end
 
+%--------------------------------------------------------------------------
+function [lnZ,lnZ_var] = estimate_lnZ(X,y,vbmodel)
+%ESTIMATE_LNZ Rough approximation of normalization constant
+
+hpd_frac = 0.2;     % Top 20% HPD
+N = size(X,1);
+
+lp = log(vbgmmpdf(vbmodel,X')');
+
+% Take HPD points according to both fcn samples and model
+[~,ord] = sort(lp + y,'descend');
+
+idx_hpd = ord(1:ceil(N*hpd_frac));
+lp_hpd = lp(idx_hpd);
+y_hpd = y(idx_hpd);
+
+delta = -(lp_hpd - y_hpd);
+
+lnZ = mean(delta);
+lnZ_var = var(delta)/numel(delta);
 
 end
