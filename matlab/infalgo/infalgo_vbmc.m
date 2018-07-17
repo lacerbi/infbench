@@ -26,6 +26,7 @@ algoptions.ProposalFcn = @(X_) exp(infbench_lnprior(X_,probstruct));
 switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'on';
     case {1,'base'}; algoset = 'base';           % Use defaults
+    case {2,'acqus'}; algoset = 'acqus'; algoptions.SearchAcqFcn = @vbmc_acqus;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
