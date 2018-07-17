@@ -23,6 +23,7 @@ gsKL = 0.5*(kl1 + kl2);
 
 if compute_lnZ
     NcompMax = 30;  % Max number of mixture components
+    Nsvb_max = 5e3; % Max number of samples for VBGMM
     
     % Add variational Gaussian mixture model toolbox to path
     mypath = fileparts(mfilename('fullpath'));
@@ -36,7 +37,10 @@ if compute_lnZ
     vbopts.TolResponsibility = 0.5;    % Remove components with less than this total responsibility
     vbopts.ClusterInit = 'kmeans';     % Initialization of VB (methods are 'rand' and 'kmeans')
    
-    vbmodel = vbgmmfit(xx',NcompMax,[],vbopts);
+    idx = round(linspace(1,size(xx,1),min(Nsvb_max,size(xx,1))));    
+    Xs = xx(idx,:);
+    
+    vbmodel = vbgmmfit(Xs',NcompMax,[],vbopts);
     [lnZ,lnZ_var] = estimate_lnZ(X,y,vbmodel);
 else
     lnZ = [];   lnZ_var = [];
