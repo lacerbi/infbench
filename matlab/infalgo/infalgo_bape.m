@@ -75,7 +75,7 @@ for i = 1:numel(stats)
      stats(i).gp.y = [];
 end
 
-history.Output.stats = diagnostics;
+history.Output.stats = stats;
 
 % Remove vbmodel from stats
 for i = 1:numel(history.Output.stats)
