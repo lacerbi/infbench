@@ -36,7 +36,7 @@ if compute_lnZ
     vbopts.TolResponsibility = 0.5;    % Remove components with less than this total responsibility
     vbopts.ClusterInit = 'kmeans';     % Initialization of VB (methods are 'rand' and 'kmeans')
    
-    vbmodel = vbgmmfit(Xs',NcompMax,[],vbopts);
+    vbmodel = vbgmmfit(xx',NcompMax,[],vbopts);
     [lnZ,lnZ_var] = estimate_lnZ(X,y,vbmodel);
 else
     lnZ = [];   lnZ_var = [];
