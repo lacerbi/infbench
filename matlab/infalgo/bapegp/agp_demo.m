@@ -15,7 +15,7 @@ UB = [5 5];
 PLB = [-1 -1];              % Plausible bounds identify initial region
 PUB = [1 1];
 
-[vbmodel,exitflag,output] = bapegp(fun,x0,LB,UB,PLB,PUB,options);
+[X,y,exitflag,output,vbmodel] = bapegp(fun,x0,LB,UB,PLB,PUB,options);
 
 % Now try without the bounds...
-[vbmodel,exitflag,output] = bapegp(fun,x0,[],[],PLB,PUB,options);
+[X,y,exitflag,output,vbmodel] = bapegp(fun,x0,[],[],PLB,PUB,options);

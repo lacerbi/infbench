@@ -55,9 +55,17 @@ UB(idx) = PUB(idx) + 3*bounds_range(idx);
 probstruct.AddLogPrior = true;
 
 algo_timer = tic;
-[vbmodel,exitflag,output] = ...
+[X,y,exitflag,output,vbmodel] = ...
     bapegp(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
+
+Niter = numel(probstruct.SaveTicks);
+%Nmax = numel(mu);
+%idx = probstruct.SaveTicks(probstruct.SaveTicks <= Nmax);
+%mu = mu(idx);
+
+[history,post] = StoreAlgoResults(...
+    probstruct,[],Niter,X,y,[],[],[],[],TotalTime);
 
 stats = output.stats;
 
@@ -67,36 +75,7 @@ for i = 1:numel(stats)
      stats(i).gp.y = [];
 end
 
-history = infbench_func(); % Retrieve history
-history.scratch.output = output;
-history.TotalTime = TotalTime;
-history.Output.stats = stats;
-
-% Store computation results (ignore points discarded after warmup)
-history.Output.X = output.X;
-history.Output.y = output.y;
-post.vbmodel = vbmodel;
-post.lnZ = stats(end).lnZ;
-post.lnZ_var = stats(end).lnZ_var;
-[post.gsKL,post.Mean,post.Cov,post.Mode] = computeStats(stats(end),probstruct);
-
-% Return estimate, SD of the estimate, and gauss-sKL with true moments
-Nticks = numel(history.SaveTicks);
-N = zeros(1,numel(stats));
-for i = 1:numel(stats); N(i) = stats(i).N; end
-for iIter = 1:Nticks
-    idx = find(N == history.SaveTicks(iIter),1);
-    if isempty(idx); continue; end
-    
-    history.Output.N(iIter) = history.SaveTicks(iIter);
-    history.Output.lnZs(iIter) = stats(idx).lnZ;
-    history.Output.lnZs_var(iIter) = stats(idx).lnZ_var;
-    [gsKL,Mean,Cov,Mode] = computeStats(stats(idx),probstruct);
-    history.Output.Mean(iIter,:) = Mean;
-    history.Output.Cov(iIter,:,:) = Cov;
-    history.Output.gsKL(iIter) = gsKL;
-    history.Output.Mode(iIter,:) = Mode;    
-end
+history.Output.stats = diagnostics;
 
 % Remove vbmodel from stats
 for i = 1:numel(history.Output.stats)

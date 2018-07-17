@@ -1,4 +1,4 @@
-function [vbmodel,exitflag,output] = bapegp(fun,x0,LB,UB,PLB,PUB,options)
+function [X,y,exitflag,output,vbmodel] = bapegp(fun,x0,LB,UB,PLB,PUB,options)
 %BAPEGP Bayesian adaptive posterior estimation inference via Gaussian processes.
 %
 % This function implements both the BAPE [1] and AGP [2] posterior inference 
@@ -13,10 +13,6 @@ function [vbmodel,exitflag,output] = bapegp(fun,x0,LB,UB,PLB,PUB,options)
 % arXiv preprint arXiv:1703.09930.
 
 % Code by Luigi Acerbi (2018).
-
-% Add variational Gaussian mixture model toolbox to path
-mypath = fileparts(mfilename('fullpath'));
-addpath([mypath filesep 'vbgmm']);       
 
 % Check existence of GPlite toolbox in path
 if ~exist('gplite_train.m','file')
@@ -41,18 +37,24 @@ end
 
 %% Algorithm options and defaults
 
+% Shared options between BAPE and AGP
 defopts.Algorithm = 'bape';             % Algorithm ('bape' or 'agp')
 defopts.MaxFunEvals = D*100;            % Maximum number of fcn evals
 defopts.NsMax_gp = 0;                   % Max GP hyperparameter samples (0 = optimize)
 defopts.StopGPSampling = 200 + 10*D;    % Training set size for switching to GP hyperparameter optimization (if sampling)
 defopts.AcqFun = [];                    % Acquisition function
-defopts.Ns = 2e4;                       % Number of MCMC samples to get approximate posterior
-defopts.SamplingMethod = 'parallel';    % MCMC sampler for approximate posterior
-defopts.NcompMax = 30;                  % Maximum number of mixture components
 defopts.Plot = 0;                       % Make diagnostic plots at each iteration
 defopts.FracExpand = 0.1;               % Expand search box by this amount
 defopts.ProposalFcn = @(x) agp_proposal(x,PLB,PUB); % Proposal fcn based on PLB and PUB (unused)
+
+% BAPE-only options
 defopts.Meanfun = 'const';              % GP mean function for BAPE (for AGP always zero)
+
+% AGP-only options for mixture-of-Gaussians posterior approximation
+defopts.Ns = 2e4;                       % Number of MCMC samples to get approximate posterior
+defopts.SamplingMethod = 'parallel';    % MCMC sampler for approximate posterior
+defopts.NcompMax = 30;                  % Maximum number of mixture components
+
 
 for f = fields(defopts)'
     if ~isfield(options,f{:}) || isempty(options.(f{:}))
@@ -67,13 +69,18 @@ switch lower(options.Algorithm)
         end       
         
         gp_meanfun = options.Meanfun;
+        gpsample_flag = options.Plot;   % Sample posterior from GP only for visualization
+        vbgmm_flag = false;             % Does not use GMM approximation
         
     case 'agp'
+                
         if isempty(options.AcqFun)
             options.AcqFun = @acqagp;
         end
         
         gp_meanfun = 'zero';    % Constant-zero mean function
+        gpsample_flag = true;   % Sample posterior from GP
+        vbgmm_flag = true;      % Builds GMM posterior approximation
         
     otherwise
         error('bapegp:UnknownAlgorithm','Unknown inference algorithm. Available methods are ''bape'' (default) or ''agp''.');
@@ -103,14 +110,23 @@ cmaes_opts.LBounds = LB(:);
 cmaes_opts.UBounds = UB(:);
 cmaes_opts.CMA.active = 1;      % Use Active CMA (generally better)
 
-% Variational Bayesian Gaussian mixture options
-vbopts.Display     = 'off';        % No display
-vbopts.TolBound    = 1e-8;         % Minimum relative improvement on variational lower bound
-vbopts.Niter       = 2000;         % Maximum number of iterations
-vbopts.Nstarts     = 1;            % Number of runs
-vbopts.TolResponsibility = 0.5;    % Remove components with less than this total responsibility
-vbopts.ClusterInit = 'kmeans';     % Initialization of VB (methods are 'rand' and 'kmeans')
+if vbgmm_flag
+    % Add variational Gaussian mixture model toolbox to path
+    mypath = fileparts(mfilename('fullpath'));
+    addpath([mypath filesep 'vbgmm']);       
+        
+    % Variational Bayesian Gaussian mixture options
+    vbopts.Display     = 'off';        % No display
+    vbopts.TolBound    = 1e-8;         % Minimum relative improvement on variational lower bound
+    vbopts.Niter       = 2000;         % Maximum number of iterations
+    vbopts.Nstarts     = 1;            % Number of runs
+    vbopts.TolResponsibility = 0.5;    % Remove components with less than this total responsibility
+    vbopts.ClusterInit = 'kmeans';     % Initialization of VB (methods are 'rand' and 'kmeans')
+else
+    vbmodel = [];
+end
 
+lnZ = NaN;  lnZ_var = NaN;
 
 %% Initialization
 
@@ -125,9 +141,7 @@ for i = 1:Ninit; y(i) = fun(X(i,:)); end
 width = 0.5*(PUB - PLB);
 switch lower(options.Algorithm)
     case 'bape'
-        % Starting GP hyperparameter vector
-        % hyp = [log(width(:));log(std(y));log(1e-3);mean(y)];    
-        hyp = [];   % Use standard GPlite start
+        hyp = [];   % Use standard GPlite starting hyperparameter vector
     
     case 'agp'
         % Draw initial samples
@@ -174,50 +188,54 @@ while 1
     hypprior = getGPhypprior(X_gp);    % Get prior over GP hyperparameters    
     [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp_meanfun,hypprior,[],gpopts);
     
-    % Sample from GP
-    fprintf(' Sampling from GP...');
-    switch lower(options.Algorithm)
-        case 'bape'
-            % Check bounds
-            lnpfun = @(x) lnprior(x,[],LB,UB);
-        case 'agp'
-            % Add approximate log posterior and check bounds
-            lnpfun = @(x) lnprior(x,vbmodel,LB,UB);
-    end
-    
-    try
-        Xs = gplite_sample(gp,options.Ns,[],options.SamplingMethod,lnpfun);
-    catch
-        error('bapegp:BadSampling','Unable to sample from approximate posterior due to numerical instabilities.');
-    end
-     
-    % Plot current approximate posterior and training points
-    if options.Plot
-        %Xrnd = vbgmmrnd(vbmodel,1e4)';
-        %cornerplot(Xrnd);    
-        for i = 1:D; names{i} = ['x_{' num2str(i) '}']; end
-        [~,ax] = cornerplot(Xs,names);
-        for i = 1:D-1
-            for j = i+1:D
-                axes(ax(j,i));  hold on;
-                scatter(X(:,i),X(:,j),'ok');
-            end
+    % Sample from GP, if needed
+    if gpsample_flag
+        fprintf(' Sampling from GP...');
+        switch lower(options.Algorithm)
+            case 'bape'
+                % Check bounds
+                lnpfun = @(x) lnprior(x,[],LB,UB);
+            case 'agp'
+                % Add approximate log posterior and check bounds
+                lnpfun = @(x) lnprior(x,vbmodel,LB,UB);
         end
-        drawnow;
+
+        try
+            Xs = gplite_sample(gp,options.Ns,[],options.SamplingMethod,lnpfun);
+        catch
+            error('bapegp:BadSampling','Unable to sample from approximate posterior due to numerical instabilities.');
+        end
+
+        % Plot current approximate posterior and training points
+        if options.Plot
+            %Xrnd = vbgmmrnd(vbmodel,1e4)';
+            %cornerplot(Xrnd);    
+            for i = 1:D; names{i} = ['x_{' num2str(i) '}']; end
+            [~,ax] = cornerplot(Xs,names);
+            for i = 1:D-1
+                for j = i+1:D
+                    axes(ax(j,i));  hold on;
+                    scatter(X(:,i),X(:,j),'ok');
+                end
+            end
+            drawnow;
+        end
     end
     
     % Refit vbGMM
-    fprintf(' Refit vbGMM...\n');
-    vbmodel = vbgmmfit(Xs',options.NcompMax,[],vbopts);
+    if vbgmm_flag
+        fprintf(' Refit vbGMM...\n');
+        vbmodel = vbgmmfit(Xs',options.NcompMax,[],vbopts);
 
-    %Xrnd = vbgmmrnd(vbmodel,1e5)';
-    %Mean = mean(Xrnd,1);
-    %Cov = cov(Xrnd);
-    
-    % Estimate normalization constant in HPD region
-    [lnZ,lnZ_var] = estimate_lnZ(X,y,vbmodel);
-        
-    fprintf('Estimate of lnZ = %f +/- %f.\n',lnZ,sqrt(lnZ_var));
+        %Xrnd = vbgmmrnd(vbmodel,1e5)';
+        %Mean = mean(Xrnd,1);
+        %Cov = cov(Xrnd);
+
+        % Estimate normalization constant in HPD region
+        [lnZ,lnZ_var] = estimate_lnZ(X,y,vbmodel);
+
+        fprintf('Estimate of lnZ = %f +/- %f.\n',lnZ,sqrt(lnZ_var));
+    end
     
     % Record stats
     stats(iter).N = N;
@@ -225,32 +243,42 @@ while 1
     % stats(iter).Cov = Cov;
     stats(iter).lnZ = lnZ;
     stats(iter).lnZ_var = lnZ_var;
-    stats(iter).vbmodel = vbmodel;
     stats(iter).gp = gplite_clean(gp);
+    if vbgmm_flag
+        stats(iter).vbmodel = vbmodel;
+    end
     
     % Find max of approximation among GP samples and record approximate mode
-    ys = vbgmmpdf(vbmodel,Xs')';
-    [~,idx] = max(ys);
-    stats(iter).mode = Xs(idx,:);
+    if vbgmm_flag
+        ys = vbgmmpdf(vbmodel,Xs')';
+        [~,idx] = max(ys);
+        stats(iter).mode = Xs(idx,:);
+    end
     
     if N >= options.MaxFunEvals; break; end
     
     % Select new points
     fprintf(' Active sampling...');
     for iNew = 1:Nstep
+        
+        if vbgmm_flag; Nsearch_rnd = floor(Nsearch/2); else Nsearch_rnd = Nsearch; end
+        
         fprintf(' %d..',iNew);
         % Random uniform search inside search box
         width = max(X) - min(X);
         lb = min(X) - width*options.FracExpand; ub = max(X) + width*options.FracExpand;
         lb = max(LB,min(lb,PLB)); ub = min(UB,max(ub,PUB));
-        [xnew,fval] = fminfill(@(x) options.AcqFun(x,vbmodel,gp,options),[],[],[],lb,ub,[],struct('FunEvals',floor(Nsearch/2)));
+        [xnew,fval] = fminfill(@(x) options.AcqFun(x,vbmodel,gp,options),[],[],[],lb,ub,[],struct('FunEvals',Nsearch_rnd));
         
-        % Random search sample from vbGMM
-        xrnd = vbgmmrnd(vbmodel,ceil(Nsearch/2))';
-        xrnd = bsxfun(@min,bsxfun(@max,LB,xrnd),UB);  % Force Xs inside hard bounds
-        frnd = options.AcqFun(xrnd,vbmodel,gp,options);
-        [frnd_min,idx] = min(frnd);        
-        if frnd_min < fval; xnew = xrnd(idx,:); fval = frnd_min; end
+        if vbgmm_flag
+            Nsearch_vbgmm = Nsearch - Nsearch_rnd;
+            % Random search sample from vbGMM
+            xrnd = vbgmmrnd(vbmodel,Nsearch_vbgmm)';
+            xrnd = bsxfun(@min,bsxfun(@max,LB,xrnd),UB);  % Force Xs inside hard bounds
+            frnd = options.AcqFun(xrnd,vbmodel,gp,options);
+            [frnd_min,idx] = min(frnd);        
+            if frnd_min < fval; xnew = xrnd(idx,:); fval = frnd_min; end
+        end
 
         % Optimize from best point with CMA-ES
         insigma = (max(X) - min(X))'/sqrt(3);

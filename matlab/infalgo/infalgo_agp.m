@@ -54,7 +54,7 @@ UB(idx) = PUB(idx) + 3*bounds_range(idx);
 probstruct.AddLogPrior = true;
 
 algo_timer = tic;
-[vbmodel,exitflag,output] = ...
+[X,y,exitflag,output,vbmodel] = ...
     bapegp(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
 
