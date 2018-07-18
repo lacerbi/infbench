@@ -27,7 +27,7 @@ switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'on';
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'acqus'}; algoset = 'acqus'; algoptions.SearchAcqFcn = @vbmc_acqus;
-    case {3,'acqev'}; algoset = 'acqev'; algoptions.SearchAcqFcn = @vbmc_acqev;
+    case {3,'acqev'}; algoset = 'acqev'; algoptions.SearchAcqFcn = @vbmc_acqev; 
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
