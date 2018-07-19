@@ -6,8 +6,8 @@ options.Method = 'IR';
 options.ErrorBar = 1;
 plots = {'lnZ','gsKL'};
 
-% algos = {'vbmc@acqproponly','vbmc@acqusonly','wsabi','wsabi@mm','bmc','bape','smc','ais'};
-algos = {'vbmc','wsabi','wsabi@mm','bbq','bbq@marginal','bmc','agp','bape','smc','ais'};
+algos = {'vbmc','vbmc@acqus','wsabi','wsabi@mm','bbq','bmc','agp','bape','smc','ais'};
+% We also ran 'bbq@marginal' (BBQ*), but it is similar to standard BBQ
 dims = {'S8','S7'};
 noise = [];
 

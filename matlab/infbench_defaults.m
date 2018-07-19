@@ -183,18 +183,26 @@ switch lower(type)
 
             case 'bbq'
                 switch algoset
-                    case 'base'; defaults.color = [188 128 189]/255; defaults.marker = 'o'; defaults.name = 'bbq';
-                    case 'marginal'; defaults.color = [255 128 189]/255; defaults.marker = '*'; defaults.name = 'bbq*';
+                    case 'base'; defaults.color = [158 98 159]/255; defaults.marker = 'o'; defaults.name = 'bbq';
+                    case 'marginal'; defaults.color = [255 88 169]/255; defaults.marker = '*'; defaults.name = 'bbq*';
                 end
                 defaults.linewidth = 2;
                 defaults.linestyle = line_deterministic;
                 
-            case {'agp','bape'}
+            case {'agp'}
 %                defaults.color = [128 177 211]/255;
                  defaults.color = [60 220 200]/255;
                 defaults.linewidth = 2;
                 defaults.linestyle = line_deterministic;
                 defaults.marker = '+';
+
+            case {'bape'}
+%                defaults.color = [128 177 211]/255;
+                 defaults.color = [223 150 68]/255;
+                defaults.linewidth = 2;
+                defaults.linestyle = line_deterministic;
+                defaults.marker = '+';
+                
                 
 %             case 'mcs'
 %                 defaults.color = [253 180 98]/255;

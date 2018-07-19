@@ -1,4 +1,4 @@
-% FIGURE 1 for VBMC paper. Plot benchmark on synthetic likelihoods.
+% FIGURE 1 for revised VBMC paper. Plot benchmark on synthetic likelihoods.
 
 options.BestOutOf = 1;
 options.NumZero = 1e-4;
@@ -6,10 +6,9 @@ options.Method = 'IR';
 options.ErrorBar = 1;
 plots = {'lnZ','gsKL'};
 
-%algos = {'vbmc','vbmc@acqusonly','wsabi','wsabi@mm','bape','bmc','smc','ais'};
-% dims = {'2D','4D','6D','8D','10D'};
-algos = {'vbmc','bbq','bbq@marginal','wsabi','wsabi@mm','agp','bape','bmc','smc','ais'};
+algos = {'wsabi','wsabi@mm','bbq','bmc','agp','bape','smc','ais','vbmc','vbmc@acqus'};
 dims = {'2D','6D','10D'};
+% dims = {'2D','4D','6D','8D','10D'};
 noise = [];
 
 n = 1;
