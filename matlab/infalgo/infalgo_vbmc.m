@@ -30,6 +30,7 @@ switch algoset
     case {3,'acqev'}; algoset = 'acqev'; algoptions.SearchAcqFcn = @vbmc_acqev;
     case {4,'detvars5'}; algoset = 'detvars'; algoptions.DetEntropyMinD = 5; 
     case {5,'detvars3'}; algoset = 'detvars'; algoptions.DetEntropyMinD = 3;
+    case {6,'opt'}; algoset = 'opt'; algoptions.Kwarmup = 1; algoptions.KfunMax = 1; algoptions.AdaptiveK = 0;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);

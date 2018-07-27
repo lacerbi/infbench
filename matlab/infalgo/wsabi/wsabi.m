@@ -1,15 +1,16 @@
 function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabi( ...
             method,         ... 1) 'L' or 'M' wsabi method
-            range,          ... 2) 2 x D matrix, lower bnd top row.
+            loglikhandle,   ... 2) Handle to log-likelihood function. 
             priorMu,        ... 3) Gaussian prior mean, 1 x D.
             priorVar,       ... 4) Gaussian prior covariance, D x D.
-            kernelVar,      ... 5) Initial input length scales, D x D.
-            lambda,         ... 6) Initial output length scale.
-            alpha,          ... 7) Alpha offset fraction, as in paper.
-            numSamples,     ... 8) Number of BBQ samples to run.
-            loglikhandle,   ... 9) Handle to log-likelihood function. 
-            printing,       ... 10) If true, print intermediate output.
-            x0)             ... 11) (optional) Use as starting point.
+            range,          ... 5) 2 x D matrix, lower bnd top row.
+            numSamples,     ... 6) Number of BBQ samples to run.
+            kernelVar,      ... 7) Initial input length scales, D x D.
+            lambda,         ... 8) Initial output length scale.
+            x0,             ... 9) Use as starting point
+            alpha,          ... 10) Alpha offset fraction, as in paper.
+            printing        ... 11) If true, print intermediate output.
+            )
         
 % Output structures:
 % log_mu:   log of the integral posterior mean.
@@ -21,7 +22,17 @@ function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabi( ...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin < 11; x0 = []; end
+% Assign defaults for empty arguments
+if nargin < 5 || isempty(range)
+    ss = sqrt(diag(priorVar))';
+    range = [priorMu - 6*ss; priorMu + 6*ss];
+end
+if nargin < 6 || isempty(numSamples); numSamples = 1e3; end
+if nargin < 7 || isempty(kernelVar); kernelVar = diag((0.5*(range(2,:)-range(1,:))/sqrt(3)).^2); end
+if nargin < 8 || isempty(lambda); lambda = 1; end
+if nargin < 9; x0 = []; end
+if nargin < 10 || isempty(alpha); alpha = 0.8; end
+if nargin < 11 || isempty(printing); printing = 1; end
 
 method = upper(method(1));
 if method ~= 'L' && method ~= 'M'
