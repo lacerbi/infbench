@@ -31,6 +31,10 @@ switch algoset
     case {4,'detvars5'}; algoset = 'detvars'; algoptions.DetEntropyMinD = 5; 
     case {5,'detvars3'}; algoset = 'detvars'; algoptions.DetEntropyMinD = 3;
     case {6,'newbnd'}; algoset = 'newbnd'; % Changed variational posterior bounds
+    case {7,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;
+    case {8,'acqf2'}; algoset = 'acqf2'; algoptions.SearchAcqFcn = @vbmc_acqf2;
+    case {9,'acqf'}; algoset = 'acqf'; algoptions.SearchAcqFcn = @vbmc_acqf;
+    case {10,'acqf1'}; algoset = 'acqf1'; algoptions.SearchAcqFcn = @vbmc_acqf1;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
