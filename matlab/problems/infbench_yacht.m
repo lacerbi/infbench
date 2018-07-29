@@ -33,7 +33,7 @@ if isempty(x)
             cmaes_opts.TolX = 1e-6;
             cmaes_opts.TolFun = 1e-6;            
             
-            Niters = 10;
+            Niters = 100;
             
             xnew = zeros(Niters,D);
             for i = 1:Niters
