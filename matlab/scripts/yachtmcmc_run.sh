@@ -3,20 +3,20 @@ PROJECT="infbench"
 SHORTNAME=IB
 BASEDIR="${HOME}/${PROJECT}/matlab"
 SOURCEDIR="${BASEDIR}/"
-JOBSCRIPT="${BASEDIR}/scripts/job_goris2015mcmc.sh"
+JOBSCRIPT="${BASEDIR}/scripts/job_yachtmcmc.sh"
 
 #Job parameters
-RUNTIME=24:00:00
+RUNTIME=4:00:00
 MAXRT=NaN
 VERBOSE=0
-WSAMPLES=250
+WSAMPLES=200
 
 NODES="1"
 PPN="1"
 MEM="4000MB"
 RESOURCES="nodes=${NODES}:ppn=${PPN},mem=${MEM},walltime=${RUNTIME}"
 
-RUN="goris2015mcmc"
+RUN="yachtmcmc"
 
 #if [[ -z ${1} ]]; then
         JOBLIST="$1"

@@ -66,7 +66,7 @@ case "${1}" in
         4e)     ALGOSET="{'acqf'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4f)     ALGOSET="{'acqfreg'}"
+        4f)     ALGOSET="{'acqfreg2'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4g)     ALGOSET="{'acqpropreg'}"
@@ -246,7 +246,7 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104f)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqfreg'}"
+                ALGOS="{'vbmc@acqfreg2'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
