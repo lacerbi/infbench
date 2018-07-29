@@ -381,6 +381,28 @@ case "${1}" in
                 IDS=$IDS_FIFTY
                 ;;
 
+	201)    PROBS="{'yacht'}"
+                ALGOS="{'laplace'}"
+                DIMS="{'8D'}"
+                IDS="{'1','2','3'}"
+                ;;
+        202)    PROBS="{'yacht'}"
+                ALGOS="{'wsabi','wsabi@mm','bmc','smc','ais'}"
+                DIMS="{'8D'}"
+                IDS=$IDS_FIFTY
+                ;;
+        203)    PROBS="{'yacht'}"
+                ALGOS="{'bbq','bbq@marginal','agp','bape','bape@negquad'}"
+                DIMS="{'8D'}"
+                IDS=$IDS_FIFTY
+                ;;
+        204)    PROBS="{'yacht'}"
+                ALGOS="{'vbmc@acqfreg2','vbmc@acqpropreg2'}"
+                DIMS="{'8D'}"
+                IDS=$IDS_CENTO
+                ;;
+
+
 
 esac
 

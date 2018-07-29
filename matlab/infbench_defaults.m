@@ -48,7 +48,7 @@ switch lower(type)
         
     case 'problem'
         
-        defaults.MaxFunEvals = 100 + 50*probstruct.D;
+        defaults.MaxFunEvals = min(100 + 50*probstruct.D,750);
         defaults.TolFun = 1e-6;             % Precision data
         defaults.SaveTicks = [];            % Time to save data
         defaults.Noise = [];

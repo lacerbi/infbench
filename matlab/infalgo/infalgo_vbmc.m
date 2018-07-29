@@ -31,7 +31,6 @@ switch algoset
     case {4,'detvars5'}; algoset = 'detvars'; algoptions.DetEntropyMinD = 5; 
     case {5,'detvars3'}; algoset = 'detvars'; algoptions.DetEntropyMinD = 3;
     case {6,'newbnd'}; algoset = 'newbnd'; % Changed variational posterior bounds
-    case {7,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;
     case {8,'acqf2'}; algoset = 'acqf2'; algoptions.SearchAcqFcn = @vbmc_acqf2;
     case {9,'acqf'}; algoset = 'acqf'; algoptions.SearchAcqFcn = @vbmc_acqf;
     case {10,'acqf1'}; algoset = 'acqf1'; algoptions.SearchAcqFcn = @vbmc_acqf1;
@@ -39,6 +38,9 @@ switch algoset
     case {12,'acqpropreg'}; algoset = 'acqpropreg'; algoptions.SearchAcqFcn = @vbmc_acqpropreg;
     case {13,'acqfreg2'}; algoset = 'acqfreg2'; algoptions.SearchAcqFcn = @vbmc_acqfreg;
     case {14,'acqpropreg2'}; algoset = 'acqpropreg2'; algoptions.SearchAcqFcn = @vbmc_acqpropreg;
+    case {15,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;
+    case {16,'K2'}; algoset = 'K2'; algoptions.Kfun = 2; algoptions.KfunMax = 2; algoptions.Kwarmup = 2;
+    case {17,'K5'}; algoset = 'K5'; algoptions.Kfun = 5; algoptions.KfunMax = 5; algoptions.Kwarmup = 5;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
