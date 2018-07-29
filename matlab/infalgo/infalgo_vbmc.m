@@ -36,7 +36,7 @@ switch algoset
     case {9,'acqf'}; algoset = 'acqf'; algoptions.SearchAcqFcn = @vbmc_acqf;
     case {10,'acqf1'}; algoset = 'acqf1'; algoptions.SearchAcqFcn = @vbmc_acqf1;
     case {11,'acqfreg'}; algoset = 'acqfreg'; algoptions.SearchAcqFcn = @vbmc_acqfreg;
-    case {12,'new'}; algoset = 'new'; algoptions.SearchAcqFcn = @vbmc_acqfreg; algoptions.StableGPSampling = 2;
+    case {12,'new'}; algoset = 'new'; algoptions.SearchAcqFcn = @vbmc_acqfreg; algoptions.StableGPSamples = 2;
         
         
         
@@ -96,11 +96,33 @@ if ~ControlRunFlag
     for iIter = 1:Nticks
         idx = find(stats.N == history.SaveTicks(iIter),1);
         if isempty(idx); continue; end
-
+        
+        % VBMC would return the current variational solution only if stable,
+        % otherwise it would return a recent solution with best ELCBO 
+        % (and warn the user of lack of stability)
+        if stats.stable(idx)
+            idx_safe = idx;
+        else
+            laststable = find(stats.stable,1,'last');
+            if isempty(laststable)
+                BackIter = ceil(iIter*0.25);  % Go up to this iterations back if no previous stable iteration
+                idx_start = max(1,idx-BackIter);
+            else
+                idx_start = laststable;
+            end
+            SafeSD = 5; % Large penalization for uncertainty
+            lnZ_iter = stats.elbo(idx_start:idx);
+            lnZsd_iter = stats.elboSD(idx_start:idx);        
+            elcbo = lnZ_iter - SafeSD*lnZsd_iter;
+            [~,idx_safe] = max(elcbo);
+            % [~,idx_safe] = min(lnZsd_iter);
+            idx_safe = idx_start + idx_safe - 1;
+        end
+        
         history.Output.N(iIter) = history.SaveTicks(iIter);
-        history.Output.lnZs(iIter) = stats.elbo(idx);
-        history.Output.lnZs_var(iIter) = stats.elboSD(idx)^2;
-        [gsKL,Mean,Cov,Mode] = computeStats(stats.vp(idx),probstruct);
+        history.Output.lnZs(iIter) = stats.elbo(idx_safe);
+        history.Output.lnZs_var(iIter) = stats.elboSD(idx_safe)^2;
+        [gsKL,Mean,Cov,Mode] = computeStats(stats.vp(idx_safe),probstruct);
         history.Output.Mean(iIter,:) = Mean;
         history.Output.Cov(iIter,:,:) = Cov;
         history.Output.gsKL(iIter) = gsKL;
