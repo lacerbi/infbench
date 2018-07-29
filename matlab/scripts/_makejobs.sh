@@ -69,10 +69,11 @@ case "${1}" in
         4f)     ALGOSET="{'acqfreg2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4g)     ALGOSET="{'gpthreshcovsample'}"
+        4g)     ALGOSET="{'acqfreg2','acqpropreg2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4h)     ALGOSET="{'gpthreshcovsample2'}"
+        4h)     ALGOSET="{'acqfreg2','acqpropreg2'}"
+                DIMS="{'20D'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4i)     ALGOSET="{'gpthreshcovsample3'}"
