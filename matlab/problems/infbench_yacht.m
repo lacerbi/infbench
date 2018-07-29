@@ -143,14 +143,14 @@ if isempty(x)
         % Standardize data
         %yacht_mat(:,1:6) = yacht_mat(:,1:6) - mean(yacht_mat(:,1:6));
         %yacht_mat(:,1:6) = yacht_mat(:,1:6) ./ std(yacht_mat(:,1:6));
-        %yacht_mat = bsxfun(@minus,yacht_mat,mean(yacht_mat));
-        %yacht_mat = bsxfun(@rdivide,yacht_mat,std(yacht_mat));
+        yacht_mat = bsxfun(@minus,yacht_mat,mean(yacht_mat));
+        yacht_mat = bsxfun(@rdivide,yacht_mat,std(yacht_mat));
         
         % Normalize data
         %yacht_mat(:,1:6) = yacht_mat(:,1:6) - mean(yacht_mat(:,1:6));
         %yacht_mat(:,1:6) = yacht_mat(:,1:6) ./ std(yacht_mat(:,1:6));
-        yacht_mat = bsxfun(@minus,yacht_mat,min(yacht_mat));
-        yacht_mat = bsxfun(@rdivide,yacht_mat,max(yacht_mat));
+        %yacht_mat = bsxfun(@minus,yacht_mat,min(yacht_mat));
+        %yacht_mat = bsxfun(@rdivide,yacht_mat,max(yacht_mat));
         
         
         

@@ -35,6 +35,11 @@ switch algoset
     case {8,'acqf2'}; algoset = 'acqf2'; algoptions.SearchAcqFcn = @vbmc_acqf2;
     case {9,'acqf'}; algoset = 'acqf'; algoptions.SearchAcqFcn = @vbmc_acqf;
     case {10,'acqf1'}; algoset = 'acqf1'; algoptions.SearchAcqFcn = @vbmc_acqf1;
+    case {11,'acqfreg'}; algoset = 'acqfreg'; algoptions.SearchAcqFcn = @vbmc_acqfreg;
+    case {12,'new'}; algoset = 'new'; algoptions.SearchAcqFcn = @vbmc_acqfreg; algoptions.StableGPSampling = 2;
+        
+        
+        
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
