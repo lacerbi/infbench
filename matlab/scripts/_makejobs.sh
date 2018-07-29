@@ -391,11 +391,17 @@ case "${1}" in
                 DIMS="{'8D'}"
                 IDS=$IDS_FIFTY
                 ;;
-        203)    PROBS="{'goris2015'}"
+        203)    PROBS="{'yacht'}"
                 ALGOS="{'bbq','bbq@marginal','agp','bape','bape@negquad'}"
                 DIMS="{'8D'}"
                 IDS=$IDS_FIFTY
                 ;;
+        204)    PROBS="{'yacht'}"
+                ALGOS="{'vbmc@acqfreg2','vbmc@acqpropreg2'}"
+                DIMS="{'8D'}"
+                IDS=$IDS_CENTO
+                ;;
+
 
 
 esac
