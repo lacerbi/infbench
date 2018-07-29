@@ -69,7 +69,7 @@ case "${1}" in
         4f)     ALGOSET="{'acqfreg2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4g)     ALGOSET="{'acqfreg2','acqpropreg2'}"
+        4g)     ALGOSET="{'acqpropreg2'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4h)     ALGOSET="{'acqfreg2','acqpropreg2'}"
@@ -252,14 +252,14 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104g)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@gpthreshcovsample'}"
+                ALGOS="{'vbmc@acqpropreg2'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104h)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@gpthreshcovsample2'}"
+                ALGOS="{'vbmc@K1','vbmc@K2','vbmc@K5'}"
                 DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
+                IDS=$IDS_FIFTY
                 ;;
         104i)   PROBS="{'goris2015'}"
                 ALGOS="{'vbmc@gpthreshcovsample3'}"
