@@ -37,6 +37,8 @@ switch algoset
     case {10,'acqf1'}; algoset = 'acqf1'; algoptions.SearchAcqFcn = @vbmc_acqf1;
     case {11,'acqfreg'}; algoset = 'acqfreg'; algoptions.SearchAcqFcn = @vbmc_acqfreg;
     case {12,'acqpropreg'}; algoset = 'acqpropreg'; algoptions.SearchAcqFcn = @vbmc_acqpropreg;
+    case {13,'acqfreg2'}; algoset = 'acqfreg2'; algoptions.SearchAcqFcn = @vbmc_acqfreg;
+    case {14,'acqpropreg2'}; algoset = 'acqpropreg2'; algoptions.SearchAcqFcn = @vbmc_acqpropreg;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
