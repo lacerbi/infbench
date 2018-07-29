@@ -33,7 +33,7 @@ if isempty(x)
             cmaes_opts.TolX = 1e-6;
             cmaes_opts.TolFun = 1e-6;            
             
-            Niters = 4;
+            Niters = 10;
             
             xnew = zeros(Niters,D);
             for i = 1:Niters
@@ -141,18 +141,8 @@ if isempty(x)
         yacht_mat(:,7) = yacht_mat(:,7);
         
         % Standardize data
-        %yacht_mat(:,1:6) = yacht_mat(:,1:6) - mean(yacht_mat(:,1:6));
-        %yacht_mat(:,1:6) = yacht_mat(:,1:6) ./ std(yacht_mat(:,1:6));
         yacht_mat = bsxfun(@minus,yacht_mat,mean(yacht_mat));
         yacht_mat = bsxfun(@rdivide,yacht_mat,std(yacht_mat));
-        
-        % Normalize data
-        %yacht_mat(:,1:6) = yacht_mat(:,1:6) - mean(yacht_mat(:,1:6));
-        %yacht_mat(:,1:6) = yacht_mat(:,1:6) ./ std(yacht_mat(:,1:6));
-        %yacht_mat = bsxfun(@minus,yacht_mat,min(yacht_mat));
-        %yacht_mat = bsxfun(@rdivide,yacht_mat,max(yacht_mat));
-        
-        
         
         data.X = yacht_mat(:,1:D-2);
         data.y = yacht_mat(:,7);
@@ -203,21 +193,8 @@ if isempty(x)
 else
         
     % Iteration call -- evaluate objective function (GP likelihood)
-    try
-    
-%         hyp.cov = x(1:7);
-%         hyp.lik = x(8);
-%         hyp.mean = [];
-%         nlZ2 = gp(hyp, [], @meanZero, @covSEard, [], infprob.gp.X, infprob.gp.y);
-    
-        % x = x/2;
-        x(7) = x(7) + 1.5*log(2*pi) ;
-        % x(7) = x(7) - sum(x(1:6));
-        nlZ = gplite_nlZ(x(:),infprob.gp);
-        
-        
-%         [nlZ,nlZ2]
-        
+    try        
+        nlZ = gplite_nlZ(x(:),infprob.gp);        
     catch
         nlZ = Inf;
     end        
