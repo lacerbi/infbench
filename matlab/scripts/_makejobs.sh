@@ -256,9 +256,9 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104h)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@gpthreshcovsample2'}"
+                ALGOS="{'vbmc@K1','vbmc@K2','vbmc@K5'}"
                 DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
+                IDS=$IDS_FIFTY
                 ;;
         104i)   PROBS="{'goris2015'}"
                 ALGOS="{'vbmc@gpthreshcovsample3'}"
