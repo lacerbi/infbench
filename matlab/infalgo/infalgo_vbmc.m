@@ -103,9 +103,9 @@ if ~ControlRunFlag
         if stats.stable(idx)
             idx_safe = idx;
         else
-            laststable = find(stats.stable,1,'last');
+            laststable = find(stats.stable(1:idx),1,'last');
             if isempty(laststable)
-                BackIter = ceil(iIter*0.25);  % Go up to this iterations back if no previous stable iteration
+                BackIter = ceil(idx*0.25);  % Go up to this iterations back if no previous stable iteration
                 idx_start = max(1,idx-BackIter);
             else
                 idx_start = laststable;

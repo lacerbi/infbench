@@ -159,8 +159,8 @@ if isempty(x)
         
         lb = -Inf(1,D);
         ub = Inf(1,D);
-        plb = -2*ones(1,D);
-        pub = 2*ones(1,D);
+        plb = -ones(1,D);
+        pub = ones(1,D);
         noise = [];
                 
         Mean = zeros(1,D);
