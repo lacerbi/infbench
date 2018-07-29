@@ -76,14 +76,14 @@ if isempty(x)
             if numel(mcmc_params) > 1
                 W_mult = mcmc_params(2);
             else
-                W_mult = 1e3;
+                W_mult = 200;
             end
 
             W = 2*(infprob.D+1);    % Number of walkers
             Ns = W*W_mult;             % Number of samples
 
-            sampleopts.Burnin = Ns;
-            sampleopts.Thin = 1;
+            sampleopts.Thin = 10;
+            sampleopts.Burnin = Ns*sampleopts.Thin;
             sampleopts.Display = 'notify';
             sampleopts.Diagnostics = false;
             sampleopts.VarTransform = false;
