@@ -8,8 +8,9 @@ function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabi( ...
             kernelVar,      ... 7) Initial input length scales, D x D.
             lambda,         ... 8) Initial output length scale.
             x0,             ... 9) Use as starting point
-            alpha,          ... 10) Alpha offset fraction, as in paper.
-            printing        ... 11) If true, print intermediate output.
+            Nsearch,        ... 10) Search point for acquisition fcn
+            alpha,          ... 11) Alpha offset fraction, as in paper.
+            printing        ... 12) If true, print intermediate output.
             )
         
 % Output structures:
@@ -31,8 +32,9 @@ if nargin < 6 || isempty(numSamples); numSamples = 1e3; end
 if nargin < 7 || isempty(kernelVar); kernelVar = diag((0.5*(range(2,:)-range(1,:))/sqrt(3)).^2); end
 if nargin < 8 || isempty(lambda); lambda = 1; end
 if nargin < 9; x0 = []; end
-if nargin < 10 || isempty(alpha); alpha = 0.8; end
-if nargin < 11 || isempty(printing); printing = 1; end
+if nargin < 10 || isempty(Nsearch); Nsearch = 0; end
+if nargin < 11 || isempty(alpha); alpha = 0.8; end
+if nargin < 12 || isempty(printing); printing = 1; end
 
 method = upper(method(1));
 if method ~= 'L' && method ~= 'M'
@@ -386,27 +388,68 @@ for t = 1:numSamples - 1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Actively select next sample point:
  
-    if rand < 1.1 % Sample starting location for search from prior.
-        strtSamp = mvnrnd(bb,diag(BB),1);
+    % Define acquisition function
+    if method == 'L'
+      acqfun = @(x) expectedVarL( transp(x), lambda, VV, ... 
+         lHatD, xxIter, invKxx, jitterNoise, bb, BB );
     else
-        strtSamp = 2*range(2,:).*rand(1,dim) - 50;
+      acqfun = @(x) expectedVarM( transp(x), lambda, VV, ... 
+         lHatD, xxIter, invKxx, jitterNoise, bb, BB );
+    end
+        
+    if Nsearch > 0
+        % Perform shotgun search first
+        
+        % 1) Draw points from prior
+        Nrnd = ceil(Nsearch/3);
+        murnd = bb;
+        sigmarnd = sqrt(BB);
+        Xsearch = bsxfun(@plus,bsxfun(@times,randn(Nrnd,dim),sigmarnd),murnd);
+        
+        % 2) Draw points around current points based on GP length scale
+        Nrnd = ceil((Nsearch - size(Xsearch,1))/2);
+        if Nrnd > 0
+            idx = randi(size(xxIter,1),[Nrnd,1]);
+            murnd = xxIter(idx,:);
+            sigmarnd = 2*sqrt(VV);
+            Xsearch = [Xsearch; ...
+                bsxfun(@plus,bsxfun(@times,randn(Nrnd,dim),sigmarnd),murnd)];
+        end
+        
+        % 3) Draw remaining points uniformly inside search box
+        Nrnd = Nsearch - size(Xsearch,1);
+        if Nrnd > 0        
+            Xsearch = [Xsearch; ...
+                bsxfun(@plus, range(1,:), ...
+                bsxfun(@times,range(2,:)-range(1,:),rand(Nrnd,dim)))];
+        end
+        
+        % Evaluate acquisition function on all candidate search points
+        aval = Inf(Nsearch,1);
+        for iSearch = 1:Nsearch
+            aval(iSearch) = acqfun(Xsearch(iSearch,:));
+        end
+        
+        % Take best point
+        [strtFval,idx] = min(aval);
+        strtSamp = Xsearch(idx,:);
+    
+    else
+        if rand < 1.1 % Sample starting location for search from prior.
+            strtSamp = mvnrnd(bb,diag(BB),1);
+        else
+            strtSamp = 2*range(2,:).*rand(1,dim) - 50;
+        end
+        strtFval = acqfun(strtSamp);
     end
     
-    % If using local optimiser (fast):
-    % if method == 'L'
-    %   EV = @(x) expectedVarL( transp(x), lambda, VV, ... 
-    %      lHatD, xxIter, invKxx, jitterNoise, bb, BB ); %Utility function
-    % else
-    %   EV = @(x) expectedVarM( transp(x), lambda, VV, ... 
-    %      lHatD, xxIter, invKxx, jitterNoise, bb, BB ); %Utility function
-    %end
-    %newX = fmincon( EV,  strtSamp,[],[],[],[], ...
-    %                range(1,:),range(2,:),[],options2 );
-    
-    % If using global optimiser (cmaes):
-    newX = cmaes_modded( ['expectedVar' method], strtSamp', [],opts, lambda, VV, ...
+    % Using global optimiser (cmaes):
+    [newX,cmaesFval] = cmaes_modded( ['expectedVar' method], strtSamp', [],opts, lambda, VV, ...
                   lHatD, xxIter, invKxx, jitterNoise, bb, BB);
     newX = newX';
+    
+    % If CMA-ES somehow does not improve from starting point, just use that
+    if strtFval < cmaesFval; newX = strtSamp; end
     
     xx(numSamples-currNumSamples,:) = newX;
     

@@ -7,6 +7,7 @@ addpath(genpath([BaseFolder filesep() AlgoFolder]));
 
 algoptions.Method = 'L';    % Default is WSABI-L
 algoptions.Alpha = 0.8;     % Fractional offset, as in paper.
+algoptions.Nsearch = 0;     % Extra search points
 
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 
@@ -15,6 +16,8 @@ switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'scatter';
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'mm'}; algoset = 'mm'; algoptions.Method = 'M';
+    case {3,'search'}; algoset = 'search'; algoptions.Nsearch = 1e4;
+    case {4,'mmsearch'}; algoset = 'mmsearch'; algoptions.Method = 'M'; algoptions.Nsearch = 1e4;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -56,7 +59,7 @@ algo_timer = tic;
     wsabi(method,@(x) infbench_func(x,probstruct),...
     probstruct.PriorMean,diag(probstruct.PriorVar),...
     range,algoptions.MaxFunEvals+1,kernelCov,lambda,x0,...
-    algoptions.Alpha,printing);
+    algoptions.Nsearch,algoptions.Alpha,printing);
 TotalTime = toc(algo_timer);
 
 vvar = max(real(exp(ln_var)),0);
