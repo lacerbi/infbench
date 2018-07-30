@@ -170,6 +170,14 @@ case "${1}" in
 		ALGOSET="{'mm'}"
 		IDS=${IDS_SINGLE}
                 ;;
+        52)     ALGOS="{'wsabi'}"
+		ALGOSET="{'search'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        53)     ALGOS="{'wsabi'}"
+                ALGOSET="{'mmsearch'}"
+                IDS=${IDS_SINGLE}
+                ;;
         55)     ALGOS="{'bbq'}"
 		IDS=${IDS_SINGLE}
                 ;;
@@ -381,6 +389,12 @@ case "${1}" in
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_FIFTY
                 ;;
+        140)    PROBS="{'goris2015'}"
+                ALGOS="{'wsabi@search','wsabi@mmsearch'}"
+                DIMS="{'S7','S8'}"
+                IDS=$IDS_FIFTY
+                ;;
+
 
 	201)    PROBS="{'yacht'}"
                 ALGOS="{'laplace'}"
