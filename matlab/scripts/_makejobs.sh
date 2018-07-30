@@ -76,6 +76,15 @@ case "${1}" in
                 DIMS="{'20D'}"
                 IDS=${IDS_SINGLE}
                 ;;
+        4h1)    ALGOSET="{'K1'}"
+                IDS=${IDS_SINGLE}
+		;;
+	4h2)    ALGOSET="{'K2'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        4h5)    ALGOSET="{'K5'}"
+                IDS=${IDS_SINGLE}
+                ;;
         4i)     ALGOSET="{'gpthreshcovsample3'}"
                 IDS=${IDS_SINGLE}
                 ;;
@@ -407,12 +416,12 @@ case "${1}" in
                 IDS=$IDS_FIFTY
                 ;;
         203)    PROBS="{'yacht'}"
-                ALGOS="{'bbq','bbq@marginal','agp','bape','bape@negquad'}"
+                ALGOS="{'bbq','bbq@marginal'}" #,'agp','bape','bape@negquad'}"
                 DIMS="{'8D'}"
                 IDS=$IDS_FIFTY
                 ;;
         204)    PROBS="{'yacht'}"
-                ALGOS="{'vbmc@acqfreg2','vbmc@acqpropreg2'}"
+                ALGOS="{'vbmc','vbmc@acqfreg2','vbmc@acqpropreg2'}"
                 DIMS="{'8D'}"
                 IDS=$IDS_CENTO
                 ;;
