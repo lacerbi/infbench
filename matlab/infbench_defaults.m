@@ -110,7 +110,7 @@ switch lower(type)
                     case {'base','acqproponly'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-P';
                     case {'acqus','acqusonly'}; defaults.color = [180 0 80]/255; defaults.marker = '*'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-U';
                     % case {'base'}; defaults.color = [0 100 140]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-.';
-                    case 'acqproponly2'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-';
+                    case 'acqpropreg'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case 'acqpropcontrol'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
                     case 'acqlcb_m5'; defaults.color = [0 0 0]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case 'cheapgp'; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
@@ -173,13 +173,15 @@ switch lower(type)
 %                 defaults.marker = 'v';
                  
             case 'wsabi'
+                defaults.linestyle = line_deterministic;
                 switch algoset
                     case {'base','ip'}; defaults.color = [251 128 114]/255; defaults.marker = 'o'; defaults.name = 'wsabi-L';
-                    case 'mm'; defaults.color = [114 128 251]/255; defaults.marker = 's'; defaults.name = 'wsabi-M';
+                    case {'mm'}; defaults.color = [114 128 251]/255; defaults.marker = 's'; defaults.name = 'wsabi-M';
+                    case {'search'}; defaults.color = [251 128 114]/255; defaults.marker = 'o'; defaults.name = 'wsabi-L'; defaults.linestyle = ':';
+                    case {'mmsearch'}; defaults.color = [114 128 251]/255; defaults.marker = 's'; defaults.name = 'wsabi-M'; defaults.linestyle = ':';
                     % case 'actset'; defaults.color = [128 251 114]/255; defaults.marker = 'd';
                 end
                 defaults.linewidth = 2;
-                defaults.linestyle = line_deterministic;
 
             case 'bbq'
                 switch algoset
