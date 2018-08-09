@@ -116,7 +116,7 @@ switch lower(type)
                     case 'cheapgp'; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'morelbomid'; defaults.color = [120 100 0]/255; defaults.marker = '>'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
-                    case 'cheapgpentsqrtk'; defaults.color = [120 100 0]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-';
+                    case 'se'; defaults.color = [120 100 0]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case 'cheapgpmid'; defaults.color = [0 0 0]/255; defaults.marker = 'd'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case 'gpthreshmid'; defaults.color = [180 0 80]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'gpthreshwidths'; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
