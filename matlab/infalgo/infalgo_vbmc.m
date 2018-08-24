@@ -13,6 +13,9 @@ algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.MinIter = 0;     % No limits on iterations
 algoptions.MaxIter = Inf;
 algoptions.WarpNonlinear = 'off';   % No nonlinear warping for now
+algoptions.BestSafeSD = 5;
+algoptions.BestFracBack = 0.25;
+algoptions.Diagnostics = 'on';
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -42,6 +45,7 @@ switch algoset
     case {16,'K2'}; algoset = 'K2'; algoptions.Kfun = 2; algoptions.KfunMax = 2; algoptions.Kwarmup = 2;
     case {17,'K5'}; algoset = 'K5'; algoptions.Kfun = 5; algoptions.KfunMax = 5; algoptions.Kwarmup = 5;
     case {18,'se'}; algoset = 'se'; algoptions.gpMeanFun = 'se';
+    case {19,'detent'}; algoset = 'detent'; algoptions.DetEntropyMinD = 1; algoptions.EntropySwitch = 'off';
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -69,7 +73,7 @@ D = size(x0,2);
 probstruct.AddLogPrior = true;
 
 algo_timer = tic;
-[vp,elbo,elbo_sd,exitflag,output,stats] = ...
+[vp,elbo,elbo_sd,exitflag,~,output,stats] = ...
     vbmc(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
 
@@ -99,32 +103,36 @@ if ~ControlRunFlag
         idx = find(stats.N == history.SaveTicks(iIter),1);
         if isempty(idx); continue; end
         
+        % Compute variational solution that VBMC would return at a given iteration
+        [vp,elbo,elbo_sd,idx_best] = ...
+            vbmc_best(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack);
+        
         % VBMC would return the current variational solution only if stable,
         % otherwise it would return a recent solution with best ELCBO 
         % (and warn the user of lack of stability)
-        if stats.stable(idx)
-            idx_safe = idx;
-        else
-            laststable = find(stats.stable(1:idx),1,'last');
-            if isempty(laststable)
-                BackIter = ceil(idx*0.25);  % Go up to this iterations back if no previous stable iteration
-                idx_start = max(1,idx-BackIter);
-            else
-                idx_start = laststable;
-            end
-            SafeSD = 5; % Large penalization for uncertainty
-            lnZ_iter = stats.elbo(idx_start:idx);
-            lnZsd_iter = stats.elboSD(idx_start:idx);        
-            elcbo = lnZ_iter - SafeSD*lnZsd_iter;
-            [~,idx_safe] = max(elcbo);
-            % [~,idx_safe] = min(lnZsd_iter);
-            idx_safe = idx_start + idx_safe - 1;
-        end
+%         if stats.stable(idx)
+%             idx_safe = idx;
+%         else
+%             laststable = find(stats.stable(1:idx),1,'last');
+%             if isempty(laststable)
+%                 BackIter = ceil(idx*0.25);  % Go up to this iterations back if no previous stable iteration
+%                 idx_start = max(1,idx-BackIter);
+%             else
+%                 idx_start = laststable;
+%             end
+%             SafeSD = 5; % Large penalization for uncertainty
+%             lnZ_iter = stats.elbo(idx_start:idx);
+%             lnZsd_iter = stats.elboSD(idx_start:idx);        
+%             elcbo = lnZ_iter - SafeSD*lnZsd_iter;
+%             [~,idx_safe] = max(elcbo);
+%             % [~,idx_safe] = min(lnZsd_iter);
+%             idx_safe = idx_start + idx_safe - 1;
+%         end
         
         history.Output.N(iIter) = history.SaveTicks(iIter);
-        history.Output.lnZs(iIter) = stats.elbo(idx_safe);
-        history.Output.lnZs_var(iIter) = stats.elboSD(idx_safe)^2;
-        [gsKL,Mean,Cov,Mode] = computeStats(stats.vp(idx_safe),probstruct);
+        history.Output.lnZs(iIter) = elbo;
+        history.Output.lnZs_var(iIter) = elbo_sd^2;
+        [gsKL,Mean,Cov,Mode] = computeStats(vp,probstruct);
         history.Output.Mean(iIter,:) = Mean;
         history.Output.Cov(iIter,:,:) = Cov;
         history.Output.gsKL(iIter) = gsKL;
