@@ -46,6 +46,7 @@ switch algoset
     case {17,'K5'}; algoset = 'K5'; algoptions.Kfun = 5; algoptions.KfunMax = 5; algoptions.Kwarmup = 5;
     case {18,'se'}; algoset = 'se'; algoptions.gpMeanFun = 'se';
     case {19,'detent'}; algoset = 'detent'; algoptions.DetEntropyMinD = 1; algoptions.EntropySwitch = 'off';
+    case {20,'test'}; algoset = 'test';  % Use defaults
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
