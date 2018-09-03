@@ -50,7 +50,8 @@ switch algoset
     case {21,'w'}; algoset = 'w'; algoptions.VariableWeights = 1;% algoptions.Plot = 'on'; % algoptions.Kfun = @(x) max(2,log(x));
     case {22,'w2'}; algoset = 'w2'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2; % algoptions.Plot = 'on'; % algoptions.Kfun = @(x) max(2,log(x));
     case {23,'w2knew'}; algoset = 'w2knew'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2;
-        
+    case {24,'wwnew'}; algoset = 'wwnew'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2; algoptions.KfunMax = @(N) N.^(2/3); algoptions.WeightPenalty = 0.1;
+    
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
 end
