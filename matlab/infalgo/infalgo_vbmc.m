@@ -47,6 +47,8 @@ switch algoset
     case {18,'se'}; algoset = 'se'; algoptions.gpMeanFun = 'se';
     case {19,'detent'}; algoset = 'detent'; algoptions.DetEntropyMinD = 1; algoptions.EntropySwitch = 'off';
     case {20,'test'}; algoset = 'test';  % Use defaults
+    case {21,'hedge'}; algoset = 'hedge'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2};
+    case {22,'nodetent'}; algoset = 'nodetent'; algoptions.EntropySwitch = 0;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
