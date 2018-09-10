@@ -53,8 +53,9 @@ switch algoset
     case {24,'wwnew'}; algoset = 'wwnew'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2; algoptions.KfunMax = @(N) N.^(2/3); algoptions.WeightPenalty = 0.1;
     case {25,'wwimpro'}; algoset = 'wwimpro'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2; algoptions.KfunMax = @(N) N.^(2/3); algoptions.WeightPenalty = 0.1;
     case {26,'hedge'}; algoset = 'hedge'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2};
-    case {27,'nodetent'}; algoset = 'nodetent'; algoptions.EntropySwitch = 0;
+    case {22,'nodetent'}; algoset = 'nodetent'; algoptions.EntropySwitch = 0;
     
+>>>>>>> f4848748e4eeb29f4c312629c7ca6fd3bdf4135c
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
 end
@@ -114,7 +115,29 @@ if ~ControlRunFlag
         % Compute variational solution that VBMC would return at a given iteration
         [vp,elbo,elbo_sd,idx_best] = ...
             vbmc_best(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack);
-                
+        
+        % VBMC would return the current variational solution only if stable,
+        % otherwise it would return a recent solution with best ELCBO 
+        % (and warn the user of lack of stability)
+%         if stats.stable(idx)
+%             idx_safe = idx;
+%         else
+%             laststable = find(stats.stable(1:idx),1,'last');
+%             if isempty(laststable)
+%                 BackIter = ceil(idx*0.25);  % Go up to this iterations back if no previous stable iteration
+%                 idx_start = max(1,idx-BackIter);
+%             else
+%                 idx_start = laststable;
+%             end
+%             SafeSD = 5; % Large penalization for uncertainty
+%             lnZ_iter = stats.elbo(idx_start:idx);
+%             lnZsd_iter = stats.elboSD(idx_start:idx);        
+%             elcbo = lnZ_iter - SafeSD*lnZsd_iter;
+%             [~,idx_safe] = max(elcbo);
+%             % [~,idx_safe] = min(lnZsd_iter);
+%             idx_safe = idx_start + idx_safe - 1;
+%         end
+        
         history.Output.N(iIter) = history.SaveTicks(iIter);
         history.Output.lnZs(iIter) = elbo;
         history.Output.lnZs_var(iIter) = elbo_sd^2;
