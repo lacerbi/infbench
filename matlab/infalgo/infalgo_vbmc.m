@@ -54,6 +54,7 @@ switch algoset
     case {25,'wwimpro'}; algoset = 'wwimpro'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2; algoptions.KfunMax = @(N) N.^(2/3); algoptions.WeightPenalty = 0.1;
     case {26,'hedge'}; algoset = 'hedge'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2};
     case {27,'nodetent'}; algoset = 'nodetent'; algoptions.EntropySwitch = 0;
+    case {28,'hedgent'}; algoset = 'hedgent'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2}; algoptions.EntropySwitch = 0;
     
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
