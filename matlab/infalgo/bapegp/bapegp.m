@@ -46,6 +46,7 @@ defopts.AcqFun = [];                    % Acquisition function
 defopts.Plot = 0;                       % Make diagnostic plots at each iteration
 defopts.FracExpand = 0.1;               % Expand search box by this amount
 defopts.ProposalFcn = @(x) agp_proposal(x,PLB,PUB); % Proposal fcn based on PLB and PUB (unused)
+defopts.TolGPVar = 0;                   % Regularization factor below this GP variance
 
 % BAPE-only options
 defopts.Meanfun = 'const';              % GP mean function for BAPE (for AGP always zero)

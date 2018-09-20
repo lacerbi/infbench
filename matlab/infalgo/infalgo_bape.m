@@ -32,6 +32,7 @@ switch algoset
     case {2,'long'}; algoset = 'long'; algoptions.Nsamples = 2e4;
     case {3,'negquad'}; algoset = 'negquad'; algoptions.Meanfun = 'negquad';
     case {4,'nqdebug'}; algoset = 'nqdebug'; algoptions.Meanfun = 'negquad'; algoptions.Plot = 1;
+    case {5,'reg'}; algoset = 'reg'; algoptions.TolGPVar = 1e-4;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);

@@ -70,7 +70,14 @@ y_hpd = y(idx_hpd);
 
 delta = -(lp_hpd - y_hpd);
 
-lnZ = mean(delta);
-lnZ_var = var(delta)/numel(delta);
+idx = isfinite(delta);
+
+if any(idx)
+    lnZ = mean(delta(idx));
+    lnZ_var = var(delta(idx))/numel(delta(idx));
+else
+    lnZ = NaN;
+    lnZ_var = NaN;
+end
 
 end
