@@ -57,7 +57,7 @@ case "${1}" in
         4b)     ALGOSET="{'acqf1'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4c)      ALGOSET="{'gpthreshwidths'}"
+        4c)      ALGOSET="{'acqi'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4d)     ALGOSET="{'gpthreshruncov'}"
@@ -106,10 +106,10 @@ case "${1}" in
         4o)     ALGOSET="{'test'}"
                 IDS=${IDS_SINGLE}
                 ;;
-       	4p)    	ALGOSET="{'w'}"
+       	4p)    	ALGOSET="{'noskip'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4q)     ALGOSET="{'w2'}"
+        4q)     ALGOSET="{'acqusreg'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4r)     ALGOSET="{'w2knew'}"
@@ -125,6 +125,9 @@ case "${1}" in
                 IDS=${IDS_SINGLE}
                 ;;
         4v)     ALGOSET="{'hedge'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        4w)     ALGOSET="{'hedgent'}"
                 IDS=${IDS_SINGLE}
                 ;;
         5)      ALGOSET="{'cheapgpmid'}"
@@ -270,7 +273,7 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104c)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@newbnd'}"
+                ALGOS="{'vbmc@acqi'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
@@ -335,12 +338,12 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104p)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@w'}"
+                ALGOS="{'vbmc@noskip'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104q)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@w2'}"
+                ALGOS="{'vbmc@acqusreg'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
@@ -366,6 +369,11 @@ case "${1}" in
                 ;;
 	104v)   PROBS="{'goris2015'}"
                 ALGOS="{'vbmc@hedge'}"
+                DIMS="{'S7','S8'}"
+                IDS=$IDS_CENTO
+                ;;
+        104w)   PROBS="{'goris2015'}"
+                ALGOS="{'vbmc@hedgent'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
