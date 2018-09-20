@@ -31,6 +31,7 @@ switch algoset
     case {2,'long'}; algoset = 'long'; algoptions.Nsamples = 2e4;
     case {3,'prop'}; algoset = 'prop'; algoptions.AcqFun = @acqagpprop;
     case {4,'acqg'}; algoset = 'acqg'; algoptions.AcqFun = @acqagpg;
+    case {5,'reg'}; algoset = 'reg'; algoptions.TolGPVar = 1e-4;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
