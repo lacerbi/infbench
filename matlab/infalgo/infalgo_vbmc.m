@@ -57,6 +57,7 @@ switch algoset
     case {28,'hedgent'}; algoset = 'hedgent'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2}; algoptions.EntropySwitch = 0;
     case {29,'acqi'}; algoset = 'acqi'; algoptions.SearchAcqFcn = @vbmc_acqipreg;
     case {30,'noskip'}; algoset = 'noskip'; algoptions.SkipActiveSamplingAfterWarmup = false;
+    case {31,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;
     
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
