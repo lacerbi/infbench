@@ -4,9 +4,10 @@ options.BestOutOf = 1;
 options.NumZero = 1e-4;
 options.Method = 'IR';
 options.ErrorBar = 1;
+options.BootStrap = 1e4;
 plots = {'lnZ','gsKL'};
 
-algos = {'wsabi','wsabi@mm','bbq','bmc','agp','bape','smc','ais','vbmc','vbmc@acqus'};
+algos = {'wsabi','wsabi@mm','bbq','bmc','agp','bape@negquad','smc','ais','vbmc','vbmc@acqus'};
 dims = {'2D','6D','10D'};
 % dims = {'2D','4D','6D','8D','10D'};
 noise = [];

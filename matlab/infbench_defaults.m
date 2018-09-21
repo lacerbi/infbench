@@ -108,7 +108,7 @@ switch lower(type)
             case 'vbmc'
                 switch algoset
                     case {'base','acqproponly'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-P';
-                    case {'acqus','acqusonly'}; defaults.color = [180 0 80]/255; defaults.marker = '*'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-U';
+                    case {'acqus','acqusonly','acqusreg'}; defaults.color = [180 0 80]/255; defaults.marker = '*'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-U';
                     % case {'base'}; defaults.color = [0 100 140]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'acqpropreg'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case 'acqpropcontrol'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
@@ -204,6 +204,7 @@ switch lower(type)
                 defaults.linewidth = 2;
                 defaults.linestyle = '--';
                 defaults.marker = '+';
+                defaults.name = 'bape';
                 
                 
 %             case 'mcs'

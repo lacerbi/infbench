@@ -396,13 +396,15 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
             if options.PlotAll
                 qq = 0.05:0.05:0.95;
                 for i = 1:numel(qq); yy(i,:) = quantile(y,qq(i)); end
+                
+                yy = y;
             else
                 yy = median(y,1);
 
                 if options.BootStrap > 0
                     yy_boot = bootstrp(options.BootStrap,@median,y);
-                    yyerr_up = quantile(yy_boot,0.95,1);
-                    yyerr_down = quantile(yy_boot,0.05,1);
+                    yyerr_up = quantile(yy_boot,0.975,1);
+                    yyerr_down = quantile(yy_boot,0.025,1);
                 else
                     yyerr_up = quantile(y,options.Quantiles(2),1);
                     yyerr_down = quantile(y,options.Quantiles(1),1);
@@ -426,8 +428,13 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
     if options.PlotAll
         lw = 0.5;
         for i = 1:size(yy,1)
-            h = plot(xx,yy(i,:),[linstyle,linemarker],'Color', [lincol,0.5], 'LineWidth',lw); hold on;
+            h = plot(xx,yy(i,:),[linstyle,linemarker],'Color', [lincol,0.1], 'LineWidth',lw); hold on;
         end
+        plot(xx,median(yy),[linstyle,linemarker],'Color',lincol,'LineWidth',4);
+        plot(xx,quantile(yy,options.Quantiles(1)),['--',linemarker],'Color',lincol,'LineWidth',2);
+        plot(xx,quantile(yy,options.Quantiles(2)),[':',linemarker],'Color',lincol,'LineWidth',2);
+        
+        
     else
         if any(iLayer == enhance); lw = linewidth*2; else; lw = linewidth; end    
         if plotErrorBar
