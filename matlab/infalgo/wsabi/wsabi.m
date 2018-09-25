@@ -113,24 +113,13 @@ else
 end
 currNumSamples = 1;
 
-if printing
-    fprintf('Iter:   ');
-end
-
-
 for t = 1:numSamples - 1
     if printing
         if ~mod(t,10)
-            prstr = sprintf('Log Current Mean Integral: %g', ...
-                            log(mu(t-1)) + logscaling(t-1));
+            prstr = sprintf('Iter %d. Log Current Mean Integral: %g.\n', ...
+                            t, log(mu(t-1)) + logscaling(t-1));
             fprintf(prstr);
-            pause(1);
-            fprintf(repmat('\b',1,length(prstr)))
         end
-        if t > 1
-            fprintf(repmat('\b',1,length(num2str(t-1))));
-        end
-        fprintf('%i',t);
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

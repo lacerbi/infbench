@@ -5,9 +5,10 @@ options.NumZero = 1e-2;
 options.Method = 'IR';
 options.ErrorBar = 1;
 options.BootStrap = 1e4;
+options.SampleFrequency = NaN;
 plots = {'lnZ','gsKL'};
 
-algos = {'vbmc','vbmc@acqus','wsabi','wsabi@mm','bbq','bmc','agp','bape@negquad','smc','ais'};
+algos = {'vbmc','vbmc@acqusreg','wsabi','wsabi@mm','bbq','bmc','agp','bape@nqreg','smc','ais'};
 % We also ran 'bbq@marginal' (BBQ*), but it is similar to standard BBQ
 dims = {'S8','S7'};
 noise = [];

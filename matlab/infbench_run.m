@@ -108,7 +108,7 @@ for iRun = 1:length(idlist)
     infbench_func([],probstruct,1,probstruct.nIters,timeOffset);
 
     % Starting point (used only by some algorithms)
-    probstruct.InitPoint = [];
+    probstruct.InitPoint = [];  % Initial point should be chosen earlier, should remove this bit
     if probstruct.StartFromMode
         if any(isnan(probstruct.Mode))
             warning('Cannot start from mode, vector contains NaNs. Setting a random starting point.');
@@ -124,6 +124,7 @@ for iRun = 1:length(idlist)
     % Run inference
     algofun = str2func(['infalgo_' algo]);
     probstruct.AlgoTimer = tic;
+    probstruct
     [history{iRun},post,algoptions] = algofun(algo,algoset,probstruct);
     
     history{iRun}.X0 = FirstPoint;

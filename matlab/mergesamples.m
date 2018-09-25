@@ -1,8 +1,9 @@
-function [X,lls,funccount] = mergesamples(filepattern,MaxIter,Nml)
+function [X,lls,funccount] = mergesamples(filepattern,MaxIter,Nml,psrf_flag)
 %MERGESAMPLES Merge MCMC samples from different files.
 
 if nargin < 2 || isempty(MaxIter); MaxIter = Inf; end
 if nargin < 3 || isempty(Nml); Nml = 2e4; end
+if nargin < 4 || isempty(psrf_flag); psrf_flag = true; end
 
 files = dir(filepattern);
 M = numel(files);
@@ -47,7 +48,12 @@ lls = lls(:,1:imax);
 funccount = funccount(1:imax);
 
 % Compute PSRF
-[R,Neff] = psrf(Xs);
+if psrf_flag
+    [R,Neff] = psrf(Xs);
+else
+    R = NaN; Neff = NaN;
+end
+fprintf('R_max = %.3f. Ntot = %d. Neff_min = %.1f. Total funccount = %d.\n',max(R),N*M,min(Neff),sum(funccount));
 
 % Reshape X
 [N,D,M] = size(Xs);
@@ -55,8 +61,6 @@ X = NaN(N*M,D);
 for m = 1:M
     X((1:N)+N*(m-1),:) = Xs(:,:,m);
 end
-
-fprintf('R_max = %.3f. Ntot = %d. Neff_min = %.1f. Total funccount = %d.\n',max(R),N*M,min(Neff),sum(funccount));
 fprintf('\n\tMean_mcmc = %s;\n\tCov_mcmc = %s;\n', mat2str(mean(X,1)), mat2str(cov(X)));
 
 if Nml > 0

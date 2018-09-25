@@ -140,7 +140,7 @@ if probstruct.StartFromMode
 end
 if isempty(probstruct.InitPoint)
     if ~isempty(probstruct.PriorMean) && all(isfinite(probstruct.PriorMean))
-        probstruct.InitPoint = probstruct.PriorMean;
+        probstruct.InitPoint = probstruct.PriorMean;    % This should be fixed -- not actually used
     else
         probstruct.InitPoint = rand(1,probstruct.D).*(probstruct.PUB-probstruct.PLB) + probstruct.PLB;
     end

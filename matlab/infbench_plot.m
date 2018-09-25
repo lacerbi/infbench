@@ -46,6 +46,8 @@ defopts.PlotAll = false;        % Plot all lines
 defopts.BootStrap = 1e3;        % # samples for bootstrap
 % defopts.BaseSpeedTest = 8.2496; % Laptop speed
 defopts.BaseSpeedTest = 13.7660; % Laptop speed
+defopts.SampleFrequency = NaN;
+
 
 % Plotting options
 defopts.YlimMax = 1e5;
@@ -196,7 +198,7 @@ for iFig = 1:nfigs
                 if isempty(history); continue; end
         
                 
-                x = []; lnZs = []; gsKLs = []; D = []; FunCallsPerIter = [];
+                x = []; lnZs = []; gsKLs = []; costs = []; D = []; FunCallsPerIter = [];
                 AverageOverhead = zeros(1,numel(history));
                 FractionOverhead = [];
                 Errs = []; Zscores = [];
@@ -212,7 +214,16 @@ for iFig = 1:nfigs
                     x = [x; history{1}.SaveTicks];
 
                     % Get valid time ticks
-                    idx_valid = history{i}.SaveTicks <= history{i}.TotalMaxFunEvals;                        
+                    idx_valid = history{i}.SaveTicks <= history{i}.TotalMaxFunEvals;
+                    if isfinite(options.SampleFrequency) && options.SampleFrequency > 0
+                        sampling_array = options.SampleFrequency:options.SampleFrequency:history{i}.TotalMaxFunEvals;
+                        for ii = 1:numel(idx_valid)
+                            if ~any(history{i}.SaveTicks(ii) == sampling_array)
+                                idx_valid(ii) = false;
+                            end
+                        end
+                    end
+                    
                     lZs_new = history{i}.Output.lnZs(idx_valid);    lZs_new = lZs_new(:)';                   
                     lZs_var_new = history{i}.Output.lnZs_var(idx_valid);    lZs_var_new = lZs_var_new(:)';                 
                     gsKLs_new = history{i}.Output.gsKL(idx_valid);                        
@@ -225,7 +236,7 @@ for iFig = 1:nfigs
                     Errs = [Errs; abs(lZs_new - lnZ_true)];
                     Zscores = [Zscores; (lZs_new - lnZ_true)./ sqrt(lZs_var_new)];
                     
-                    if ~isempty(history{i})
+                    %if ~isempty(history{i})
                         
                         if isfield(history{i},'FunCallsPerIter')
                             FunCallsPerIter{i} = history{i}.FunCallsPerIter;
@@ -253,8 +264,14 @@ for iFig = 1:nfigs
                         TotalFunctionTime = TotalFunctionTime + sum(history{i}.FuncTime(1:last))*speedfactor;
                         TotalTrials = TotalTrials + history{i}.SaveTicks(last);
                         FractionOverhead = [FractionOverhead, (history{i}.ElapsedTime(last)/sum(history{i}.FuncTime(1:last))-1)];                        
-                    end
+                    %end
                     
+                    FuncCumTime = cumsum(history{i}.FuncTime);
+                    difftime = [history{i}.ElapsedTime(1),diff(history{i}.ElapsedTime)];
+                    diffticks = [history{i}.SaveTicks(1),diff(history{i}.SaveTicks)];
+                    % costpertrial_new = (history{i}.ElapsedTime(idx_valid) - FuncCumTime(idx_valid))*speedfactor./history{i}.SaveTicks(idx_valid);
+                    costpertrial_new = (difftime(idx_valid) - history{i}.FuncTime(idx_valid))*speedfactor./diffticks(idx_valid);
+                    costs = [costs; costpertrial_new];
                 end
                                 
                 % Save summary statistics
@@ -292,6 +309,8 @@ for iFig = 1:nfigs
                             [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,lnZs,iLayer,varargin{dimlayers},options);
                         case 'gskl'
                             [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,gsKLs,iLayer,varargin{dimlayers},options);
+                        case 'costs'
+                            [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,costs,iLayer,varargin{dimlayers},options);
                     end
                     
                     % Save summary information
@@ -463,6 +482,8 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
             ystring = 'Median LML error';
         case 'gskl'
             ystring = 'Median gsKL';
+        case 'costs'
+            ystring = 'Median algorithmic cost per trial (s)';
     end
 
     string = [];
@@ -505,9 +526,14 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
                 else
                     ylims = [NumZero,YlimMax];
                     %ytick = [0.001,0.01,0.1,1,10,100,1e3,1e4,1e5];
+                    if YlimMax <= 1000
+                        ytick = [0.0001,0.001,0.01,0.1,1,10,1e2,1e3];
+                        yticklabel = {'10^{-4}','10^{-3}','0.01','0.1','1','10','100','10^3','10^4'};
+                    else
                     %yticklabel = {'0.001','0.01','0.1','1','10','10^2','10^3','10^4','10^5'};
-                    ytick = [0.0001,0.01,1,100,1e4,1e6,1e8];
-                    yticklabel = {'10^{-4}','10^{-2}','1','10^{2}','10^4','10^6','10^8'};
+                        ytick = [0.0001,0.01,1,100,1e4,1e6,1e8];
+                        yticklabel = {'10^{-4}','10^{-2}','1','10^{2}','10^4','10^6','10^8'};
+                    end
                 end
                 liney = lnZ_true*[1 1];                
             end
