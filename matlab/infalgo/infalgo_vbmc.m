@@ -133,6 +133,11 @@ else
     % Control condition -- run VBMC as normal but compute marginal likelihood
     % and posterior via other methods
 
+    % Add WSABI algorithm to MATLAB path
+    BaseFolder = fileparts(mfilename('fullpath'));
+    AlgoFolder = 'wsabi';
+    addpath(genpath([BaseFolder filesep() AlgoFolder]));
+        
     history = infbench_func(); % Retrieve history
     
     % Start warmup
