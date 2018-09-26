@@ -192,15 +192,17 @@ switch lower(type)
                 defaults.linestyle = line_deterministic;
                 
             case {'agp'}
-%                defaults.color = [128 177 211]/255;
-                 defaults.color = [60 220 200]/255;
+                switch algoset
+                    case 'base'; defaults.color = [60 220 200]/255; defaults.marker = 'o'; defaults.name = 'agp';
+                    case 'reg'; defaults.color = [255 88 169]/255; defaults.marker = '*'; defaults.name = 'agp (reg)';
+                end                 
                 defaults.linewidth = 2;
                 defaults.linestyle = '--';
                 defaults.marker = '+';
 
             case {'bape'}
 %                defaults.color = [128 177 211]/255;
-                 defaults.color = [223 150 68]/255;
+                 defaults.color = [128 177 48]/255;
                 defaults.linewidth = 2;
                 defaults.linestyle = '--';
                 defaults.marker = '+';

@@ -4,14 +4,15 @@ options.BestOutOf = 1;
 options.NumZero = 1e-2;
 options.Method = 'IR';
 options.ErrorBar = 1;
-options.BootStrap = 1e4;
+options.BootStrap = 1e5;
 plots = {'costs'};
 options.SampleFrequency = NaN;
 
-%algos = {'vbmc','vbmc@acqusreg','wsabi','wsabi@mm','bbq','bmc','agp','bape@nqreg','smc','ais'};
-algos = {'vbmc','vbmc@acqusreg','wsabi','wsabi@mm','bbq','agp','bape@nqreg'};
+% algos = {'vbmc','vbmc@acqusreg','wsabi','wsabi@mm','bbq','agp','bape@nqreg'};
+algos = {'wsabi','wsabi@mm','bbq','bape@nqreg','vbmc'};
 % We also ran 'bbq@marginal' (BBQ*), but it is similar to standard BBQ
-dims = {'S8','S7'};
+%dims = {'S8','S7'};
+dims = {'S8'};
 noise = [];
 
 n = 1;

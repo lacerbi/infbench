@@ -2,15 +2,16 @@
 
 options.BestOutOf = 1;
 options.NumZero = 1e-4;
+YlimMax = [1e4,1e6];
 options.Method = 'IR';
 options.ErrorBar = 1;
-options.BootStrap = 1e4;
+options.BootStrap = 1e5;
 options.SampleFrequency = NaN;
 plots = {'lnZ','gsKL'};
 
-algos = {'vbmc','vbmc@acqusreg','wsabi','wsabi@mm','bbq','bmc','agp','bape@nqreg','smc','ais'};
+%algos = {'wsabi','wsabi@mm','bbq','bmc','agp','bape@nqreg','smc','ais','vbmc@acqusreg','vbmc'};
+algos = {'smc','ais','bmc','wsabi','wsabi@mm','bbq','agp','bape@nqreg','vbmc@acqusreg','vbmc'};
 
-% algos = {'wsabi','wsabi@mm','bbq','bmc','agp','bape@negquad','smc','ais','vbmc','vbmc@acqusreg'};
 dims = {'2D','6D','10D'};
 % dims = {'2D','4D','6D','8D','10D'};
 noise = [];
@@ -25,6 +26,7 @@ mypath = '.';
 
 for iPlot = 1:numel(plots)
     options.PlotType = plots{iPlot};
+    options.YlimMax = YlimMax(iPlot);
     options.DisplayLegend = iPlot == numel(plots);
     figure(iPlot);
     infbench_plot(probset,probs,dims,noise,algos,[],{'prob','subprob'},options);

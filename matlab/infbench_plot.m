@@ -483,7 +483,7 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
         case 'gskl'
             ystring = 'Median gsKL';
         case 'costs'
-            ystring = 'Median algorithmic cost per trial (s)';
+            ystring = 'Median algorithmic cost per function evaluation (s)';
     end
 
     string = [];
