@@ -58,6 +58,7 @@ switch algoset
     case {29,'acqi'}; algoset = 'acqi'; algoptions.SearchAcqFcn = @vbmc_acqipreg;
     case {30,'noskip'}; algoset = 'noskip'; algoptions.SkipActiveSamplingAfterWarmup = false;
     case {31,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;
+    case {100,'control'}; algoset = 'control'; ControlRunFlag = true;
     
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -143,7 +144,7 @@ else
     N = history.SaveTicks(1:Niter);
     
     % Find when warm-up ends
-    idx = find(stats.vpK > 2,1);
+    idx = find(stats.warmup == 0,1);
     if isempty(idx); endWarmupN = Inf; else; endWarmupN = stats.N(idx); end
     
     mu = zeros(1,Niter);
