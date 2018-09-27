@@ -58,6 +58,9 @@ switch algoset
     case {29,'acqi'}; algoset = 'acqi'; algoptions.SearchAcqFcn = @vbmc_acqipreg;
     case {30,'noskip'}; algoset = 'noskip'; algoptions.SkipActiveSamplingAfterWarmup = false;
     case {31,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;
+    case {32,'acqfv2'}; algoset = 'acqfv2'; algoptions.SearchAcqFcn = @vbmc_acqfregv2;
+    case {33,'acqf2reg'}; algoset = 'acqf2reg'; algoptions.SearchAcqFcn = @vbmc_acqf2reg;
+        
     case {100,'control'}; algoset = 'control'; ControlRunFlag = true;
     
     otherwise
