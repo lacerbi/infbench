@@ -1,6 +1,7 @@
 % FIGURE S2 for VBMC paper. Plot example posterior of neuronal model.
 
 names = {'x_1','x_2','x_3','x_4','x_5','x_6','x_7'};
+fontsize = 18;
 
 % Cornerplot of true posterior
 id = 7;
