@@ -60,6 +60,8 @@ switch algoset
     case {31,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;
     case {32,'acqfv2'}; algoset = 'acqfv2'; algoptions.SearchAcqFcn = @vbmc_acqfregv2;
     case {33,'acqf2reg'}; algoset = 'acqf2reg'; algoptions.SearchAcqFcn = @vbmc_acqf2reg;
+    case {34,'acqfregvlnn'}; algoset = 'acqfregvlnn'; algoptions.SearchAcqFcn = @vbmc_acqfregvlnn;
+    case {35,'acqfregvsqrtn'}; algoset = 'acqfregvsqrtn'; algoptions.SearchAcqFcn = @vbmc_acqfregvsqrtn;
         
     case {100,'control'}; algoset = 'control'; ControlRunFlag = true;
     
