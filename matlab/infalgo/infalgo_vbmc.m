@@ -28,42 +28,20 @@ algoptions.ProposalFcn = @(X_) exp(infbench_lnprior(X_,probstruct));
 % Options from current problem
 switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'on';
-    case {1,'base'}; algoset = 'base';           % Use defaults
-    case {2,'acqus'}; algoset = 'acqus'; algoptions.SearchAcqFcn = @vbmc_acqus;
-    case {3,'acqev'}; algoset = 'acqev'; algoptions.SearchAcqFcn = @vbmc_acqev;
-    case {4,'detvars5'}; algoset = 'detvars'; algoptions.DetEntropyMinD = 5; 
-    case {5,'detvars3'}; algoset = 'detvars'; algoptions.DetEntropyMinD = 3;
-    case {6,'newbnd'}; algoset = 'newbnd'; % Changed variational posterior bounds
-    case {8,'acqf2'}; algoset = 'acqf2'; algoptions.SearchAcqFcn = @vbmc_acqf2;
-    case {9,'acqf'}; algoset = 'acqf'; algoptions.SearchAcqFcn = @vbmc_acqf;
-    case {10,'acqf1'}; algoset = 'acqf1'; algoptions.SearchAcqFcn = @vbmc_acqf1;
-    case {11,'acqfreg'}; algoset = 'acqfreg'; algoptions.SearchAcqFcn = @vbmc_acqfreg;
-    case {12,'acqpropreg'}; algoset = 'acqpropreg'; algoptions.SearchAcqFcn = @vbmc_acqpropreg;
-    case {13,'acqfreg2'}; algoset = 'acqfreg2'; algoptions.SearchAcqFcn = @vbmc_acqfreg;
-    case {14,'acqpropreg2'}; algoset = 'acqpropreg2'; algoptions.SearchAcqFcn = @vbmc_acqpropreg;
-    case {15,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;
-    case {16,'K2'}; algoset = 'K2'; algoptions.Kfun = 2; algoptions.KfunMax = 2; algoptions.Kwarmup = 2;
-    case {17,'K5'}; algoset = 'K5'; algoptions.Kfun = 5; algoptions.KfunMax = 5; algoptions.Kwarmup = 5;
-    case {18,'se'}; algoset = 'se'; algoptions.gpMeanFun = 'se';
-    case {19,'detent'}; algoset = 'detent'; algoptions.DetEntropyMinD = 1; algoptions.EntropySwitch = 'off';
-    case {20,'test'}; algoset = 'test';  % Use defaults
-    case {21,'w'}; algoset = 'w'; algoptions.VariableWeights = 1;% algoptions.Plot = 'on'; % algoptions.Kfun = @(x) max(2,log(x));
-    case {22,'w2'}; algoset = 'w2'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2; % algoptions.Plot = 'on'; % algoptions.Kfun = @(x) max(2,log(x));
-    case {23,'w2knew'}; algoset = 'w2knew'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2;
-    case {24,'wwnew'}; algoset = 'wwnew'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2; algoptions.KfunMax = @(N) N.^(2/3); algoptions.WeightPenalty = 0.1;
-    case {25,'wwimpro'}; algoset = 'wwimpro'; algoptions.VariableWeights = 1; algoptions.AdaptiveK = 2; algoptions.KfunMax = @(N) N.^(2/3); algoptions.WeightPenalty = 0.1;
-    case {26,'hedge'}; algoset = 'hedge'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2};
-    case {27,'nodetent'}; algoset = 'nodetent'; algoptions.EntropySwitch = 0;
-    case {28,'hedgent'}; algoset = 'hedgent'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2}; algoptions.EntropySwitch = 0;
-    case {29,'acqi'}; algoset = 'acqi'; algoptions.SearchAcqFcn = @vbmc_acqipreg;
-    case {30,'noskip'}; algoset = 'noskip'; algoptions.SkipActiveSamplingAfterWarmup = false;
-    case {31,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;
-    case {32,'acqfv2'}; algoset = 'acqfv2'; algoptions.SearchAcqFcn = @vbmc_acqfregv2;
-    case {33,'acqf2reg'}; algoset = 'acqf2reg'; algoptions.SearchAcqFcn = @vbmc_acqf2reg;
-    case {34,'acqfregvlnn'}; algoset = 'acqfregvlnn'; algoptions.SearchAcqFcn = @vbmc_acqfregvlnn;
-    case {35,'acqfregvsqrtn'}; algoset = 'acqfregvsqrtn'; algoptions.SearchAcqFcn = @vbmc_acqfregvsqrtn;
+    case {1,'base'}; algoset = 'base';                                                      % Use defaults
+    case {2,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;    % Vanilla uncertainty sampling
+    case {3,'control'}; algoset = 'control'; ControlRunFlag = true;                         % Control experiment
+
+    % Fixed number of mixture components
+    case {11,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;
+    case {12,'K2'}; algoset = 'K2'; algoptions.Kfun = 2; algoptions.KfunMax = 2; algoptions.Kwarmup = 2;
+    case {13,'K5'}; algoset = 'K5'; algoptions.Kfun = 5; algoptions.KfunMax = 5; algoptions.Kwarmup = 5;
         
-    case {100,'control'}; algoset = 'control'; ControlRunFlag = true;
+    % Ongoing research and testing
+    case {21,'hedge'}; algoset = 'hedge'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2};
+    case {22,'hedgent'}; algoset = 'hedgent'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2}; algoptions.EntropySwitch = 0;
+    case {23,'acqfregvlnn'}; algoset = 'acqfregvlnn'; algoptions.SearchAcqFcn = @vbmc_acqfregvlnn;
+    case {24,'acqfregvsqrtn'}; algoset = 'acqfregvsqrtn'; algoptions.SearchAcqFcn = @vbmc_acqfregvsqrtn;
     
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);

@@ -109,10 +109,8 @@ switch lower(type)
                 switch algoset
                     case {'base','acqproponly'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-P';
                     case {'acqus','acqusonly','acqusreg'}; defaults.color = [180 0 80]/255; defaults.marker = '*'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-U';
-                    % case {'base'}; defaults.color = [0 100 140]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'acqpropreg'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case 'control'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
-                    case 'acqlcb_m5'; defaults.color = [0 0 0]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case 'nodetent'; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'noskip'; defaults.color = [120 100 0]/255; defaults.marker = '>'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
@@ -125,28 +123,7 @@ switch lower(type)
                     otherwise
                         defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
                 end
-            
-            
-%             case 'bads'
-%                 switch algoset
-%                     case {'base','x2','nearest'}; defaults.color = [0 100 140]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-.';
-%                     case 'matern5'; defaults.color = [0 100 140]/255; defaults.marker = 'v'; defaults.linewidth = 2; defaults.linestyle = ':';
-%                     case 'sqexp'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-';
-%                     case 'acqlcb'; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
-%                     case 'lcbnearest'; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
-%                     case 'acqlcb_m5'; defaults.color = [0 0 0]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = ':';
-%                     case 'acqpi'; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
-%                     case 'acqpi_m5'; defaults.color = [120 100 0]/255; defaults.marker = '>'; defaults.linewidth = 2; defaults.linestyle = ':';
-%                     case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
-%                     case 'acqpi_se'; defaults.color = [120 100 0]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-';
-%                     case 'acqlcb_se'; defaults.color = [0 0 0]/255; defaults.marker = 'd'; defaults.linewidth = 2; defaults.linestyle = '-';
-%                     case 'onesearch'; defaults.color = [180 0 80]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-';
-%                     case 'searchwcm'; defaults.color = [180 0 80]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-.';
-%                     case 'searchell'; defaults.color = [180 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
-%                     case 'noscaling'; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
-%                 end
-% 
-
+                        
             case 'smc'
                 defaults.color = [150 150 150]/255;
                 defaults.linewidth = 3;
@@ -154,7 +131,6 @@ switch lower(type)
                 defaults.marker = '.';                
                 
             case 'ais'
-                % defaults.color = [252 205 229]/255;
                 defaults.color = [240 198 114]/255;
                 defaults.linewidth = 3;
                 defaults.linestyle = ':';
@@ -165,13 +141,6 @@ switch lower(type)
                 defaults.linewidth = 2;
                 defaults.linestyle = '-';
                 defaults.marker = 'o';
-
-
-%             case 'smc'
-%                 defaults.color = [240 198 114]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = line_deterministic;
-%                 defaults.marker = 'v';
                  
             case 'wsabi'
                 defaults.linestyle = line_deterministic;
@@ -202,72 +171,13 @@ switch lower(type)
                 defaults.marker = '+';
 
             case {'bape'}
-%                defaults.color = [128 177 211]/255;
                  defaults.color = [128 177 48]/255;
                 defaults.linewidth = 2;
                 defaults.linestyle = '--';
                 defaults.marker = '+';
                 defaults.name = 'bape';
                 
-                
-%             case 'mcs'
-%                 defaults.color = [253 180 98]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = line_deterministic;
-%                 defaults.marker = 's';
-%                 
-%             case 'snobfit'
-%                 defaults.color = [183 120 38]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = line_deterministic;
-%                 defaults.marker = '>';                
-% 
-%             case 'global'
-%                 defaults.color = [60 220 200]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = '--';
-%                 defaults.marker = 'x';
-% 
-%             case 'cmaes'
-%                 switch algoset
-%                     case 'base'; defaults.color = [188 128 189]/255; defaults.marker = 'o';
-%                     case 'noisy'; defaults.color = [255 128 189]/255; defaults.marker = '*';
-%                     case 'active'; defaults.color = [188 223 166]/255; defaults.marker = 'h';
-%                     case 'actnoisy'; defaults.color = [188 223 166]/255; defaults.marker = 'h';
-%                 end
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = ':';
-%                 
-%             case 'particleswarm'
-%                 defaults.color = [165 211 195]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = ':';
-%                 defaults.marker = '^';
-%                 
-%             case 'ga'
-%                 defaults.color = [159 212 105]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = ':';
-%                 defaults.marker = '*';
-% 
-%             case 'simulannealbnd'
-%                 defaults.color = [252 205 229]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = ':';
-%                 defaults.marker = 'd';                
-%                 
-%             case 'randsearch'
-%                 defaults.color = [150 150 150]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = ':';
-%                 defaults.marker = '.';                
-%                 
-%             case 'bayesopt'
-%                 defaults.color = [250 120 150]/255;
-%                 defaults.linewidth = 2;
-%                 defaults.linestyle = '-.';
-%                 defaults.marker = 'o';
-                
+                                
         end
         
 end
