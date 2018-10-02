@@ -1,18 +1,18 @@
-% FIGURE S4 for revised VBMC paper. Plot costs of Goris et al. (2015).
+% FIGURE S4 for VBMC paper. Plot robustness results on Goris et al. (2015).
 
 options.BestOutOf = 1;
 options.NumZero = 1e-2;
 options.Method = 'IR';
 options.ErrorBar = 1;
-options.BootStrap = 1e5;
-plots = {'costs'};
+options.PlotAll = 1;
+options.Quantiles = [0.75,0.9];
+options.BootStrap = 0;
 options.SampleFrequency = NaN;
 
-% algos = {'vbmc','vbmc@acqusreg','wsabi','wsabi@mm','bbq','agp','bape@nqreg'};
-algos = {'wsabi','wsabi@mm','bbq','bape@nqreg','vbmc'};
-% We also ran 'bbq@marginal' (BBQ*), but it is similar to standard BBQ
-%dims = {'S8','S7'};
-dims = {'S8'};
+plots = {'lnZ','gsKL'};
+
+algos = {'vbmc'};
+dims = {'S8','S7'};
 noise = [];
 
 n = 1;
@@ -21,11 +21,11 @@ probs = {'goris2015'};
 
 %algos = {'vbmc@acqproponly','bape'};
 
-figname = {'vbmc_figS4'};
+figname = {'vbmc_figS4a','vbmc_figS4b'};
 mypath = fileparts(mfilename('fullpath'));
 mypath = '.';
 
-YlimMax = [100];
+YlimMax = [1e4,1e6];
 
 for iPlot = 1:numel(plots)
     options.PlotType = plots{iPlot};

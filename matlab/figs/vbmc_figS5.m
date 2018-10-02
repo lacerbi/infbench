@@ -1,27 +1,31 @@
-% FIGURE S5 for VBMC paper. Plot control on Goris et al. (2015).
+% FIGURE S5 for revised VBMC paper. Plot costs of Goris et al. (2015).
 
 options.BestOutOf = 1;
 options.NumZero = 1e-2;
 options.Method = 'IR';
 options.ErrorBar = 1;
-plots = {'lnZ','gsKL'};
 options.BootStrap = 1e5;
-%options.Quantiles = [0.25,0.75];
+plots = {'costs'};
 options.SampleFrequency = NaN;
 
-algos = {'wsabi','vbmc','vbmc@control'};
-dims = {'S8','S7'};
+% algos = {'vbmc','vbmc@acqusreg','wsabi','wsabi@mm','bbq','agp','bape@nqreg'};
+algos = {'wsabi','wsabi@mm','bbq','bape@nqreg','vbmc'};
+% We also ran 'bbq@marginal' (BBQ*), but it is similar to standard BBQ
+%dims = {'S8','S7'};
+dims = {'S8'};
 noise = [];
 
 n = 1;
 probset = 'vbmc18';
 probs = {'goris2015'};
 
-figname = {'vbmc_figS5a','vbmc_figS5b'};
+%algos = {'vbmc@acqproponly','bape'};
+
+figname = {'vbmc_figS5'};
 mypath = fileparts(mfilename('fullpath'));
 mypath = '.';
 
-YlimMax = [1e4,1e6];
+YlimMax = [100];
 
 for iPlot = 1:numel(plots)
     options.PlotType = plots{iPlot};

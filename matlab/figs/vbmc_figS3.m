@@ -1,42 +1,58 @@
-% FIGURE S3 for VBMC paper. Plot robustness results on Goris et al. (2015).
+% FIGURE S3 for VBMC paper. Plot example posterior of neuronal model.
 
-options.BestOutOf = 1;
-options.NumZero = 1e-2;
-options.Method = 'IR';
-options.ErrorBar = 1;
-options.PlotAll = 1;
-options.Quantiles = [0.75,0.9];
-options.BootStrap = 0;
-options.SampleFrequency = NaN;
+names = {'x_1','x_2','x_3','x_4','x_5','x_6','x_7'};
+fontsize = 18;
 
-plots = {'lnZ','gsKL'};
+% Cornerplot of true posterior
+id = 7;
+infprob = infbench_goris2015([],id);
+probstruct = infprob_init('vbmc18','goris2015',id,[],1,[]);
 
-algos = {'vbmc'};
-dims = {'S8','S7'};
-noise = [];
+folder = 'C:\Users\Luigi\Dropbox\Postdoc\VBMC\data\goris2015mcmc';
+cd(folder);
+X = mergesamples(['goris2015_mcmc_n' num2str(id) '*'],[],0,0);
+Xorig = warpvars(X,'inv',infprob.Data.trinfo);
+bounds = [min(Xorig); max(Xorig)];
+cornerplot(Xorig,names,[],bounds);
+h = axes(gcf,'Position',[0 0 1 1]);
+set(h,'Color','none','box','off','XTick',[],'YTick',[],'Units','normalized','Xcolor','none','Ycolor','none');
+text(0.9,0.9,'True','FontSize',fontsize,'HorizontalAlignment','right');
+title('Neuronal model (V2 neuron)','FontSize',fontsize);
 
+pos = [100 200 980 780];
+set(gcf,'Position',pos);
+set(gcf,'Units','inches'); pos = get(gcf,'Position');
+set(gcf,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3), pos(4)])
+drawnow;
+
+mypath = 'C:\Users\Luigi\Dropbox\Postdoc\VBMC\data';
+figname = 'vbmc_figS3a';
+saveas(gcf,[mypath filesep() figname '.pdf']);
+
+folder = ['C:\Users\Luigi\Dropbox\Postdoc\VBMC\data\vbmc18@goris2015\S' num2str(id)];
+cd(folder);
+
+close all;
+
+% Cornerplot of variational posterior
 n = 1;
-probset = 'vbmc18';
-probs = {'goris2015'};
+data = load(['vbmc@base@' num2str(n) '.mat']);
+stats = data.history{1}.Output.stats;
+idx = find(stats.stable == 1,1);
+vp = stats.vp(idx);
 
-%algos = {'vbmc@acqproponly','bape'};
+Xrnd = warpvars(vbmc_rnd(1e6,vp),'inv',probstruct.trinfo);
+Xrnd = warpvars(Xrnd,'inv',infprob.Data.trinfo);
+cornerplot(Xrnd,names,[],bounds);
+h = axes(gcf,'Position',[0 0 1 1]);
+set(h,'Color','none','box','off','XTick',[],'YTick',[],'Units','normalized','Xcolor','none','Ycolor','none');
+text(0.9,0.9,['VBMC (iteration ' num2str(idx) ')'],'FontSize',fontsize,'HorizontalAlignment','right');
 
-figname = {'vbmc_figS3a','vbmc_figS3b'};
-mypath = fileparts(mfilename('fullpath'));
-mypath = '.';
+pos = [100 200 980 780];
+set(gcf,'Position',pos);
+set(gcf,'Units','inches'); pos = get(gcf,'Position');
+set(gcf,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3), pos(4)])
+drawnow;
 
-YlimMax = [1e4,1e6];
-
-for iPlot = 1:numel(plots)
-    options.PlotType = plots{iPlot};
-    options.YlimMax = YlimMax(iPlot);
-    options.DisplayLegend = iPlot == numel(plots);
-    figure(iPlot);
-    infbench_plot(probset,probs,dims,noise,algos,[],{'prob','subprob'},options);
-    pos = [20,20,900,450];
-    set(gcf,'Position',pos);
-    set(gcf,'Units','inches'); pos = get(gcf,'Position');
-    set(gcf,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3), pos(4)])
-    drawnow;
-    saveas(gcf,[mypath filesep() figname{iPlot} '.pdf']);
-end
+figname = 'vbmc_figS3b';
+saveas(gcf,[mypath filesep() figname '.pdf']);

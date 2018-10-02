@@ -47,7 +47,7 @@ defopts.BootStrap = 1e3;        % # samples for bootstrap
 % defopts.BaseSpeedTest = 8.2496; % Laptop speed
 defopts.BaseSpeedTest = 13.7660; % Laptop speed
 defopts.SampleFrequency = NaN;
-
+defopts.AdaptiveYlim = 0;
 
 % Plotting options
 defopts.YlimMax = 1e5;
@@ -157,6 +157,7 @@ for iFig = 1:nfigs
                                     
             IsMinKnown = true;
             MinFvalNew = Inf;
+            yybnd = [Inf,-Inf];
             
             % Initialize summary statistics (load from file if present)
             benchdata = loadSummaryStats( ...
@@ -328,11 +329,15 @@ for iFig = 1:nfigs
                     benchdatanew.(field1).(field2).(field3).FractionOverhead = mean(FractionOverhead);
 %                     benchdatanew.(field1).(field2).(field3).Zscores = Zscores(:);
 %                     benchdatanew.(field1).(field2).(field3).Errs = Errs(:);
+
+                    yybnd = [min(min(yy(:)),yybnd(1)),max(max(yy(:)),yybnd(2))];
+
                 end
                 
             end
             
-            [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,xx,lnZ_true,benchlist,IsMinKnown,options);
+            
+            [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,xx,lnZ_true,benchlist,IsMinKnown,yybnd,options);
         end
     end
     
@@ -472,7 +477,7 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
     end
 
 %--------------------------------------------------------------------------
-function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,xx,lnZ_true,benchlist,IsMinKnown,options)
+function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,xx,lnZ_true,benchlist,IsMinKnown,yybnd,options)
 %PANELITERATIONS Finalize panel for plotting iterations
 
     NumZero = options.NumZero;
@@ -520,14 +525,24 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
                 liney = [1 1];
             else
                 YlimMax = options.YlimMax;
+                if options.AdaptiveYlim
+                    if yybnd(1) >= 1e-3; NumZero = 1e-3; end
+                    if yybnd(1) >= 1e-2; NumZero = 1e-2; end
+                    if yybnd(1) >= 1e-1; NumZero = 1e-1; end
+                    if yybnd(2) <= 1e4; YlimMax = 1e4; end
+                    if yybnd(2) <= 1e3; YlimMax = 1e3; end
+                    if yybnd(2) <= 1e2; YlimMax = 1e2; end
+                    if yybnd(2) <= 1e1; YlimMax = 1e1; end
+                end
+                
                 if options.AbsolutePlot
                     ylims = [lnZ_true-30,lnZ_true+30];
                     ytick = [];
                 else
                     ylims = [NumZero,YlimMax];
                     %ytick = [0.001,0.01,0.1,1,10,100,1e3,1e4,1e5];
-                    if YlimMax <= 1000
-                        ytick = [0.0001,0.001,0.01,0.1,1,10,1e2,1e3];
+                    if YlimMax <= 1000 || NumZero >= 0.1
+                        ytick = [0.0001,0.001,0.01,0.1,1,10,1e2,1e3,1e4];
                         yticklabel = {'10^{-4}','10^{-3}','0.01','0.1','1','10','100','10^3','10^4'};
                     else
                     %yticklabel = {'0.001','0.01','0.1','1','10','10^2','10^3','10^4','10^5'};
