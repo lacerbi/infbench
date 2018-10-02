@@ -10,8 +10,6 @@ Notably, this goal is more ambitious than simply finding the maximum of the post
 
 Our first benchmark shows that existing inference algorithms perform quite poorly at reconstructing posteriors (or evaluating their normalization constant) with both syntethic and real pdfs that have moderately challenging features, showing that this is a much harder problem [[1](#reference)].
 
-This repository is currently actively used for research, stay tuned for updates or write to me at <luigi.acerbi@unige.ch>.
-
 ## How to run the benchmark (`vbmc18`)
 
 You can run the benchmark on one test problem in the `vbmc18` problem set as follows:
@@ -36,6 +34,13 @@ The outputs are:
 ## Reference
 
 1. Acerbi, L. (2018). Variational Bayesian Monte Carlo. To appear in *Advances in Neural Information Processing Systems 31*. [arXiv preprint](https://arxiv.org/abs/XXXX.YYYY) arXiv:XXXX.YYYY
+
+### Contact
+
+This repository is currently actively used for research, stay tuned for updates:
+
+- [Follow me on Twitter](https://twitter.com/AcerbiLuigi) for updates about my work on model inference and other projects I am involved with;
+- If you have questions or comments about this work, get in touch at <luigi.acerbi@unige.ch> (putting 'infbench' in the subject of the email).
 
 ### License
 
