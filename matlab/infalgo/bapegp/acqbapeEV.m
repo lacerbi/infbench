@@ -27,7 +27,7 @@ acq = -(2*fbar + vtot + log(expm1(vtot)));
 if TolVar > 0
     idx = vtot < TolVar;
     if any(idx)
-        acq(idx) = acq(idx) .* exp(-(TolVar./vtot(idx)-1));
+        acq(idx) = acq(idx) + (TolVar./vtot(idx)-1);
     end
 end
 
