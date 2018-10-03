@@ -41,7 +41,7 @@ stats = data.history{1}.Output.stats;
 idx = find(stats.stable == 1,1);
 vp = stats.vp(idx);
 
-Xrnd = warpvars(vbmc_rnd(1e6,vp),'inv',probstruct.trinfo);
+Xrnd = warpvars(vbmc_rnd(vp,1e6),'inv',probstruct.trinfo);
 Xrnd = warpvars(Xrnd,'inv',infprob.Data.trinfo);
 cornerplot(Xrnd,names,[],bounds);
 h = axes(gcf,'Position',[0 0 1 1]);
