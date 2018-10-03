@@ -10,7 +10,7 @@ options.SampleFrequency = NaN;
 plots = {'lnZ','gsKL'};
 
 %algos = {'wsabi','wsabi@mm','bbq','bmc','agp','bape@nqreg','smc','ais','vbmc@acqusreg','vbmc'};
-algos = {'smc','ais','bmc','wsabi','wsabi@mm','bbq','agp','bape@nqreg','vbmc@acqusreg','vbmc'};
+algos = {'smc','ais','bmc','wsabi','wsabi@mm','bbq','agp','bape@nqreg','vbmc@acqusreg','vbmc@acqproreg'};
 
 dims = {'2D','6D','10D'};
 % dims = {'2D','4D','6D','8D','10D'};

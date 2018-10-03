@@ -8,7 +8,7 @@ options.BootStrap = 1e5;
 options.SampleFrequency = NaN;
 plots = {'lnZ','gsKL'};
 
-algos = {'smc','ais','bmc','wsabi','wsabi@mm','bbq','agp','bape@nqreg','vbmc@acqusreg','vbmc'};
+algos = {'smc','ais','bmc','wsabi','wsabi@mm','bbq','agp','bape@nqreg','vbmc@acqusreg','vbmc@acqproreg'};
 % We also ran 'bbq@marginal' (BBQ*), but it is similar to standard BBQ
 dims = {'S8','S7'};
 noise = [];

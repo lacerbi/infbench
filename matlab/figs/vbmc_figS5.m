@@ -9,7 +9,7 @@ plots = {'costs'};
 options.SampleFrequency = NaN;
 
 % algos = {'vbmc','vbmc@acqusreg','wsabi','wsabi@mm','bbq','agp','bape@nqreg'};
-algos = {'wsabi','wsabi@mm','bbq','bape@nqreg','vbmc'};
+algos = {'wsabi','wsabi@mm','bbq','bape@nqreg','vbmc@acqproreg'};
 % We also ran 'bbq@marginal' (BBQ*), but it is similar to standard BBQ
 %dims = {'S8','S7'};
 dims = {'S8'};

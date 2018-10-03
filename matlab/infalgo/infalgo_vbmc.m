@@ -30,7 +30,8 @@ switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'on';
     case {1,'base'}; algoset = 'base';                                                      % Use defaults
     case {2,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;    % Vanilla uncertainty sampling
-    case {3,'control'}; algoset = 'control'; ControlRunFlag = true;                         % Control experiment
+    case {3,'acqproreg'}; algoset = 'acqproreg'; algoptions.SearchAcqFcn = @vbmc_acqfreg;   % Prospective uncertainty sampling
+    case {4,'control'}; algoset = 'control'; ControlRunFlag = true;                         % Control experiment
 
     % Fixed number of mixture components
     case {11,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;

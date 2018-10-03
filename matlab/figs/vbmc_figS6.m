@@ -9,7 +9,7 @@ options.BootStrap = 1e5;
 %options.Quantiles = [0.25,0.75];
 options.SampleFrequency = NaN;
 
-algos = {'wsabi','vbmc','vbmc@control'};
+algos = {'wsabi','vbmc@acqproreg','vbmc@control'};
 dims = {'S8','S7'};
 noise = [];
 

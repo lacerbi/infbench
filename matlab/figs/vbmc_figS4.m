@@ -11,7 +11,7 @@ options.SampleFrequency = NaN;
 
 plots = {'lnZ','gsKL'};
 
-algos = {'vbmc'};
+algos = {'vbmc@acqproreg'};
 dims = {'S8','S7'};
 noise = [];
 
