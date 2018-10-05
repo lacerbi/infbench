@@ -43,6 +43,7 @@ switch algoset
     case {22,'hedgent'}; algoset = 'hedgent'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2}; algoptions.EntropySwitch = 0;
     case {23,'acqfregvlnn'}; algoset = 'acqfregvlnn'; algoptions.SearchAcqFcn = @vbmc_acqfregvlnn;
     case {24,'acqfregvsqrtn'}; algoset = 'acqfregvsqrtn'; algoptions.SearchAcqFcn = @vbmc_acqfregvsqrtn;
+    case {25,'acqfregt'}; algoset = 'acqfregt'; algoptions.SearchAcqFcn = @vbmc_acqfregt;   % annealed prospective uncertainty sampling
     
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
