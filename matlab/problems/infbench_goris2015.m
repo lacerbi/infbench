@@ -201,6 +201,8 @@ if isempty(x)
         idx_params = [1:4,6,8,12];  % Only consider a subset of params
         D = numel(idx_params);
         trinfo = warpvars(D,lb(idx_params),ub(idx_params),plb(idx_params),pub(idx_params));     % Transform to unconstrained space
+        trinfo.mu = zeros(1,D);     % Necessary for retro-compatibility
+        trinfo.delta = ones(1,D);
         y.xBaseFull = xmin;
         xmin = warpvars(xmin(idx_params),'d',trinfo);
         fval = fval + warpvars(xmin,'logp',trinfo);
