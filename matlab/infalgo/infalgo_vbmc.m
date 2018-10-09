@@ -32,6 +32,7 @@ switch algoset
     case {2,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;    % Vanilla uncertainty sampling
     case {3,'acqproreg'}; algoset = 'acqproreg'; algoptions.SearchAcqFcn = @vbmc_acqfreg;   % Prospective uncertainty sampling
     case {4,'control'}; algoset = 'control'; ControlRunFlag = true;                         % Control experiment
+    case {5,'test'}; algoset = 'test';                                                      % Test defaults
 
     % Fixed number of mixture components
     case {11,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;
