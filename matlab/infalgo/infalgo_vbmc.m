@@ -16,6 +16,7 @@ algoptions.WarpNonlinear = 'off';   % No nonlinear warping for now
 algoptions.BestSafeSD = 5;
 algoptions.BestFracBack = 0.25;
 algoptions.Diagnostics = 'on';
+algoptions.InitDesign = 'plausible';    % Initial design uniform in plausible box
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
