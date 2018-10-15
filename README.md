@@ -33,7 +33,7 @@ The outputs are:
 
 ## Reference
 
-1. Acerbi, L. (2018). Variational Bayesian Monte Carlo. To appear in *Advances in Neural Information Processing Systems 31*. [arXiv preprint](https://arxiv.org/abs/XXXX.YYYY) arXiv:XXXX.YYYY
+1. Acerbi, L. (2018). Variational Bayesian Monte Carlo. To appear in *Advances in Neural Information Processing Systems 31*. [arXiv preprint](https://arxiv.org/abs/1810.05558) arXiv:1810.05558
 
 ### Contact
 
