@@ -97,22 +97,22 @@ case "${1}" in
         4l)     ALGOSET="{'acqfregt'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4m)     ALGOSET="{'altent'}"
+        4m)     ALGOSET="{'anngp'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4n)     ALGOSET="{'altentquick'}"
+        4n)     ALGOSET="{'se'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4o)     ALGOSET="{'test'}"
                 IDS=${IDS_SINGLE}
                 ;;
-       	4p)    	ALGOSET="{'noskip'}"
+       	4p)    	ALGOSET="{'narrow'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4q)     ALGOSET="{'acqusreg'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4r)     ALGOSET="{'w2knew'}"
+        4r)     ALGOSET="{'const'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4s)     ALGOSET="{'wwnew'}"
@@ -336,12 +336,12 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104m)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@altent'}"
+                ALGOS="{'vbmc@anngp'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104n)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@altentquick'}"
+                ALGOS="{'vbmc@se'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
@@ -351,7 +351,7 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104p)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@noskip'}"
+                ALGOS="{'vbmc@narrow'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
@@ -361,7 +361,7 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104r)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@w2knew'}"
+                ALGOS="{'vbmc@const'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
