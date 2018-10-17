@@ -49,7 +49,8 @@ switch algoset
     case {25,'acqfregt'}; algoset = 'acqfregt'; algoptions.SearchAcqFcn = @vbmc_acqfregt;   % annealed prospective uncertainty sampling
     case {26,'anngp'}; algoset = 'anngp'; algoptions.AnnealedGPMean     = @(N,NMAX) N/(0.1*NMAX);           
     case {27,'se'}; algoset = 'se'; algoptions.gpMeanFun = 'se';           
-    case {28,'const'}; algoset = 'const'; algoptions.gpMeanFun = 'const';           
+    case {28,'const'}; algoset = 'const'; algoptions.gpMeanFun = 'const';        
+    case {29,'acqf2reg'}; algoset = 'acqf2reg'; algoptions.SearchAcqFcn = @vbmc_acqf2reg;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
