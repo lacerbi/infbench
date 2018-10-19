@@ -107,19 +107,28 @@ switch lower(type)
         switch algo
             case 'vbmc'
                 switch algoset
+                    % VBMC main paper
                     case {'base','acqproreg'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-P';
                     case {'acqus','acqusreg'}; defaults.color = [180 0 80]/255; defaults.marker = '*'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-U';
-                    case 'acqpropreg'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-';
+                    case 'acqf2reg'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'vbmc-F';
+                    case 'se'; defaults.color = [60 60 60]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = ':';
+                    case 'const'; defaults.color = [60 60 60]/255; defaults.marker = 'd'; defaults.linewidth = 2; defaults.linestyle = '--';
+                    case 'acqfregvlnn'; defaults.color = [180 0 80]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-.';
+                    case 'acqfregvsqrtn'; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
+%                     % VBMC workshop paper                        
+%                     case {'base','acqproreg'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'def';
+%                     case {'acqus','acqusreg'}; defaults.color = [180 0 80]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'a-us';
+%                     case 'acqf2reg'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'a-gpus';
+%                     case 'se'; defaults.color = [60 60 60]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = ':'; defaults.name = 'm-se';
+%                     case 'const'; defaults.color = [60 60 60]/255; defaults.marker = 'd'; defaults.linewidth = 2; defaults.linestyle = '--'; defaults.name = 'm-cn';
+%                     case 'acqfregvlnn'; defaults.color = [80 0 250]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'a-ln';
+%                     case 'acqfregvsqrtn'; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'a-sqrt';
                     case 'control'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
-                    case 'nodetent'; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
-                    case 'noskip'; defaults.color = [120 100 0]/255; defaults.marker = '>'; defaults.linewidth = 2; defaults.linestyle = ':';
-                    case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
-                    case 'se'; defaults.color = [120 100 0]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-';
-                    case 'cheapgpmid'; defaults.color = [0 0 0]/255; defaults.marker = 'd'; defaults.linewidth = 2; defaults.linestyle = '-';
-                    case 'gpthreshmid'; defaults.color = [180 0 80]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'acqi'; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'hedge'; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
-                    case 'acqfregvsqrtn'; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
+                    case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
+                    case 'nodetent'; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
+                    case 'noskip'; defaults.color = [120 100 0]/255; defaults.marker = '>'; defaults.linewidth = 2; defaults.linestyle = ':';
                     otherwise
                         defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
                 end
