@@ -74,8 +74,8 @@ options1.GradObj                = 'off';
 options1.Algorithm              = 'active-set';
 options1.TolX                   = 1e-5;
 options1.TolFun                 = 1e-5;
-options1.MaxTime                = 0.5;
-options1.MaxFunEvals            = 50;
+options1.MaxTime                = 5;
+options1.MaxFunEvals            = 100*dim;
 %options1.UseParallel           = 'always';
 options1.AlwaysHonorConstraints = 'true';
 

@@ -18,6 +18,8 @@ switch algoset
     case {2,'mm'}; algoset = 'mm'; algoptions.Method = 'M';
     case {3,'search'}; algoset = 'search'; algoptions.Nsearch = 1e4;
     case {4,'mmsearch'}; algoset = 'mmsearch'; algoptions.Method = 'M'; algoptions.Nsearch = 1e4;
+    case {5,'base2'}; algoset = 'base2';           % Base, longer optimization
+    case {6,'mm2'}; algoset = 'mm2'; algoptions.Method = 'M';   % Moment-matching, longer optimization
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
