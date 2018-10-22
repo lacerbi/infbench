@@ -9,8 +9,10 @@ options.BootStrap = 1e5;
 options.SampleFrequency = NaN;
 plots = {'lnZ','gsKL'};
 
-%algos = {'wsabi','wsabi@mm','bbq','bmc','agp','bape@nqreg','smc','ais','vbmc@acqusreg','vbmc'};
-algos = {'smc','ais','bmc','wsabi','wsabi@mm','bbq','agp','bape@nqreg','vbmc@acqusreg','vbmc@acqproreg'};
+algos = {'smc','ais','bmc','wsabi@base2','wsabi@mm2','bbq','agp','bape@nqreg','vbmc@acqusreg','vbmc@acqproreg'};
+% We also ran 'bbq@marginal' (BBQ*), with no much difference from BBQ. 
+% For WSABI here we increased the duration of hyperparameter optimization,
+% which ends up improving the exploration in active sampling.
 
 dims = {'2D','6D','10D'};
 % dims = {'2D','4D','6D','8D','10D'};

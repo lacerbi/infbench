@@ -11,7 +11,7 @@ options.AdaptiveYlim = 1;
 plots = {'lnZ','gsKL'};
 
 %algos = {'smc','ais','bmc','wsabi','wsabi@mm','bbq','agp','bape@nqreg','vbmc@acqusreg','vbmc'};
-algos = {'smc','bmc','wsabi','bbq','bape@nqreg','vbmc@acqproreg'};
+algos = {'vbmc@acqproreg','smc','bmc','wsabi@base2','bbq','bape@nqreg'};
 
 dims = {'2D','4D','6D','8D','10D'};
 noise = [];
