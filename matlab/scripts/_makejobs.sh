@@ -115,7 +115,7 @@ case "${1}" in
         4r)     ALGOSET="{'const'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4s)     ALGOSET="{'wwnew'}"
+        4s)     ALGOSET="{'acqf2reg'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4t)     ALGOSET="{'wwimpro'}"
@@ -204,11 +204,11 @@ case "${1}" in
 		IDS=${IDS_SINGLE}
                 ;;
         52)     ALGOS="{'wsabi'}"
-		ALGOSET="{'search'}"
+		ALGOSET="{'base2'}"
                 IDS=${IDS_SINGLE}
                 ;;
         53)     ALGOS="{'wsabi'}"
-                ALGOSET="{'mmsearch'}"
+                ALGOSET="{'mm2'}"
                 IDS=${IDS_SINGLE}
                 ;;
         55)     ALGOS="{'bbq'}"
@@ -366,12 +366,12 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104s)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@wwnew'}"
+                ALGOS="{'vbmc@acqf2reg'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104t)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@wwimpro'}"
+                ALGOS="{'vbmc@control2'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
@@ -491,7 +491,7 @@ case "${1}" in
                 IDS=$IDS_FIFTY
                 ;;
         140)    PROBS="{'goris2015'}"
-                ALGOS="{'wsabi@search','wsabi@mmsearch'}"
+                ALGOS="{'wsabi@base2','wsabi@mm2'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_FIFTY
                 ;;
