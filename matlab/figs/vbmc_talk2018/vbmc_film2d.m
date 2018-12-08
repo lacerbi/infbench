@@ -187,9 +187,33 @@ for iIter = 0:Niters
     set(gcf,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3), pos(4)])
     drawnow;
     
-    mypath = '.';
-    figname = ['demo_' num2str(iIter)];
-    saveas(gcf,[mypath filesep() figname '.pdf']);
+    if 0
+        mypath = '.';
+        figname = ['demo_' num2str(iIter)];
+        saveas(gcf,[mypath filesep() figname '.pdf']);
+    else
+        endIters = 3;
+        f = getframe(gcf);
+        if iIter == 0
+            [im,map] = rgb2ind(f.cdata,256,'nodither');
+            im(1,1,1,Niters+endIters+1) = 0;
+        else
+            im(:,:,1,iIter+1) = rgb2ind(f.cdata,map,'nodither');
+        end
+        if iIter == Niters
+            axes(h(1));            
+            titlestr = ['Iteration ' num2str(iIter) ' (stable)'];
+            title(titlestr);
+            drawnow;            
+            f = getframe(gcf);
+            for iFinal = 1:endIters
+                im(:,:,1,Niters+1+iFinal) = rgb2ind(f.cdata,map,'nodither');
+            end
+            filename = 'vbmc_demo';
+            imwrite(im,map,[filename '.gif'],'DelayTime',0,'LoopCount',inf);
+        end
+    end
+        
     
     
 %    pause
