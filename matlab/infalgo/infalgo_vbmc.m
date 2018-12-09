@@ -53,7 +53,7 @@ switch algoset
     case {28,'const'}; algoset = 'const'; algoptions.gpMeanFun = 'const';        
     case {29,'acqf2reg'}; algoset = 'acqf2reg'; algoptions.SearchAcqFcn = @vbmc_acqf2reg;
     case {30,'slicelite'}; algoset = 'slicelite'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 10;
-    case {31,'slicelite2'}; algoset = 'slicelite2'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 10;
+    case {31,'slicelite2'}; algoset = 'slicelite2'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 0;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
