@@ -28,12 +28,12 @@ algoptions.ProposalFcn = @(X_) exp(infbench_lnprior(X_,probstruct));
 
 % Options from current problem
 switch algoset
-    case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'on';
+    case {0,'debug'}; algoset = 'debug'; algoptions.Debug = true; algoptions.Plot = 'on'; algoptions.FeatureTest = true;
     case {1,'base'}; algoset = 'base';                                                      % Use defaults
     case {2,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;    % Vanilla uncertainty sampling
     case {3,'acqproreg'}; algoset = 'acqproreg'; algoptions.SearchAcqFcn = @vbmc_acqfreg;   % Prospective uncertainty sampling
     case {4,'control'}; algoset = 'control'; ControlRunFlag = true;                         % Control experiment
-    case {5,'test'}; algoset = 'test';                                                      % Test defaults
+    case {5,'test'}; algoset = 'test'; algoptions.FeatureTest = true;                       % Test feature
     case {6,'narrow'}; algoset = 'narrow'; algoptions.InitDesign = 'narrow';                % Narrow initialization
     case {7,'control2'}; algoset = 'control2'; ControlRunFlag = true;                       % Control experiment, repeated
 
