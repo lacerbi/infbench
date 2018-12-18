@@ -1,12 +1,13 @@
 function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabi_oneshot( ...
             method,         ... 1) 'L' or 'M' wsabi method
-            priorMu,        ... 2) Gaussian prior mean, 1 x D.
-            priorVar,       ... 3) Gaussian prior covariance, D x D.
-            kernelVar,      ... 4) Initial input length scales, D x D.
-            lambda,         ... 5) Initial output length scale.
-            alpha,          ... 6) Alpha offset fraction, as in paper.
-            X,              ... 7) N-by-D matrix of training inputs.
-            logliks         ... 8) Vector of log-likelihood values at X0.
+            priorMu,        ... 2) Gaussian prior mean, 1 x D
+            priorVar,       ... 3) Gaussian prior covariance, D x D
+            kernelVar,      ... 4) Initial input length scales, D x D
+            lambda,         ... 5) Initial output length scale
+            alpha,          ... 6) Alpha offset fraction, as in paper
+            X,              ... 7) N-by-D matrix of training inputs
+            logliks         ... 8) Vector of log-likelihood values at X0
+            hypVar          ... 9) Variance of prior over GP hyperparams            
             )
         
 % Output structures:
@@ -18,6 +19,8 @@ function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabi_oneshot( ..
 % hyp:      integral hyperparameters.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if nargin < 9 || isempty(hypVar); hypVar = 1; end
 
 method = upper(method(1));
 if method ~= 'L' && method ~= 'M'
@@ -43,6 +46,9 @@ hypLims     = 30*ones(1,dim+1);
 % Allocate Storage
 loglHatD_0_tmp  = zeros(size(logliks));
 hyp             = zeros(1,1+dim);
+
+% Variance of prior over GP hyperparameters
+if isscalar(hypVar); hypVar = hypVar*ones(size(hyp));
 
 % Minimiser options (fmincon for hyperparameters)
 options1                        = optimset('fmincon');
@@ -93,7 +99,7 @@ for t = 1:1
     hyp(2:end)      = log(VV);
     
     if currNumSamples < numEigs + 1
-        hypLogLik = @(x) logLikGPDim(xxIter, lHatD, x);
+        hypLogLik = @(x) logLikGPDim(xxIter, lHatD, x, hypVar);
     else
         hypLogLik = @(x) logLikGPDimNystrom(xxIter, lHatD, x, numEigs);
     end

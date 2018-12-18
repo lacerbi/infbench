@@ -1,16 +1,17 @@
 function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabi( ...
             method,         ... 1) 'L' or 'M' wsabi method
-            loglikhandle,   ... 2) Handle to log-likelihood function. 
-            priorMu,        ... 3) Gaussian prior mean, 1 x D.
-            priorVar,       ... 4) Gaussian prior covariance, D x D.
-            range,          ... 5) 2 x D matrix, lower bnd top row.
-            numSamples,     ... 6) Number of BBQ samples to run.
-            kernelVar,      ... 7) Initial input length scales, D x D.
-            lambda,         ... 8) Initial output length scale.
+            loglikhandle,   ... 2) Handle to log-likelihood function
+            priorMu,        ... 3) Gaussian prior mean, 1 x D
+            priorVar,       ... 4) Gaussian prior covariance, D x D
+            range,          ... 5) 2 x D matrix, lower bnd top row
+            numSamples,     ... 6) Number of BBQ samples to run
+            kernelVar,      ... 7) Initial input length scales, D x D
+            lambda,         ... 8) Initial output length scale
             x0,             ... 9) Use as starting point
             Nsearch,        ... 10) Search point for acquisition fcn
-            alpha,          ... 11) Alpha offset fraction, as in paper.
-            printing        ... 12) If true, print intermediate output.
+            alpha,          ... 11) Alpha offset fraction, as in paper
+            printing,       ... 12) If true, print intermediate output
+            hypVar          ... 13) Variance of prior over GP hyperparams
             )
         
 % Output structures:
@@ -35,6 +36,7 @@ if nargin < 9; x0 = []; end
 if nargin < 10 || isempty(Nsearch); Nsearch = 0; end
 if nargin < 11 || isempty(alpha); alpha = 0.8; end
 if nargin < 12 || isempty(printing); printing = 1; end
+if nargin < 13 || isempty(hypVar); hypVar = 1; end
 
 method = upper(method(1));
 if method ~= 'L' && method ~= 'M'
@@ -66,6 +68,9 @@ clktime         = zeros(numSamples-1,1);
 lHatD_0_tmp     = zeros(numSamples,1);
 loglHatD_0_tmp  = zeros(size(lHatD_0_tmp));
 hyp             = zeros(1,1+dim);
+
+% Variance of prior over GP hyperparameters
+if isscalar(hypVar); hypVar = hypVar*ones(size(hyp));
 
 % Minimiser options (fmincon for hyperparameters)
 options1                        = optimset('fmincon');
@@ -148,17 +153,22 @@ for t = 1:numSamples - 1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % ML-II On GP Likelihood model hyperparameters
     
-    hyp(1)          = log( lambda );
+    hyp(1)          = log(lambda);
     hyp(2:end)      = log(VV);
     
     if currNumSamples > 3 &&  ~mod(currNumSamples,hypOptEvery)
         if currNumSamples < numEigs + 1
-            hypLogLik = @(x) logLikGPDim(xxIter, lHatD, x);
+            hypLogLik = @(x) logLikGPDim(xxIter, lHatD, x, hypVar);
         else
             hypLogLik = @(x) logLikGPDimNystrom(xxIter, lHatD, x, numEigs);
         end
-        [hyp] = fmincon(hypLogLik, ...
+        [hyp,nll] = fmincon(hypLogLik, ...
                          hyp,[],[],[],[],-hypLims,hypLims,[],options1);
+        if ~mod(currNumSamples,hypOptEvery*10)
+            [hyp2,nll2] = fmincon(hypLogLik, ...
+                             randn(size(hyp)),[],[],[],[],-hypLims,hypLims,[],options1);
+            if nll2 < nll; hyp = hyp2; end
+        end
     end
     
     lambda          = exp(hyp(1));
@@ -405,12 +415,22 @@ for t = 1:numSamples - 1
                 bsxfun(@plus,bsxfun(@times,randn(Nrnd,dim),sigmarnd),murnd)];
         end
         
-        % 3) Draw remaining points uniformly inside search box
+        % 3) Draw remaining points
         Nrnd = Nsearch - size(Xsearch,1);
-        if Nrnd > 0        
-            Xsearch = [Xsearch; ...
-                bsxfun(@plus, range(1,:), ...
-                bsxfun(@times,range(2,:)-range(1,:),rand(Nrnd,dim)))];
+        if Nrnd > 0 
+            if t > dim      % Draw from multivariate normal ~ hpd region
+                ll = loglHatD_0_tmp(numSamples-currNumSamples+1:end) ...
+                - 0.5*sum(bsxfun(@rdivide,bsxfun(@minus,xxIter,bb).^2,BB),2) ...
+                - 0.5*sum(log(BB));
+                [~,ord] = sort(ll,'descend');
+                xx_hpd = xxIter(ord(1:ceil(0.8*numel(ll))),:);
+                Xsearch = [Xsearch; ...
+                    mvnrnd(mean(xx_hpd),sqrt(2)*cov(xx_hpd),Nrnd)];
+            else            % Uniform draw inside search box
+                Xsearch = [Xsearch; ...
+                    bsxfun(@plus, range(1,:), ...
+                    bsxfun(@times,range(2,:)-range(1,:),rand(Nrnd,dim)))];                    
+            end
         end
         
         % Evaluate acquisition function on all candidate search points
@@ -433,7 +453,10 @@ for t = 1:numSamples - 1
     end
     
     % Using global optimiser (cmaes):
-    [newX,cmaesFval] = cmaes_modded( ['expectedVar' method], strtSamp', [],opts, lambda, VV, ...
+    insigma = [];
+    % insigma = exp((log(VV) + log(BB))/4);
+    % if size(xxIter,1) > dim; insigma = std(xxIter); end
+    [newX,cmaesFval] = cmaes_modded( ['expectedVar' method], strtSamp', insigma', opts, lambda, VV, ...
                   lHatD, xxIter, invKxx, jitterNoise, bb, BB);
     newX = newX';
     
