@@ -55,6 +55,8 @@ switch algoset
     case {30,'slicelite'}; algoset = 'slicelite'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 10;
     case {31,'slicelite2'}; algoset = 'slicelite2'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 0;
     case {32,'precise'}; algoset = 'precise'; algoptions.NSent = '@(K) 1000*K';
+    case {33,'det'}; algoset = 'det'; algoptions.DetEntTolOpt = 1e-4; algoptions.EntropySwitch = true; algoptions.DetEntropyMinD = 0; algoptions.EntropyForceSwitch = Inf;
+
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
