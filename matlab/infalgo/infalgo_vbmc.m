@@ -56,6 +56,7 @@ switch algoset
     case {31,'slicelite2'}; algoset = 'slicelite2'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 0;
     case {32,'precise'}; algoset = 'precise'; algoptions.NSent = '@(K) 1000*K';
     case {33,'det'}; algoset = 'det'; algoptions.DetEntTolOpt = 1e-4; algoptions.EntropySwitch = true; algoptions.DetEntropyMinD = 0; algoptions.EntropyForceSwitch = Inf;
+    case {34,'scache'}; algoset = 'scache'; algoptions.SearchCacheFrac = 0.1; algoptions.NSsearch = 2^10;
 
         
     otherwise
