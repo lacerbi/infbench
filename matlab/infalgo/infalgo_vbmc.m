@@ -26,6 +26,26 @@ end
 % Use prior as proposal function
 algoptions.ProposalFcn = @(X_) exp(infbench_lnprior(X_,probstruct));
 
+% Default options for variational active sampling
+if numel(algoset) >= 3 && strcmpi(algoset(1:3),'vas')
+    algoptions.VarActiveSample = true;
+    algoptions.VariableMeans = false;
+    algoptions.Plot = 'on';
+    algoptions.NSent = 0;
+    algoptions.NSentFast = 0;
+    algoptions.NSentFine = '@(K) 2^15*round(sqrt(K))';
+    algoptions.DetEntTolOpt = 1e-3;
+    algoptions.EntropySwitch = true;
+    algoptions.DetEntropyMinD = 0;
+    algoptions.EntropyForceSwitch = Inf;
+    algoptions.TolWeight = 0;
+    algoptions.NSelbo = '@(K) 50*sqrt(K)';
+    algoptions.SearchAcqFcn = @vbmc_acqvasreg;
+    algoptions.NSsearch = 2^7;
+    algoptions.Warmup = false;
+    algoptions.FunEvalsPerIter = 1;
+end
+
 % Options from current problem
 switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = true; algoptions.Plot = 'on'; algoptions.FeatureTest = true;
@@ -55,9 +75,14 @@ switch algoset
     case {30,'slicelite'}; algoset = 'slicelite'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 10;
     case {31,'slicelite2'}; algoset = 'slicelite2'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 0;
     case {32,'precise'}; algoset = 'precise'; algoptions.NSent = '@(K) 1000*K';
-    case {33,'det'}; algoset = 'det'; algoptions.DetEntTolOpt = 1e-4; algoptions.EntropySwitch = true; algoptions.DetEntropyMinD = 0; algoptions.EntropyForceSwitch = Inf;
+    case {33,'det'}; algoset = 'det'; algoptions.NSent = 0; algoptions.NSentFast = 0; algoptions.NSentFine = 0; algoptions.DetEntTolOpt = 1e-4; algoptions.EntropySwitch = true; algoptions.DetEntropyMinD = 0; algoptions.EntropyForceSwitch = Inf;
     case {34,'scache'}; algoset = 'scache'; algoptions.SearchCacheFrac = 0.1; algoptions.NSsearch = 2^10;
-
+    case {35,'one'}; algoset = 'one'; algoptions.FunEvalsPerIter = 1;
+    case {36,'fixed'}; algoset = 'fixed'; algoptions.VariableMeans = false; algoptions.Plot = 'on'; algoptions.NSent = 0; algoptions.NSentFast = 0; algoptions.NSentFine = '@(K) 2^15*round(sqrt(K))'; algoptions.DetEntTolOpt = 1e-3; algoptions.EntropySwitch = true; algoptions.DetEntropyMinD = 0; algoptions.EntropyForceSwitch = Inf; algoptions.TolWeight = 0; algoptions.NSelbo = '@(K) 50*sqrt(K)';
+    case {37,'wsmall'}; algoset = 'wsmall'; algoptions.TolWeight = 1e-3;
+        
+    % Variational active sampling
+    case {100,'vas'}; algoset = 'vas'; 
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
