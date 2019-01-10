@@ -56,6 +56,7 @@ switch algoset
     case {5,'test'}; algoset = 'test'; algoptions.FeatureTest = true;                       % Test feature
     case {6,'narrow'}; algoset = 'narrow'; algoptions.InitDesign = 'narrow';                % Narrow initialization
     case {7,'control2'}; algoset = 'control2'; ControlRunFlag = true;                       % Control experiment, repeated
+    case {8,'test2'}; algoset = 'test2'; algoptions.FeatureTest = true;                     % Test feature (second case)
 
     % Fixed number of mixture components
     case {11,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;
