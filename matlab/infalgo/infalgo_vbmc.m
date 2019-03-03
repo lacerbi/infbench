@@ -81,6 +81,7 @@ switch algoset
     case {35,'one'}; algoset = 'one'; algoptions.FunEvalsPerIter = 1;
     case {36,'fixed'}; algoset = 'fixed'; algoptions.VariableMeans = false; algoptions.Plot = 'on'; algoptions.NSent = 0; algoptions.NSentFast = 0; algoptions.NSentFine = '@(K) 2^15*round(sqrt(K))'; algoptions.DetEntTolOpt = 1e-3; algoptions.EntropySwitch = true; algoptions.DetEntropyMinD = 0; algoptions.EntropyForceSwitch = Inf; algoptions.TolWeight = 0; algoptions.NSelbo = '@(K) 50*sqrt(K)';
     case {37,'wsmall'}; algoset = 'wsmall'; algoptions.TolWeight = 1e-3;
+    case {38,'fixgpmean'}; algoset = 'fixgpmean'; algoptions.ConstrainedGPMean = true;
         
     % Variational active sampling
     case {100,'vas'}; algoset = 'vas'; 
