@@ -84,6 +84,12 @@ switch algoset
     case {37,'wsmall'}; algoset = 'wsmall'; algoptions.TolWeight = 1e-3;
     case {38,'fixgpmean'}; algoset = 'fixgpmean'; algoptions.ConstrainedGPMean = true;
     case {39,'noempgp'}; algoset = 'noempgp'; algoptions.EmpiricalGPPrior = false;
+    case {40,'hpdsearch'}; algoset = 'hpdsearch'; algoptions.SearchCacheFrac = 0.1; algoptions.HPDSearchFrac = 0.9; algoptions.HeavyTailSearchFrac = 0; algoptions.MVNSearchFrac = 0; algoptions.SearchAcqFcn = @vbmc_acqpropregt; algoptions.StopWarmupThresh = 0.1; algoptions.TolStableWarmup = 5; algoptions.FastWarmup = true; algoptions.Kwarmup = 2; algoptions.NSgpMaxWarmup = 3;
+    case {41,'specialwarmup'}; algoset = 'specialwarmup';
+        w.SearchCacheFrac = 0.1; w.HPDSearchFrac = 0.9; w.HeavyTailSearchFrac = 0; w.MVNSearchFrac = 0; w.SearchAcqFcn = @vbmc_acqpropregt; w.StopWarmupThresh = 0.1; w.SearchCMAESVPInit = false;
+        algoptions.WarmupOptions = w;
+        algoptions.TolStableWarmup = 5; algoptions.BOWarmup = true; algoptions.NSgpMaxWarmup = 8;
+    case {42,'robust'}; algoset = 'robust'; algoptions.NSgpMaxMain = 0; algoptions.GPStochasticStepsize = true; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
         
     % Variational active sampling
     case {100,'vas'}; algoset = 'vas'; 
