@@ -91,6 +91,7 @@ switch algoset
         algoptions.TolStableWarmup = 5; algoptions.BOWarmup = true; algoptions.NSgpMaxWarmup = 8;
     case {42,'robust'}; algoset = 'robust'; algoptions.NSgpMaxMain = 0; algoptions.GPStochasticStepsize = true; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
     case {43,'robust2'}; algoset = 'robust2'; algoptions.NSgpMaxMain = 0; algoptions.GPStochasticStepsize = true; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10;
+    case {44,'robust3'}; algoset = 'robust3'; algoptions.NSgpMaxMain = 0; algoptions.GPStochasticStepsize = true; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true;
         
     % Variational active sampling
     case {100,'vas'}; algoset = 'vas'; 
