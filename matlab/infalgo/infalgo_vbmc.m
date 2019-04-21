@@ -18,6 +18,10 @@ algoptions.BestFracBack = 0.25;
 algoptions.Diagnostics = 'on';
 algoptions.InitDesign = 'plausible';    % Initial design uniform in plausible box
 algoptions.EmpiricalGPPrior = 'yes';
+algoptions.WarmupNoImproThreshold = Inf; 
+algoptions.TolStableExceptions = 1;
+algoptions.TolStableIters = 8;
+algoptions.WarmupCheckMax = false;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
