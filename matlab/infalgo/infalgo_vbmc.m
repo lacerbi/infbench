@@ -98,6 +98,7 @@ switch algoset
     case {44,'robust3'}; algoset = 'robust3'; algoptions.NSgpMaxMain = 0; algoptions.GPStochasticStepsize = true; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true;
     case {45,'newdef'}; algoset = 'newdef'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true;
     case {46,'newdef2'}; algoset = 'newdef2'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.GPStochasticStepsize = true;
+    case {47,'newdef3'}; algoset = 'newdef3'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
     case {50,'mixgpmean'}; algoset = 'mixgpmean'; algoptions.gpMeanFun = 'negquadse'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true;
         
     % Variational active sampling
