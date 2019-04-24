@@ -45,7 +45,7 @@ if numel(algoset) >= 3 && strcmpi(algoset(1:3),'vas')
     algoptions.EntropyForceSwitch = Inf;
     algoptions.TolWeight = 0;
     algoptions.NSelbo = '@(K) 50*sqrt(K)';
-    algoptions.SearchAcqFcn = @vbmc_acqvasreg;
+    algoptions.SearchAcqFcn = @acqvasreg_vbmc;
     algoptions.NSsearch = 2^7;
     algoptions.Warmup = false;
     algoptions.FunEvalsPerIter = 1;
@@ -55,8 +55,8 @@ end
 switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = true; algoptions.Plot = 'on'; algoptions.FeatureTest = true;
     case {1,'base'}; algoset = 'base';                                                      % Use defaults
-    case {2,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @vbmc_acqusreg;    % Vanilla uncertainty sampling
-    case {3,'acqproreg'}; algoset = 'acqproreg'; algoptions.SearchAcqFcn = @vbmc_acqfreg;   % Prospective uncertainty sampling
+    case {2,'acqusreg'}; algoset = 'acqusreg'; algoptions.SearchAcqFcn = @acqusreg_vbmc;    % Vanilla uncertainty sampling
+    case {3,'acqproreg'}; algoset = 'acqproreg'; algoptions.SearchAcqFcn = @acqfreg_vbmc;   % Prospective uncertainty sampling
     case {4,'control'}; algoset = 'control'; ControlRunFlag = true;                         % Control experiment
     case {5,'test'}; algoset = 'test'; algoptions.FeatureTest = true;                       % Test feature
     case {6,'narrow'}; algoset = 'narrow'; algoptions.InitDesign = 'narrow';                % Narrow initialization
