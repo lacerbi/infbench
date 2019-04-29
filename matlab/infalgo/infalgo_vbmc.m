@@ -22,6 +22,7 @@ algoptions.WarmupNoImproThreshold = Inf;
 algoptions.TolStableExceptions = 1;
 algoptions.TolStableIters = 8;
 algoptions.WarmupCheckMax = false;
+algoptions.SGDStepSize = 0.01;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -162,7 +163,7 @@ if ~ControlRunFlag
         
         % Compute variational solution that VBMC would return at a given iteration
         [vp,elbo,elbo_sd,idx_best] = ...
-            vbmc_best(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack);
+            best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack);
                 
         history.Output.N(iIter) = history.SaveTicks(iIter);
         history.Output.lnZs(iIter) = elbo;
