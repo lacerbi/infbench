@@ -23,6 +23,7 @@ algoptions.TolStableExceptions = 1;
 algoptions.TolStableIters = 8;
 algoptions.WarmupCheckMax = false;
 algoptions.SGDStepSize = 0.01;
+algoptions.RankCriterion = false;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -101,9 +102,14 @@ switch algoset
     case {46,'newdef2'}; algoset = 'newdef2'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.GPStochasticStepsize = true;
     case {47,'newdef3'}; algoset = 'newdef3'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
     case {50,'mixgpmean'}; algoset = 'mixgpmean'; algoptions.gpMeanFun = 'negquadse'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true;
+    case {51,'rank'}; algoset = 'rank'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005; algoptions.RankCriterion = true;
+
+        
+    case {100,'new_defaults'}; algoset = 'new_defaults'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+        
         
     % Variational active sampling
-    case {100,'vas'}; algoset = 'vas'; 
+    case {1000,'vas'}; algoset = 'vas'; 
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -163,7 +169,7 @@ if ~ControlRunFlag
         
         % Compute variational solution that VBMC would return at a given iteration
         [vp,elbo,elbo_sd,idx_best] = ...
-            best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack);
+            best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack,algoptions.RankCriterion);
                 
         history.Output.N(iIter) = history.SaveTicks(iIter);
         history.Output.lnZs(iIter) = elbo;
