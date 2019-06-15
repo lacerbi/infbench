@@ -2,6 +2,8 @@ function [nll, dll] = logLikGPDim( xx, dat, hyp, hypVar )
 outl = hyp(1);
 inl  = hyp(2:end);
 
+hypMu = [0, log(0.1)*ones(1,size(xx,2))];
+
 dKxx = cell(1,length(hyp));
 dll = zeros(size(hyp));
 
@@ -16,7 +18,7 @@ Kxx = Kxx/2 + Kxx'/2;
 cholKxx = jitter_chol(Kxx);
 
 %logLik
-nll = (1/2)*2*sum(log(diag(cholKxx))) + 0.5*dat'*(cholKxx\(cholKxx' \ dat)) + (length(xx(:,1))/2)*log(2*pi)+ 0.5*sum(hyp.^2./hypVar);
+nll = (1/2)*2*sum(log(diag(cholKxx))) + 0.5*dat'*(cholKxx\(cholKxx' \ dat)) + (length(xx(:,1))/2)*log(2*pi)+ 0.5*sum((hyp - hypMu).^2./hypVar);
 
 if any(isnan(nll))
     keyboard;
@@ -30,7 +32,7 @@ for i = 2:length(hyp)
 end
 
 for i = 1:length(hyp)
-    dll(i) = 0.5*trace((cholKxx \(cholKxx' \ dKxx{i}))) - 0.5*dat'*(cholKxx\(cholKxx' \ dKxx{i})) * (cholKxx\(cholKxx' \ dat)) + hyp(i)/hypVar(i);
+    dll(i) = 0.5*trace((cholKxx \(cholKxx' \ dKxx{i}))) - 0.5*dat'*(cholKxx\(cholKxx' \ dKxx{i})) * (cholKxx\(cholKxx' \ dat)) + (hyp(i)-hypMu(i))/hypVar(i);
 end
 end
 end

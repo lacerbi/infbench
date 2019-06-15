@@ -9,16 +9,18 @@ algoptions.Method = 'L';    % Default is WSABI-L
 algoptions.Alpha = 0.8;     % Fractional offset, as in paper.
 algoptions.Nsearch = 0;     % Extra search points
 algoptions.HypVar  = 1;     % Variance of GP hyperparamters (WSABI default)
-
+algoptions.Debug = false;
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
+
+HypVar = [1e4,4*ones(1,probstruct.D)];
 
 % Options from current problem
 switch algoset
-    case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Plot = 'scatter';
+    case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Nsearch = 1e3; algoptions.HypVar = HypVar;
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'mm'}; algoset = 'mm'; algoptions.Method = 'M';
-    case {3,'search'}; algoset = 'search'; algoptions.Nsearch = 1e4; algoptions.HypVar = 1e4;
-    case {4,'mmsearch'}; algoset = 'mmsearch'; algoptions.Method = 'M'; algoptions.Nsearch = 1e4; algoptions.HypVar = 1e4;
+    case {3,'search'}; algoset = 'search'; algoptions.Nsearch = 1e3; algoptions.HypVar = HypVar;
+    case {4,'mmsearch'}; algoset = 'mmsearch'; algoptions.Method = 'M'; algoptions.Nsearch = 1e4; algoptions.HypVar = HypVar;
     case {5,'base2'}; algoset = 'base2';           % Base, longer optimization
     case {6,'mm2'}; algoset = 'mm2'; algoptions.Method = 'M';   % Moment-matching, longer optimization
         
@@ -55,7 +57,7 @@ range = [PLB - 3*diam; PUB + 3*diam];
 % Do not add log prior to function evaluation, already passed to WSABI 
 probstruct.AddLogPrior = false;
 
-printing = 1;
+if algoptions.Debug; printing = 2; else; printing = 1; end
 
 algo_timer = tic;
 [mu, ln_var, tt, X, y, hyp] = ...

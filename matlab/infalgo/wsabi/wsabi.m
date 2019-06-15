@@ -70,7 +70,7 @@ loglHatD_0_tmp  = zeros(size(lHatD_0_tmp));
 hyp             = zeros(1,1+dim);
 
 % Variance of prior over GP hyperparameters
-if isscalar(hypVar); hypVar = hypVar*ones(size(hyp));
+if isscalar(hypVar); hypVar = hypVar*ones(size(hyp)); end
 
 % Minimiser options (fmincon for hyperparameters)
 options1                        = optimset('fmincon');
@@ -105,7 +105,7 @@ opts.DispFinal                  = 'off';
 opts.SaveVariables              = 'off';
 opts.LogModulo                  = 0;
 opts.CMA.active                 = 1;      % Use Active CMA (generally better)
-%opts.EvalParallel              = 'on';
+opts.EvalParallel               = 'on';
 %opts.PopSize                   = 100;
 %opts.Restarts                  = 1;
 
@@ -125,6 +125,21 @@ for t = 1:numSamples - 1
                             t, log(mu(t-1)) + logscaling(t-1));
             fprintf(prstr);
         end
+        
+        if printing == 2 && ~mod(t,10)
+            gp.method = method;
+            gp.lambda = lambda;
+            gp.VV = VV;
+            gp.noise = jitterNoise;
+            gp.alpha = aa;
+            gp.X = xxIter;
+            gp.y = lHatD;
+            gp.invKxx = invKxx;
+            sqrtgp_plot(gp,[],100);
+            drawnow;
+            % pause;
+        end
+                
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,9 +179,14 @@ for t = 1:numSamples - 1
         end
         [hyp,nll] = fmincon(hypLogLik, ...
                          hyp,[],[],[],[],-hypLims,hypLims,[],options1);
+        % Attempt restart of hyperparameters
         if ~mod(currNumSamples,hypOptEvery*10)
+            hyp0 = randn(100,numel(hyp));
+            nll0 = zeros(size(hyp0,1),1);
+            for iHyp = 1:size(hyp0,1); nll0(iHyp) = hypLogLik(hyp0(iHyp,:)); end
+            [~,idx] = min(nll0);
             [hyp2,nll2] = fmincon(hypLogLik, ...
-                             randn(size(hyp)),[],[],[],[],-hypLims,hypLims,[],options1);
+                             hyp0(idx,:),[],[],[],[],-hypLims,hypLims,[],options1);
             if nll2 < nll; hyp = hyp2; end
         end
     end
@@ -386,7 +406,7 @@ for t = 1:numSamples - 1
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Actively select next sample point:
- 
+     
     % Define acquisition function
     if method == 'L'
       acqfun = @(x) expectedVarL( transp(x), lambda, VV, ... 
@@ -400,32 +420,43 @@ for t = 1:numSamples - 1
         % Perform shotgun search first
         
         % 1) Draw points from prior
-        Nrnd = ceil(Nsearch/3);
+        Nrnd = ceil(Nsearch/10);
         murnd = bb;
         sigmarnd = sqrt(BB);
         Xsearch = bsxfun(@plus,bsxfun(@times,randn(Nrnd,dim),sigmarnd),murnd);
-        
-        % 2) Draw points around current points based on GP length scale
+
+        ll = loglHatD_0_tmp(numSamples-currNumSamples+1:end) ...
+            - 0.5*sum(bsxfun(@rdivide,bsxfun(@minus,xxIter,bb).^2,BB),2) ...
+            - 0.5*sum(log(BB));
+                
+        % 2) Draw points around current points
         Nrnd = ceil((Nsearch - size(Xsearch,1))/2);
-        if Nrnd > 0
-            idx = randi(size(xxIter,1),[Nrnd,1]);
-            murnd = xxIter(idx,:);
-            sigmarnd = 2*sqrt(VV);
+        if Nrnd > 0 && t > 3
+            cma_Sigma = 0.01*covcma(xxIter,ll,xxIter(1,:),'descend');            
+            if 0
+                [~,ord] = sort(ll,'descend');                
+                wwmu = 0.5*size(xxIter,1);
+                weights = zeros(floor(wwmu),1);
+                weights(:,1) = log(wwmu+1/2)-log(1:floor(wwmu));
+                weights = weights.^3./sum(weights.^3);
+                iirnd = randsample(ord(1:numel(weights))', Nrnd, true, weights);
+            else                
+                weights = ll./sum(ll);
+                iirnd = randsample((1:size(xxIter,1))', Nrnd, true, weights);
+            end
+            murnd = xxIter(iirnd,:);
+            
             Xsearch = [Xsearch; ...
-                bsxfun(@plus,bsxfun(@times,randn(Nrnd,dim),sigmarnd),murnd)];
+                mvnrnd(murnd,cma_Sigma,Nrnd)];
         end
         
         % 3) Draw remaining points
         Nrnd = Nsearch - size(Xsearch,1);
         if Nrnd > 0 
-            if t > dim      % Draw from multivariate normal ~ hpd region
-                ll = loglHatD_0_tmp(numSamples-currNumSamples+1:end) ...
-                - 0.5*sum(bsxfun(@rdivide,bsxfun(@minus,xxIter,bb).^2,BB),2) ...
-                - 0.5*sum(log(BB));
-                [~,ord] = sort(ll,'descend');
-                xx_hpd = xxIter(ord(1:ceil(0.8*numel(ll))),:);
+            if t > min(4,dim)      % Draw from multivariate normal ~ hpd region            
+                [cma_Sigma,cma_mu] = covcma(xxIter,ll,[],'descend');            
                 Xsearch = [Xsearch; ...
-                    mvnrnd(mean(xx_hpd),sqrt(2)*cov(xx_hpd),Nrnd)];
+                    mvnrnd(cma_mu,cma_Sigma,Nrnd)];
             else            % Uniform draw inside search box
                 Xsearch = [Xsearch; ...
                     bsxfun(@plus, range(1,:), ...
@@ -434,10 +465,7 @@ for t = 1:numSamples - 1
         end
         
         % Evaluate acquisition function on all candidate search points
-        aval = Inf(Nsearch,1);
-        for iSearch = 1:Nsearch
-            aval(iSearch) = acqfun(Xsearch(iSearch,:));
-        end
+        aval = acqfun(Xsearch);
         
         % Take best point
         [strtFval,idx] = min(aval);

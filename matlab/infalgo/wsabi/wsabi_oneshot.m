@@ -6,7 +6,7 @@ function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabi_oneshot( ..
             lambda,         ... 5) Initial output length scale
             alpha,          ... 6) Alpha offset fraction, as in paper
             X,              ... 7) N-by-D matrix of training inputs
-            logliks         ... 8) Vector of log-likelihood values at X0
+            logliks,        ... 8) Vector of log-likelihood values at X0
             hypVar          ... 9) Variance of prior over GP hyperparams            
             )
         
@@ -48,7 +48,7 @@ loglHatD_0_tmp  = zeros(size(logliks));
 hyp             = zeros(1,1+dim);
 
 % Variance of prior over GP hyperparameters
-if isscalar(hypVar); hypVar = hypVar*ones(size(hyp));
+if isscalar(hypVar); hypVar = hypVar*ones(size(hyp)); end
 
 % Minimiser options (fmincon for hyperparameters)
 options1                        = optimset('fmincon');
