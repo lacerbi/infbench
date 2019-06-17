@@ -88,6 +88,9 @@ switch lower(options.Algorithm)
         
 end
 
+gp_covfun = 'se';           % Squared exponential kernel
+gp_noisefun = [1 0 0];      % Constant noise
+
 % Convert AcqFun to function handle if passed as a string
 if ischar(options.AcqFun); options.AcqFun = str2func(options.AcqFun); end
 
@@ -187,7 +190,7 @@ while 1
     
     % Train GP
     hypprior = getGPhypprior(X_gp);    % Get prior over GP hyperparameters    
-    [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp_meanfun,hypprior,[],gpopts);
+    [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp_covfun,gp_meanfun,gp_noisefun,[],hypprior,[],gpopts);
     
     % Sample from GP, if needed
     if gpsample_flag
@@ -299,7 +302,7 @@ while 1
                 ynew_gp = ynew - log(py);       % Log difference
         end
 
-        gp = gplite_post(gp,xnew,ynew_gp,[],1);   % Rank-1 update
+        gp = gplite_post(gp,xnew,ynew_gp,[],[],[],[],1);   % Rank-1 update
         
         % Plot new candidate points
         if options.Plot

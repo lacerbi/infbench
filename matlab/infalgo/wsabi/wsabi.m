@@ -410,51 +410,48 @@ for t = 1:numSamples - 1
     % Define acquisition function
     if method == 'L'
       acqfun = @(x) expectedVarL( transp(x), lambda, VV, ... 
-         lHatD, xxIter, invKxx, jitterNoise, bb, BB );
+         lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa );
     else
       acqfun = @(x) expectedVarM( transp(x), lambda, VV, ... 
-         lHatD, xxIter, invKxx, jitterNoise, bb, BB );
+         lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa );
     end
         
     if Nsearch > 0
-        % Perform shotgun search first
-        
-        % 1) Draw points from prior
-        Nrnd = ceil(Nsearch/10);
-        murnd = bb;
-        sigmarnd = sqrt(BB);
-        Xsearch = bsxfun(@plus,bsxfun(@times,randn(Nrnd,dim),sigmarnd),murnd);
+        % Perform shotgun search
 
         ll = loglHatD_0_tmp(numSamples-currNumSamples+1:end) ...
             - 0.5*sum(bsxfun(@rdivide,bsxfun(@minus,xxIter,bb).^2,BB),2) ...
             - 0.5*sum(log(BB));
+        
+        if size(xxIter,1) > max(4,dim)
+            [cma_Sigma,cma_mu] = covcma(xxIter,ll,[],'descend');
+        else
+            cma_Sigma = []; cma_mu = [];            
+        end        
+        
+        % 1) Draw a small number of points from prior
+        Nrnd = ceil(Nsearch/10);
+        murnd = bb;
+        sigmarnd = sqrt(BB);
+        Xsearch = bsxfun(@plus,bsxfun(@times,randn(Nrnd,dim),sigmarnd),murnd);
                 
         % 2) Draw points around current points
         Nrnd = ceil((Nsearch - size(Xsearch,1))/2);
         if Nrnd > 0 && t > 3
-            cma_Sigma = 0.01*covcma(xxIter,ll,xxIter(1,:),'descend');            
-            if 0
-                [~,ord] = sort(ll,'descend');                
-                wwmu = 0.5*size(xxIter,1);
-                weights = zeros(floor(wwmu),1);
-                weights(:,1) = log(wwmu+1/2)-log(1:floor(wwmu));
-                weights = weights.^3./sum(weights.^3);
-                iirnd = randsample(ord(1:numel(weights))', Nrnd, true, weights);
-            else                
-                weights = ll./sum(ll);
-                iirnd = randsample((1:size(xxIter,1))', Nrnd, true, weights);
-            end
+            cma_SS = 0.01*covcma(xxIter,ll,xxIter(1,:),'descend');
+            sqlik = exp(0.5*ll-0.5*max(ll));            
+            weights = sqlik./sum(sqlik);
+            iirnd = randsample((1:size(xxIter,1))', Nrnd, true, weights);
             murnd = xxIter(iirnd,:);
             
             Xsearch = [Xsearch; ...
-                mvnrnd(murnd,cma_Sigma,Nrnd)];
+                mvnrnd(murnd,cma_SS,Nrnd)];
         end
         
         % 3) Draw remaining points
         Nrnd = Nsearch - size(Xsearch,1);
-        if Nrnd > 0 
-            if t > min(4,dim)      % Draw from multivariate normal ~ hpd region            
-                [cma_Sigma,cma_mu] = covcma(xxIter,ll,[],'descend');            
+        if Nrnd > 0
+            if ~isempty(cma_Sigma)  % Draw from multivariate normal ~ hpd region            
                 Xsearch = [Xsearch; ...
                     mvnrnd(cma_mu,cma_Sigma,Nrnd)];
             else            % Uniform draw inside search box
@@ -471,6 +468,7 @@ for t = 1:numSamples - 1
         [strtFval,idx] = min(aval);
         strtSamp = Xsearch(idx,:);
     
+        insigma = 0.1*sqrt(diag(cma_Sigma));
     else
         if rand < 1.1 % Sample starting location for search from prior.
             strtSamp = mvnrnd(bb,diag(BB),1);
@@ -478,14 +476,14 @@ for t = 1:numSamples - 1
             strtSamp = 2*range(2,:).*rand(1,dim) - 50;
         end
         strtFval = acqfun(strtSamp);
+        insigma = [];
     end
     
     % Using global optimiser (cmaes):
-    insigma = [];
     % insigma = exp((log(VV) + log(BB))/4);
     % if size(xxIter,1) > dim; insigma = std(xxIter); end
-    [newX,cmaesFval] = cmaes_modded( ['expectedVar' method], strtSamp', insigma', opts, lambda, VV, ...
-                  lHatD, xxIter, invKxx, jitterNoise, bb, BB);
+    [newX,cmaesFval] = cmaes_modded( ['expectedVar' method], strtSamp', insigma(:), opts, lambda, VV, ...
+                  lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa);
     newX = newX';
     
     % If CMA-ES somehow does not improve from starting point, just use that

@@ -203,7 +203,7 @@ if isempty(x)
         
         % Create base GP
         hyp = zeros(8,1);
-        y.gp = gplite_post(hyp,data.X,data.y,'zero');
+        y.gp = gplite_post(hyp,data.X,data.y,[],'zero');
         
     end
     

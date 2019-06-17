@@ -1,4 +1,4 @@
-function [NEV] = expectedVarL(xs, lambda, VV, lHatD, xxx, invKxx, noise, bb, BB)
+function [NEV] = expectedVarL(xs, lambda, VV, lHatD, xxx, invKxx, noise, bb, BB, aa)
 % Active sampling loss function for wsabi_L
 
 xs = xs';

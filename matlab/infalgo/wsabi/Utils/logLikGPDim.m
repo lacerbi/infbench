@@ -2,7 +2,7 @@ function [nll, dll] = logLikGPDim( xx, dat, hyp, hypVar )
 outl = hyp(1);
 inl  = hyp(2:end);
 
-hypMu = [0, log(0.1)*ones(1,size(xx,2))];
+hypMu = [0, log(0.01)*ones(1,size(xx,2))];
 
 dKxx = cell(1,length(hyp));
 dll = zeros(size(hyp));

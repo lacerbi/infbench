@@ -1,4 +1,4 @@
-function [NEV] = expectedVarM(xs, lambda, VV, lHatD, xxx, invKxx, noise, bb, BB)
+function [NEV] = expectedVarM(xs, lambda, VV, lHatD, xxx, invKxx, noise, bb, BB, aa)
 % Uncertainty sampling loss function for moment matched sqrtBBQ
 
 xs = xs';
