@@ -110,7 +110,6 @@ switch algoset
         
     case {100,'new_defaults'}; algoset = 'new_defaults'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
         
-        
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
         
