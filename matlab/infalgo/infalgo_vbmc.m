@@ -24,6 +24,7 @@ algoptions.TolStableIters = 8;
 algoptions.WarmupCheckMax = false;
 algoptions.SGDStepSize = 0.01;
 algoptions.RankCriterion = false;
+algoptions.EmpiricalGPPrior = true;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
