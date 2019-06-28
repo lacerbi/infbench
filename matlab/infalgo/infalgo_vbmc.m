@@ -25,6 +25,7 @@ algoptions.WarmupCheckMax = false;
 algoptions.SGDStepSize = 0.01;
 algoptions.RankCriterion = false;
 algoptions.EmpiricalGPPrior = true;
+algoptions.gpQuadraticMeanBound = false;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -108,6 +109,7 @@ switch algoset
     case {53,'acqdf'}; algoset = 'acqdf'; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqfdfreg_vbmc; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
     case {54,'acqmaxvar'}; algoset = 'acqmaxvar'; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqmaxvarreg_vbmc; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
     case {55,'noemp'}; algoset = 'noemp'; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {56,'gpbound'}; algoset = 'gpbound'; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
         
     case {100,'new_defaults'}; algoset = 'new_defaults'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
         
