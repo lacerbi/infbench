@@ -1,13 +1,14 @@
-function [Sigma,x0] = covcma(X,y,x0,d)
+function [Sigma,x0] = covcma(X,y,x0,d,frac)
 %WCMA Weighted covariance matrix (inspired by CMA-ES).
 
 if nargin < 3; x0 = []; end
 if nargin < 4 || isempty(d); d = 'descend'; end
+if nargin < 5 || isempty(frac); frac = 0.5; end
 
 [N,D] = size(X);
 
 % Compute vector weights
-mu = 0.5*N;
+mu = frac*N;
 weights = zeros(1,1,floor(mu));
 weights(1,1,:) = log(mu+1/2)-log(1:floor(mu));
 weights = weights./sum(weights);
