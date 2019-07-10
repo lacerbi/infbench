@@ -73,53 +73,23 @@ switch algoset
     case {13,'K5'}; algoset = 'K5'; algoptions.Kfun = 5; algoptions.KfunMax = 5; algoptions.Kwarmup = 5;
         
     % Ongoing research and testing
-    case {21,'hedge'}; algoset = 'hedge'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2};
-    case {22,'hedgent'}; algoset = 'hedgent'; algoptions.Portfolio = 1; algoptions.SearchAcqFcn = {@vbmc_acqfreg,@vbmc_acqfregv2}; algoptions.EntropySwitch = 0;
-    case {23,'acqfregvlnn'}; algoset = 'acqfregvlnn'; algoptions.SearchAcqFcn = @vbmc_acqfregvlnn;
-    case {24,'acqfregvsqrtn'}; algoset = 'acqfregvsqrtn'; algoptions.SearchAcqFcn = @vbmc_acqfregvsqrtn;
-    case {25,'acqfregt'}; algoset = 'acqfregt'; algoptions.SearchAcqFcn = @vbmc_acqfregt;   % annealed prospective uncertainty sampling
-    case {26,'anngp'}; algoset = 'anngp'; algoptions.AnnealedGPMean     = @(N,NMAX) N/(0.1*NMAX);           
-    case {27,'se'}; algoset = 'se'; algoptions.gpMeanFun = 'se';           
-    case {28,'const'}; algoset = 'const'; algoptions.gpMeanFun = 'const';        
-    case {29,'acqf2reg'}; algoset = 'acqf2reg'; algoptions.SearchAcqFcn = @vbmc_acqf2reg;
-    case {30,'slicelite'}; algoset = 'slicelite'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 10;
-    case {31,'slicelite2'}; algoset = 'slicelite2'; algoptions.GPHypSampler = 'slicelite'; algoptions.GPRetrainThreshold = 0;
-    case {32,'precise'}; algoset = 'precise'; algoptions.NSent = '@(K) 1000*K';
-    case {33,'det'}; algoset = 'det'; algoptions.NSent = 0; algoptions.NSentFast = 0; algoptions.NSentFine = 0; algoptions.DetEntTolOpt = 1e-4; algoptions.EntropySwitch = true; algoptions.DetEntropyMinD = 0; algoptions.EntropyForceSwitch = Inf;
-    case {34,'scache'}; algoset = 'scache'; algoptions.SearchCacheFrac = 0.1; algoptions.NSsearch = 2^10;
-    case {35,'one'}; algoset = 'one'; algoptions.FunEvalsPerIter = 1;
-    case {36,'fixed'}; algoset = 'fixed'; algoptions.VariableMeans = false; algoptions.Plot = 'on'; algoptions.NSent = 0; algoptions.NSentFast = 0; algoptions.NSentFine = '@(K) 2^15*round(sqrt(K))'; algoptions.DetEntTolOpt = 1e-3; algoptions.EntropySwitch = true; algoptions.DetEntropyMinD = 0; algoptions.EntropyForceSwitch = Inf; algoptions.TolWeight = 0; algoptions.NSelbo = '@(K) 50*sqrt(K)';
-    case {37,'wsmall'}; algoset = 'wsmall'; algoptions.TolWeight = 1e-3;
-    case {38,'fixgpmean'}; algoset = 'fixgpmean'; algoptions.ConstrainedGPMean = true;
-    case {39,'noempgp'}; algoset = 'noempgp'; algoptions.EmpiricalGPPrior = false;
-    case {40,'hpdsearch'}; algoset = 'hpdsearch'; algoptions.SearchCacheFrac = 0.1; algoptions.HPDSearchFrac = 0.9; algoptions.HeavyTailSearchFrac = 0; algoptions.MVNSearchFrac = 0; algoptions.SearchAcqFcn = @vbmc_acqpropregt; algoptions.StopWarmupThresh = 0.1; algoptions.TolStableWarmup = 5; algoptions.FastWarmup = true; algoptions.Kwarmup = 2; algoptions.NSgpMaxWarmup = 3;
-    case {41,'specialwarmup'}; algoset = 'specialwarmup';
-        w.SearchCacheFrac = 0.1; w.HPDSearchFrac = 0.9; w.HeavyTailSearchFrac = 0; w.MVNSearchFrac = 0; w.SearchAcqFcn = @acqpropreg_vbmc; w.StopWarmupThresh = 0.1; w.SearchCMAESVPInit = false;
-        algoptions.WarmupOptions = w;
-        algoptions.TolStableWarmup = 5; algoptions.BOWarmup = true; algoptions.NSgpMaxWarmup = 8;
-    case {42,'robust'}; algoset = 'robust'; algoptions.NSgpMaxMain = 0; algoptions.GPStochasticStepsize = true; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
-    case {43,'robust2'}; algoset = 'robust2'; algoptions.NSgpMaxMain = 0; algoptions.GPStochasticStepsize = true; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10;
-    case {44,'robust3'}; algoset = 'robust3'; algoptions.NSgpMaxMain = 0; algoptions.GPStochasticStepsize = true; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true;
-    case {45,'newdef'}; algoset = 'newdef'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
-    case {46,'newdef2'}; algoset = 'newdef2'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.GPStochasticStepsize = true;
-    case {47,'newdef3'}; algoset = 'newdef3'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {50,'mixgpmean'}; algoset = 'mixgpmean'; algoptions.gpMeanFun = 'negquadse'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true;
-    case {51,'rank'}; algoset = 'rank'; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005; algoptions.RankCriterion = true;
-    case {52,'acqiqr'}; algoset = 'acqiqr'; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqiqrreg_vbmc; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {53,'acqdf'}; algoset = 'acqdf'; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqfdfreg_vbmc; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {54,'acqmaxvar'}; algoset = 'acqmaxvar'; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqmaxvarreg_vbmc; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {55,'noemp'}; algoset = 'noemp'; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {56,'gpbound'}; algoset = 'gpbound'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {57,'outnoise'}; algoset = 'outnoise'; algoptions.Plot = 0; algoptions.gpNoiseFun = [1 0 1]; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {58,'band'}; algoset = 'band'; algoptions.Bandwidth = 1e-3; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {59,'acqpropnew'}; algoset = 'acqpropnew'; algoptions.SearchAcqFcn = @acqpropreg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {60,'bowarmup'}; algoset = 'bowarmup';
+    case {21,'acqfregvlnn'}; algoset = 'acqfregvlnn'; algoptions.SearchAcqFcn = @vbmc_acqfregvlnn;
+    case {22,'acqfregvsqrtn'}; algoset = 'acqfregvsqrtn'; algoptions.SearchAcqFcn = @vbmc_acqfregvsqrtn;
+    case {23,'acqfregt'}; algoset = 'acqfregt'; algoptions.SearchAcqFcn = @vbmc_acqfregt;   % annealed prospective uncertainty sampling
+    case {24,'se'}; algoset = 'se'; algoptions.gpMeanFun = 'se';           
+    case {25,'const'}; algoset = 'const'; algoptions.gpMeanFun = 'const';        
+    case {26,'acqf2reg'}; algoset = 'acqf2reg'; algoptions.SearchAcqFcn = @vbmc_acqf2reg;
+    case {27,'acqpropnew'}; algoset = 'acqpropnew'; algoptions.SearchAcqFcn = @acqpropreg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {28,'bowarmup'}; algoset = 'bowarmup';
         w.SearchCacheFrac = 0.1; w.HPDSearchFrac = 0.9; w.HeavyTailSearchFrac = 0; w.MVNSearchFrac = 0; w.SearchAcqFcn = @acqpropreg_vbmc; w.StopWarmupThresh = 0.1; w.SearchCMAESVPInit = false;
         algoptions.WarmupOptions = w; algoptions.Plot = 0;
         algoptions.TolStableWarmup = 55; algoptions.BOWarmup = true; algoptions.NSgpMaxWarmup = 8;
         algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 220 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
-    case {61,'acqfheavy'}; algoset = 'acqfheavy'; algoptions.Plot = 1; algoptions.SearchAcqFcn = @acqfheavyreg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {100,'new_defaults'}; algoset = 'new_defaults'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {29,'acqfheavy'}; algoset = 'acqfheavy'; algoptions.Plot = 1; algoptions.SearchAcqFcn = @acqfheavyreg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {30,'gpswitch'}; algoset = 'gpswitch'; algoptions.Plot = 0; algoptions.StableGPSampling = '100+10*nvars'; algoptions.WarmupOptions.StableGPSampling = '200+10*nvars'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
+        
+    % New defaults
+    case {100,'newdef'}; algoset = 'newdef'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExceptions = 2; algoptions.TolStableIters = 10; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
         
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 

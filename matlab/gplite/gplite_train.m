@@ -148,13 +148,12 @@ if ~isempty(LogP) && Ns > 0
 end
 
 % First evaluate GP log posterior on an informed space-filling design
+timer1 = tic;
 if Ninit > 0
-    % tic
     optfill.FunEvals = Ninit;
     [~,~,~,output_fill] = fminfill(gpoptimize_fun,hyp0',LB,UB,PLB,PUB,hprior,optfill);
     hyp(:,:) = output_fill.X(1:Nopts,:)';
     widths_default = std(output_fill.X,[],1);
-    % toc
     
     if 0
         tic
@@ -190,11 +189,12 @@ else
     hyp = hyp0(:,ord);
     widths_default = PUB - PLB;
 end
+t1 = toc(timer1);
 
 % Check that hyperparameters are within bounds
 hyp = bsxfun(@min,UB'-eps(UB'),bsxfun(@max,LB'+eps(LB'),hyp));
 
-%tic
+timer2 = tic;
 % Perform optimization from most promising NOPTS hyperparameter vectors
 for iTrain = 1:Nopts
     nll = Inf(1,Nopts);
@@ -205,10 +205,11 @@ for iTrain = 1:Nopts
         % Could not optimize, keep starting point
     end
 end
-%toc
 
 [~,idx] = min(nll); % Take best hyperparameter vector
 hyp_start = hyp(:,idx);
+
+t2 = toc(timer2);
 
 % Check that starting point is inside current bounds
 hyp_start = min(max(hyp_start',LB+eps(LB)),UB-eps(UB))';
@@ -216,6 +217,7 @@ hyp_start = min(max(hyp_start',LB+eps(LB)),UB-eps(UB))';
 logp_prethin = [];  % Log posterior of samples
 
 %% Sample from best hyperparameter vector using slice sampling
+timer3 = tic;
 if Ns > 0
     
     Ns_eff = Ns*Thin;   % Effective number of samples (thin after)
@@ -320,6 +322,9 @@ else
     logp_prethin = -nll;
     logp = -nll(idx);
 end
+t3 = toc(timer3);
+
+% [t1 t2 t3]
 
 % Recompute GP with finalized hyperparameters
 gp = gp_objfun(hyp,gp,[],1);
