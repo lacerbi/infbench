@@ -26,6 +26,7 @@ algoptions.SGDStepSize = 0.01;
 algoptions.RankCriterion = false;
 algoptions.EmpiricalGPPrior = true;
 algoptions.gpQuadraticMeanBound = false;
+algoptions.WarmupOptions = [];
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
