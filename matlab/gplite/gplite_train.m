@@ -35,6 +35,7 @@ defopts.DfBase          = 7;        % Default degrees of freedom for Student's t
 defopts.Sampler         = 'slicesample';    % Default MCMC sampler for hyperparameters
 defopts.Widths          = [];        % Default widths (used only for HMC sampler)
 defopts.LogP            = [];        % Old log probability associated to starting points
+defopts.OutwarpFun      = [];        % Output warping function
 
 for f = fields(defopts)'
     if ~isfield(options,f{:}) || isempty(options.(f{:}))
@@ -52,6 +53,7 @@ Burnin = options.Burnin;
 DfBase = options.DfBase;
 Widths = options.Widths;
 LogP = options.LogP;
+outwarpfun = options.OutwarpFun;
 
 %% Initialize inference of GP hyperparameters (bounds, priors, etc.)
 
@@ -60,8 +62,18 @@ LogP = options.LogP;
 [Nnoise,noiseinfo] = gplite_noisefun('info',X,noisefun,y,s2);
 [Nmean,meaninfo] = gplite_meanfun('info',X,meanfun,y);
 
+% Output warping
+outwarp_flag = ~isempty(outwarpfun);
+if outwarp_flag
+    [Noutwarp,outwarpinfo] = outwarpfun('info',y);
+else
+    Noutwarp = 0;
+    outwarpinfo.LB = []; outwarpinfo.UB = [];
+    outwarpinfo.PLB = []; outwarpinfo.PUB = [];
+end
+
 % Hyperparameters
-if isempty(hyp0); hyp0 = zeros(Ncov+Nnoise+Nmean,1); end
+if isempty(hyp0); hyp0 = zeros(Ncov+Nnoise+Nmean+Noutwarp,1); end
 Nhyp = size(hyp0,1);
 
 LB = [];
@@ -92,9 +104,19 @@ UB_cov = UB(1:Ncov); idx = isnan(UB_cov); UB_cov(idx) = covinfo.UB(idx);
 UB_noise = UB(Ncov+1:Ncov+Nnoise); idx = isnan(UB_noise); UB_noise(idx) = noiseinfo.UB(idx);
 UB_mean = UB(Ncov+Nnoise+1:Ncov+Nnoise+Nmean); idx = isnan(UB_mean); UB_mean(idx) = meaninfo.UB(idx);
 
+% Set output warping function hyperparameters bounds (if used)
+if outwarp_flag
+    LB_outwarp = LB(Ncov+Nnoise+Nmean+1:Ncov+Nnoise+Nmean+Noutwarp); 
+    idx = isnan(LB_outwarp); LB_outwarp(idx) = outwarpinfo.LB(idx);
+    UB_outwarp = UB(Ncov+Nnoise+Nmean+1:Ncov+Nnoise+Nmean+Noutwarp); 
+    idx = isnan(UB_outwarp); UB_outwarp(idx) = outwarpinfo.UB(idx);
+else
+    LB_outwarp = []; UB_outwarp = [];
+end
+
 % Create lower and upper bounds
-LB = [LB_cov,LB_noise,LB_mean];
-UB = [UB_cov,UB_noise,UB_mean];
+LB = [LB_cov,LB_noise,LB_mean,LB_outwarp];
+UB = [UB_cov,UB_noise,UB_mean,UB_outwarp];
 UB = max(LB,UB);
 
 % Plausible bounds for generation of starting points
@@ -102,8 +124,14 @@ PLB_cov = covinfo.PLB;      PUB_cov = covinfo.PUB;
 PLB_noise = noiseinfo.PLB;  PUB_noise = noiseinfo.PUB;
 PLB_mean = meaninfo.PLB;    PUB_mean = meaninfo.PUB;
 
-PLB = [PLB_cov,PLB_noise,PLB_mean];
-PUB = [PUB_cov,PUB_noise,PUB_mean];
+if outwarp_flag
+    PLB_outwarp = outwarpinfo.PLB;    PUB_outwarp = outwarpinfo.PUB;
+else
+    PLB_outwarp = []; PUB_outwarp = [];
+end
+
+PLB = [PLB_cov,PLB_noise,PLB_mean,PLB_outwarp];
+PUB = [PUB_cov,PUB_noise,PUB_mean,PUB_outwarp];
 PLB = min(max(PLB,LB),UB);
 PUB = max(min(PUB,UB),LB);
 
@@ -120,7 +148,7 @@ hyp = zeros(Nhyp,Nopts);
 nll = [];
 
 % Initialize GP
-gp = gplite_post(hyp0(:,1),X,y,covfun,meanfun,noisefun,s2);
+gp = gplite_post(hyp0(:,1),X,y,covfun,meanfun,noisefun,s2,0,outwarpfun);
 
 % Define objective functions for optimization
 gpoptimize_fun = @(hyp_) gp_objfun(hyp_(:),gp,hprior,0,0);
@@ -358,7 +386,8 @@ if nargin < 5 || isempty(swapsign); swapsign = 0; end
 compute_grad = nargout > 1 && ~gpflag;
 
 if gpflag
-    gp = gplite_post(hyp(1:end,:),gp.X,gp.y,gp.covfun,gp.meanfun,gp.noisefun,gp.s2);
+    if isfield(gp,'outwarpfun'); outwarpfun = gp.outwarpfun; else; outwarpfun = []; end
+    gp = gplite_post(hyp(1:end,:),gp.X,gp.y,gp.covfun,gp.meanfun,gp.noisefun,gp.s2,[],outwarpfun);
     nlZ = gp;
 else
 

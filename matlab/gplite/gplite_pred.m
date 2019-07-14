@@ -1,5 +1,6 @@
 function [ymu,ys2,fmu,fs2,lp] = gplite_pred(gp,Xstar,ystar,ssflag,s2star)
 %GPLITE_PRED Prediction for lite Gaussian Processes regression.
+% Should make GPLITE_QPRED for quantile prediction.
 
 % HYP is a column vector. Multiple columns correspond to multiple samples.
 if nargin < 3; ystar = []; end
@@ -27,6 +28,14 @@ Ncov = gp.Ncov;
 Nnoise = gp.Nnoise;
 Nmean = gp.Nmean;
 
+outwarp_flag = isfield(gp,'outwarpfun') && ~isempty(gp.outwarpfun);
+if outwarp_flag
+    Noutwarp = gp.Noutwarp;
+    fmu_prewarp = zeros(Nstar,Ns);
+else
+    Noutwarp = 0;
+end
+
 % Loop over hyperparameter samples
 for s = 1:Ns
     hyp = gp.post(s).hyp;
@@ -44,7 +53,7 @@ for s = 1:Ns
     % Get mean function hyperpameters and evaluate GP mean at test points
     hyp_mean = hyp(Ncov+Nnoise+1:Ncov+Nnoise+Nmean);
     mstar = gplite_meanfun(hyp_mean,Xstar,gp.meanfun);
-
+    
     % Compute cross-kernel matrix Ks_mat
     if gp.covfun(1) == 1    % Hard-coded SE-ard for speed
         ell = exp(hyp(1:D));
@@ -81,7 +90,39 @@ for s = 1:Ns
 
         % Compute log probability of test inputs
         if ~isempty(ystar) && nargout > 4
-            lp(:,s) = -(ystar-ymu).^2./(sn2_star*sn2_mult)/2-log(2*pi*sn2_star*sn2_mult)/2;
+            if outwarp_flag; error('output warping unsupported'); end
+            lp(:,s) = -(ystar-ymu(:,s)).^2./(sn2_star*sn2_mult)/2-log(2*pi*sn2_star*sn2_mult)/2;
+        end
+    end
+    
+    % Adjust predictions for output-warped GP
+    if outwarp_flag
+        hyp_outwarp = hyp(Ncov+Nnoise+Nmean+1:Ncov+Nnoise+Nmean+Noutwarp);
+        
+        fmu_prewarp(:,s) = fmu(:,s);        
+        fmu(:,s) = gp.outwarpfun(hyp_outwarp,fmu_prewarp(:,s),'inv');
+        ymu(:,s) = fmu_prewarp(:,s);
+        if nargout > 1
+            
+            if 1
+                [~,dwarp_dt] = gp.outwarpfun(hyp_outwarp,fmu(:,s));            
+                fs2(:,s) = fs2(:,s)./dwarp_dt.^2;
+                ys2(:,s) = ys2(:,s)./dwarp_dt.^2;
+                % The problem is that the sample variance explodes for multiple
+                % samples (because the predictive means can be very far apart)
+            else
+                kk = 1.96;
+                fmup1 = gp.outwarpfun(hyp_outwarp,fmu_temp+kk*sqrt(fs2(:,s)),'inv');
+                fmum1 = gp.outwarpfun(hyp_outwarp,fmu_temp-kk*sqrt(fs2(:,s)),'inv');
+                fs2(:,s) = (fmup1-fmum1).^2/(2*kk)^2;
+                ymup1 = gp.outwarpfun(hyp_outwarp,fmu_temp+kk*sqrt(ys2(:,s)),'inv');
+                ymum1 = gp.outwarpfun(hyp_outwarp,fmu_temp-kk*sqrt(ys2(:,s)),'inv');
+                ys2(:,s) = (ymup1-ymum1).^2/(2*kk)^2;                
+            end
+                
+            if nargout > 4
+                lp(:,s) = lp(:,s) + log(abs(dwarp_dt));                
+            end
         end
     end
 
