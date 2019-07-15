@@ -1,15 +1,26 @@
-function [ymu,ys2,fmu,fs2,lp] = gplite_pred(gp,Xstar,ystar,ssflag,s2star)
+function [ymu,ys2,fmu,fs2,lp] = gplite_pred(gp,Xstar,ystar,s2star,ssflag,nowarpflag)
 %GPLITE_PRED Prediction for lite Gaussian Processes regression.
 % Should make GPLITE_QPRED for quantile prediction.
 
 % HYP is a column vector. Multiple columns correspond to multiple samples.
 if nargin < 3; ystar = []; end
-if nargin < 4 || isempty(ssflag); ssflag = false; end
-if nargin < 5; s2star = []; end
+if nargin < 4; s2star = []; end
+if nargin < 5 || isempty(ssflag); ssflag = false; end
+if nargin < 6 || isempty(nowarpflag); nowarpflag = false; end
 
 [N,D] = size(gp.X);            % Number of training points and dimension
 Ns = numel(gp.post);           % Hyperparameter samples
 Nstar = size(Xstar,1);         % Number of test inputs
+
+% Perform dimensionality checks
+if ~isempty(ystar) && size(ystar,1) ~= Nstar
+    error('gplite_pred:ydimmismatch', ...
+        'YSTAR should be empty or a column vector of NSTAR observations.');
+end
+if ~isempty(s2star) && size(s2star,1) ~= Nstar
+    error('gplite_pred:s2dimmismatch', ...
+        'S2STAR should be empty or a column vector of NSTAR estimated variances.');
+end
 
 % Preallocate space
 fmu = zeros(Nstar,Ns);
@@ -28,7 +39,8 @@ Ncov = gp.Ncov;
 Nnoise = gp.Nnoise;
 Nmean = gp.Nmean;
 
-outwarp_flag = isfield(gp,'outwarpfun') && ~isempty(gp.outwarpfun);
+% Output warping function
+outwarp_flag = isfield(gp,'outwarpfun') && ~isempty(gp.outwarpfun) && ~nowarpflag;
 if outwarp_flag
     Noutwarp = gp.Noutwarp;
     fmu_prewarp = zeros(Nstar,Ns);
@@ -104,21 +116,11 @@ for s = 1:Ns
         ymu(:,s) = fmu_prewarp(:,s);
         if nargout > 1
             
-            if 1
-                [~,dwarp_dt] = gp.outwarpfun(hyp_outwarp,fmu(:,s));            
-                fs2(:,s) = fs2(:,s)./dwarp_dt.^2;
-                ys2(:,s) = ys2(:,s)./dwarp_dt.^2;
-                % The problem is that the sample variance explodes for multiple
-                % samples (because the predictive means can be very far apart)
-            else
-                kk = 1.96;
-                fmup1 = gp.outwarpfun(hyp_outwarp,fmu_temp+kk*sqrt(fs2(:,s)),'inv');
-                fmum1 = gp.outwarpfun(hyp_outwarp,fmu_temp-kk*sqrt(fs2(:,s)),'inv');
-                fs2(:,s) = (fmup1-fmum1).^2/(2*kk)^2;
-                ymup1 = gp.outwarpfun(hyp_outwarp,fmu_temp+kk*sqrt(ys2(:,s)),'inv');
-                ymum1 = gp.outwarpfun(hyp_outwarp,fmu_temp-kk*sqrt(ys2(:,s)),'inv');
-                ys2(:,s) = (ymup1-ymum1).^2/(2*kk)^2;                
-            end
+            [~,dwarp_dt] = gp.outwarpfun(hyp_outwarp,fmu(:,s));            
+            fs2(:,s) = fs2(:,s)./dwarp_dt.^2;
+            ys2(:,s) = ys2(:,s)./dwarp_dt.^2;
+            % The problem is that the sample variance explodes for multiple
+            % samples (because the predictive means can be very far apart)
                 
             if nargout > 4
                 lp(:,s) = lp(:,s) + log(abs(dwarp_dt));                

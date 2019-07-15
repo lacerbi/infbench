@@ -14,7 +14,7 @@ s2 = [];
 %y(idx(randperm(numel(idx)))) = -linspace(1000,1001,numel(idx))';
 
 hyp0 = [];          % Starting hyperparameter vector for optimization
-Ns = 0;             % Number of hyperparameter samples
+Ns = 10;             % Number of hyperparameter samples
 covfun = [3 3];     % GP covariance function
 meanfun = 4;        % GP mean function
 noisefun = [1 0 0]; % Constant plus user-provided noise

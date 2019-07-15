@@ -134,7 +134,7 @@ else
     if Nstar > 1; gp(2:Nstar) = gp(1); end
     
     % Compute prediction for all samples
-    [mstar,vstar] = gplite_pred(gp(1),xstar,ystar,1,s2star);
+    [mstar,vstar] = gplite_pred(gp(1),xstar,ystar,s2star,1);
         
     % Loop over hyperparameter samples
     for s = 1:Ns
