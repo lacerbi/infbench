@@ -153,6 +153,7 @@ if ~ControlRunFlag
     history.Output.y = output.y_orig(output.X_flag);
     post.lnZ = elbo;
     post.lnZ_var = elbo_sd^2;
+    fprintf('Calculating VBMC output at final iteration...\n');
     [post.gsKL,post.Mean,post.Cov,post.Mode] = computeStats(vp,probstruct);
 
     % Return estimate, SD of the estimate, and gauss-sKL with true moments
