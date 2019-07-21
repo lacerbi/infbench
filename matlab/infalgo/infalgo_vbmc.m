@@ -158,6 +158,8 @@ if ~ControlRunFlag
     % Return estimate, SD of the estimate, and gauss-sKL with true moments
     Nticks = numel(history.SaveTicks);
     for iIter = 1:Nticks
+        fprintf('Calculating VBMC output at iteration %d...\n',iIter);
+        
         idx = find(stats.N == history.SaveTicks(iIter),1);
         if isempty(idx); continue; end
         
