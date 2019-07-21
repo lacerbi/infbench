@@ -248,6 +248,6 @@ Cov = cov(xx);
 gsKL = 0.5*(kl1 + kl2);
 
 % Compute mode
-Mode = vbmc_mode(vp,1);
+Mode = vbmc_mode(vp,[],1);
 
 end
