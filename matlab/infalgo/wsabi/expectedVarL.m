@@ -22,5 +22,6 @@ end
 priorWeighting = mvnpdf(xs,bb,BB);
 
 NEV(1,:) = -(l_0.^2 .* varPred) .* priorWeighting.^2; %Negative expected variance.
+% NEV(1,:) = -2*varPred.*(2*l_0.^2 + varPred) .* priorWeighting.^2; %Negative expected variance.
 
 end

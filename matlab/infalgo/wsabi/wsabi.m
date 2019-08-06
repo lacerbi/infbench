@@ -121,9 +121,9 @@ currNumSamples = 1;
 for t = 1:numSamples - 1
     if printing
         if ~mod(t,10)
-            prstr = sprintf('Iter %d. Log Current Mean Integral: %g.\n', ...
-                            t, log(mu(t-1)) + logscaling(t-1));
-            fprintf(prstr);
+            fprintf('Iter %d. Log Current Mean Integral: %g +/- %g.\n', ...
+                            t, log(mu(t-1)) + logscaling(t-1), ...
+                            sqrt(Var(t-1))/mu(t-1));
         end
         
         if printing == 2 && ~mod(t,10)
@@ -179,6 +179,7 @@ for t = 1:numSamples - 1
         end
         [hyp,nll] = fmincon(hypLogLik, ...
                          hyp,[],[],[],[],-hypLims,hypLims,[],options1);
+
         % Attempt restart of hyperparameters
         if ~mod(currNumSamples,hypOptEvery*10)
             hyp0 = randn(100,numel(hyp));
@@ -238,6 +239,7 @@ for t = 1:numSamples - 1
     
     % Expected value of integral:
     ww              = invKxx * lHatD;
+    
     Yvar            = (VV.*VV + 2*VV.*BB)./VV; 
     postProd        = ww*ww';
     
@@ -262,13 +264,23 @@ for t = 1:numSamples - 1
                     (1 / prod(4*pi^2*((VV.*VV + 2*VV.*BB)))^0.5) * ...
                     exp(-0.5 * (pdist2(xx2sqFin,-xx2sqFin) + dist4)) .* ...
                     postProd + sig2t;
+
+    if 0
+        xx1 = xxIter ./ sqrt(2*VV);    
+        xx2 = 0.5*(xxIter - bb) ./ sqrt(0.5*VV + BB);
+        YY2 = lambda^4 * ...
+            (1 / prod(4*pi^2*((VV.*VV + 2*VV.*BB)))^0.5) * ...
+            exp(-0.5 * pdist2_squared_fast(xx1,xx1) - 0.5*pdist2_squared_fast(xx2,-xx2)) .* ...
+            postProd;
+        mu2 = aa + 0.5*sum(YY2(:));
+    end
     
     % Mean of the integral at iteration 't', before scaling back up:
     mu(t) = aa + 0.5*sum(YY(:));
     if method == 'M'
         mu(t) = mu(t) + 0.5*lambda.^2 * (1/(prod(2*pi*VV)^0.5));
     end
-    
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     % Variance of the integral, before scaling back up:
