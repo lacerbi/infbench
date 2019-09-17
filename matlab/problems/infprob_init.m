@@ -64,6 +64,9 @@ end
 
 % Maximum function evaluations
 probstruct.MaxFunEvals = probstruct.MaxFunEvals*options.MaxFunEvalMultiplier;
+if probstruct.NoiseSigma > 0    % Increased budget for noisy targets
+    probstruct.MaxFunEvals = probstruct.MaxFunEvals*2;
+end
 probstruct.TotalMaxFunEvals = probstruct.MaxFunEvals;
 probstruct.Verbose = evalbool(options.Display);
 

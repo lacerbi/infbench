@@ -206,6 +206,10 @@ end
 
 % x
 
-varargout = {fval};    
+if nargout > 1
+    varargout = {fval,sigma};
+else
+    varargout = {fval};
+end
 
 end

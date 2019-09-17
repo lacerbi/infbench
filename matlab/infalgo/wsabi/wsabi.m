@@ -38,8 +38,8 @@ if nargin < 11 || isempty(alpha); alpha = 0.8; end
 if nargin < 12 || isempty(printing); printing = 1; end
 if nargin < 13 || isempty(hypVar); hypVar = 1; end
 
-method = upper(method(1));
-if method ~= 'L' && method ~= 'M'
+method = upper(method);
+if method(1) ~= 'L' && method(1) ~= 'M'
     error('wsabi:UnknownMethod', ...
         'Allowed values for METHOD are (L)inearized and (M)oment-matching.');
 end
@@ -127,7 +127,7 @@ for t = 1:numSamples - 1
         end
         
         if printing == 2 && ~mod(t,10)
-            gp.method = method;
+            gp.method = method(1);
             gp.lambda = lambda;
             gp.VV = VV;
             gp.noise = jitterNoise;
@@ -251,7 +251,7 @@ for t = 1:numSamples - 1
     
     dist4           = pdist2_squared_fast(xxIterScaled2,xxIterScaled2);
     
-    if method == 'M'
+    if method(1) == 'M'
         % Sigma^2 term:
         sig2t = - ... 
                 lambda^4 * (1 / prod(4*pi^2*((VV.*VV + 2*VV.*BB)))^0.5) * ...
@@ -277,7 +277,7 @@ for t = 1:numSamples - 1
     
     % Mean of the integral at iteration 't', before scaling back up:
     mu(t) = aa + 0.5*sum(YY(:));
-    if method == 'M'
+    if method(1) == 'M'
         mu(t) = mu(t) + 0.5*lambda.^2 * (1/(prod(2*pi*VV)^0.5));
     end
 
@@ -330,7 +330,7 @@ for t = 1:numSamples - 1
     
     Var(t)  = (sum(sum(GG)) - sum(YY2,2)'*(invKxx * sum(YY2,2)));
     
-    if method == 'M'
+    if method(1) == 'M'
         %---------------- Tmp Vars to calculate second term ------------------%
 
         tmp_2_mainvar = (BB.*(VV.*VV + 2*VV.*BB) + (((VV.*VV)./BB) + 2*VV) +...
@@ -420,13 +420,9 @@ for t = 1:numSamples - 1
     % Actively select next sample point:
      
     % Define acquisition function
-    if method == 'L'
-      acqfun = @(x) expectedVarL( transp(x), lambda, VV, ... 
-         lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa );
-    else
-      acqfun = @(x) expectedVarM( transp(x), lambda, VV, ... 
-         lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa );
-    end
+    acqfun_name = str2func(['expectedVar' method]);
+    acqfun = @(x) acqfun_name( transp(x), lambda, VV, ...
+        lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa );
         
     if Nsearch > 0
         % Perform shotgun search
@@ -494,7 +490,7 @@ for t = 1:numSamples - 1
     % Using global optimiser (cmaes):
     % insigma = exp((log(VV) + log(BB))/4);
     % if size(xxIter,1) > dim; insigma = std(xxIter); end
-    [newX,cmaesFval] = cmaes_modded( ['expectedVar' method], strtSamp', insigma(:), opts, lambda, VV, ...
+    [newX,cmaesFval] = cmaes_modded( ['expectedVar' method(1)], strtSamp', insigma(:), opts, lambda, VV, ...
                   lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa);
     newX = newX';
     

@@ -21,14 +21,14 @@ switch algoset
     case {2,'mm'}; algoset = 'mm'; algoptions.Method = 'M';
     case {3,'search'}; algoset = 'search'; algoptions.Nsearch = 1e3; algoptions.HypVar = HypVar;
     case {4,'mmsearch'}; algoset = 'mmsearch'; algoptions.Method = 'M'; algoptions.Nsearch = 1e4; algoptions.HypVar = HypVar;
-    case {5,'base2'}; algoset = 'base2';           % Base, longer optimization
-    case {6,'mm2'}; algoset = 'mm2'; algoptions.Method = 'M';   % Moment-matching, longer optimization
+    case {5,'searchV'}; algoset = 'searchV'; algoptions.Method = 'LV'; algoptions.Nsearch = 1e3; algoptions.HypVar = HypVar;
+    case {6,'mmsearchV'}; algoset = 'mmsearchV'; algoptions.Method = 'MV'; algoptions.Nsearch = 1e4; algoptions.HypVar = HypVar;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
 end
 
-method = upper(algoptions.Method(1));
+method = upper(algoptions.Method);
 
 % % Increase base noise with noisy functions
 % if ~isempty(probstruct.Noise) || probstruct.IntrinsicNoisy
