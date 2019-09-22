@@ -28,6 +28,7 @@ algoptions.RankCriterion = false;
 algoptions.EmpiricalGPPrior = true;
 algoptions.gpQuadraticMeanBound = false;
 algoptions.WarmupOptions = [];
+algoptions.WarmupKeepThreshold = '10*nvars';
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -133,6 +134,9 @@ switch algoset
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
     case {302,'finalK'}; algoset = 'finalK'; algoptions.MinFinalComponents = 60; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {303,'finalKmi'}; algoset = 'finalK'; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.MinFinalComponents = 60; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {304,'prune20'}; algoset = 'prune20'; algoptions.WarmupKeepThreshold = '20*nvars'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {305,'prune50'}; algoset = 'prune50'; algoptions.WarmupKeepThreshold = '50*nvars'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
         
         
     % Variational active sampling
