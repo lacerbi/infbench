@@ -4,12 +4,12 @@ algoptions = vbmc('all');                   % Get default settings
 
 ControlRunFlag = false;     % Do NOT run in control mode
 
+algoptions.MinFunEvals = probstruct.MaxFunEvals;
+algoptions.MaxFunEvals = probstruct.MaxFunEvals;
+
 % VBMC old defaults -- some of these may have changed
 algoptions.FunEvalsPerIter = 5;
 algoptions.AcqFcn = '@vbmc_acqskl';
-
-algoptions.MinFunEvals = probstruct.MaxFunEvals;
-algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.MinIter = 0;     % No limits on iterations
 algoptions.MaxIter = Inf;
 algoptions.MinFinalComponents = 0;
@@ -120,7 +120,7 @@ switch algoset
     case {59,'step1'}; algoset = 'acqstep1'; algoptions.FunEvalsPerIter = 1; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {60,'step1migps'}; algoset = 'acqstep1migps'; algoptions.FunEvalsPerIter = 1; algoptions.FunEvalStart = 'D'; algoptions.KfunMax = @(N) N; algoptions.SeparateSearchGP = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {61,'lowent'}; algoset = 'lowent'; algoptions.NSentFine = '@(K) 2^12*K'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {62,'finalK'}; algoset = 'finalK'; algoptions.MinFinalComponents = 64; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {62,'finalK'}; algoset = 'finalK'; algoptions.MinFinalComponents = 60; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
         
         
     % New defaults
