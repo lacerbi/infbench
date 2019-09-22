@@ -53,7 +53,8 @@ else
     sigma2 = infprob.sigma2;
     D = infprob.D;
     y = -0.5*x(:,1).^2/sigma2 -0.5*log(sigma2) ...
-        - 0.5*sum(x(:,2:D).^2,2)./exp(x(:,1)) - 0.5*D*log(2*pi) - 0.5*x(:,1);
+        - 0.5*sum(x(:,2:D).^2,2)./exp(x(:,1)) - 0.5*(D-1)*x(:,1) ...
+        - 0.5*D*log(2*pi);
 end
 
 end
@@ -71,7 +72,8 @@ end
 function y = f2(x,sigma,sigma_prior,D)
 
 tau = sigma_prior*sigma/sqrt(sigma^2 + sigma_prior^2);
-y = x.^2 .* normpdf(x,0,tau) ./ sqrt(2*pi*(sigma_prior^2 + exp(x))).^(D-1) ...
+y = x.^2 .* ...
+    normpdf(x,0,tau) ./ sqrt(2*pi*(sigma_prior^2 + exp(x))).^(D-1) ...
     ./ sqrt(2*pi*(sigma^2 + sigma_prior^2));
 
 end
@@ -79,8 +81,8 @@ end
 function y = f2b(x,sigma,sigma_prior,D)
 
 tau = sigma_prior*sigma/sqrt(sigma^2 + sigma_prior^2);
-y = (sigma_prior^2.*exp(x))./(sigma_prior^2 + exp(x)) ...
-    .* normpdf(x,0,tau) ./ sqrt(2*pi*(sigma_prior^2 + exp(x))).^(D-1) ...
+y = (sigma_prior^2.*exp(x))./(sigma_prior^2 + exp(x)) .* ...
+    normpdf(x,0,tau) ./ sqrt(2*pi*(sigma_prior^2 + exp(x))).^(D-1) ...
     ./ sqrt(2*pi*(sigma^2 + sigma_prior^2));
 
 end
