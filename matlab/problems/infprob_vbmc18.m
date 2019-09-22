@@ -1,7 +1,7 @@
 function probstruct = infprob_vbmc18(prob,subprob,noise,id,options)
 
 % Problem names (ordered)
-problist = {'lumpy','cigar','studentt','normal','goris2015','yacht'};
+problist = {'lumpy','cigar','studentt','funnel','normal','goris2015','yacht'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
