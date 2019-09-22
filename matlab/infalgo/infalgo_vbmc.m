@@ -12,6 +12,7 @@ algoptions.MinFunEvals = probstruct.MaxFunEvals;
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.MinIter = 0;     % No limits on iterations
 algoptions.MaxIter = Inf;
+algoptions.MinFinalComponents = 0;
 algoptions.WarpNonlinear = 'off';   % No nonlinear warping for now
 algoptions.BestSafeSD = 5;
 algoptions.BestFracBack = 0.25;
@@ -118,6 +119,8 @@ switch algoset
     case {58,'step1mi'}; algoset = 'acqstep1mi'; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {59,'step1'}; algoset = 'acqstep1'; algoptions.FunEvalsPerIter = 1; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {60,'step1migps'}; algoset = 'acqstep1migps'; algoptions.FunEvalsPerIter = 1; algoptions.FunEvalStart = 'D'; algoptions.KfunMax = @(N) N; algoptions.SeparateSearchGP = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
+    case {61,'lowent'}; algoset = 'lowent'; algoptions.NSentFine = '@(K) 2^12*K'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {62,'finalK'}; algoset = 'finalK'; algoptions.MinFinalComponents = 64; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
         
         
     % New defaults
@@ -163,18 +166,14 @@ algo_timer = tic;
     vbmc(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
 
-% Remove training data from GPs, too bulky (can be reconstructed)
-for i = 1:numel(stats.gp)
-    stats.gp(i).X = [];
-    stats.gp(i).y = [];
-end
+% Get preprocessed OPTIONS struct
+options_vbmc = setupoptions_vbmc(D,algoptions,algoptions);
 
 if ~ControlRunFlag
     
     history = infbench_func(); % Retrieve history
     history.scratch.output = output;
     history.TotalTime = TotalTime;
-    history.Output.stats = stats;
     
     % Store computation results (ignore points discarded after warmup)
     history.Output.X = output.X_orig(output.X_flag,:);
@@ -190,13 +189,15 @@ if ~ControlRunFlag
     for iIter = 1:Nticks
         fprintf('%d..',iIter);
         
-        idx = find(stats.N == history.SaveTicks(iIter),1);
+        idx = find(stats.funccount == history.SaveTicks(iIter),1);
         if isempty(idx); continue; end
         
         % Compute variational solution that VBMC would return at a given iteration
-        [vp,elbo,elbo_sd,idx_best] = ...
-            best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack,algoptions.RankCriterion);
-                
+        [vp,~,~,idx_best] = ...
+            best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack,algoptions.RankCriterion);                
+        [vp,elbo,elbo_sd] = ...
+            finalboost_vbmc(vp,idx_best,[],stats,options_vbmc);
+        
         history.Output.N(iIter) = history.SaveTicks(iIter);
         history.Output.lnZs(iIter) = elbo;
         history.Output.lnZs_var(iIter) = elbo_sd^2;
@@ -260,9 +261,20 @@ else
     [history,post] = ...
         StoreAlgoResults(probstruct,[],Niter,X_iter{Niter},y_iter{Niter},mu,vvar,X_iter,y_iter,TotalTime);
     history.scratch.output = output;
-    history.Output.stats = stats;    
     
 end
+
+% Remove training data from GPs, too bulky (can be reconstructed)
+for i = 1:numel(stats.gp)
+    if ~any(stats.funccount(i) == history.SaveTicks)
+        stats.gp(i).X = [];
+        stats.gp(i).y = [];
+    end
+end
+stats.gpHypFull = [];   % Too bulky
+
+history.Output.stats = stats;
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
