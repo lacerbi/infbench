@@ -29,6 +29,7 @@ algoptions.EmpiricalGPPrior = true;
 algoptions.gpQuadraticMeanBound = false;
 algoptions.WarmupOptions = [];
 algoptions.WarmupKeepThreshold = '10*nvars';
+algoptions.PruningThresholdMultiplier = 1;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -57,6 +58,19 @@ if numel(algoset) >= 3 && strcmpi(algoset(1:3),'vas')
     algoptions.Warmup = false;
     algoptions.FunEvalsPerIter = 1;
 end
+
+% New VBMC defaults (need to be set manually here)
+newdefaults = algoptions;
+newdefaults.MinFinalComponents = 50;
+newdefaults.WarmupKeepThreshold = '20*nvars';
+newdefaults.PruningThresholdMultiplier = @(K) 1/sqrt(K);
+newdefaults.gpQuadraticMeanBound = 1;
+newdefaults.EmpiricalGPPrior = 0;
+newdefaults.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
+newdefaults.TolStableExcptFrac = 0.2;
+newdefaults.TolStableCount = 50;
+newdefaults.WarmupCheckMax = true;
+newdefaults.SGDStepSize = 0.005;
 
 % Options from current problem
 switch algoset
@@ -124,24 +138,17 @@ switch algoset
         
         
     % New defaults
-    case {100,'newdef'}; algoset = 'newdef'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {101,'newdef2'}; algoset = 'newdef2'; algoptions.Plot = 1; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {102,'newdef3'}; algoset = 'newdef3'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
+    case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
+    case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults; algoptions.Plot = 1;
+    case {102,'newdef3'}; algoset = 'newdef3'; algoptions = newdefaults;
 
     % Noise
     case {201,'acqf2new'}; algoset = 'acqf2new'; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
         
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
-    case {302,'finalK'}; algoset = 'finalK'; algoptions.MinFinalComponents = 60; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {303,'finalKmi'}; algoset = 'finalK'; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.MinFinalComponents = 60; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {304,'prune20'}; algoset = 'prune20'; algoptions.WarmupKeepThreshold = '20*nvars'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {305,'prune50'}; algoset = 'prune50'; algoptions.WarmupKeepThreshold = '50*nvars'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {306,'finalK20'}; algoset = 'finalK20'; algoptions.MinFinalComponents = 60; algoptions.WarmupKeepThreshold = '20*nvars'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {307,'finalKmi20'}; algoset = 'finalKmi20'; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.MinFinalComponents = 60; algoptions.WarmupKeepThreshold = '20*nvars'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {308,'finalKmi20step1'}; algoset = 'finalKmi20step1'; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.MinFinalComponents = 60; algoptions.WarmupKeepThreshold = '20*nvars'; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-        
-        
+    case {302,'acqmistep1'}; algoset = 'acqmistep1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc;
+            
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
         
