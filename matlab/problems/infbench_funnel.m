@@ -50,12 +50,13 @@ if isempty(x)
     
     % Compute posterior mode analytically
     tau2 = sigma_prior^2*sigma^2/(sigma^2 + sigma_prior^2);
+    y.Post.Mode = [-0.5*(D-1)*tau2,zeros(1,D-1)];
+    
 %     fun = @(x) 0.5*x(:,1).^2/y.sigma2 ...
 %         + 0.5*sum(x(:,2:D).^2,2)./exp(x(:,1)) + 0.5*(D-1)*x(:,1) ...
 %         + 0.5*sum(x.^2,2)/sigma_prior^2;
 %     Mode = fminunc(fun,zeros(1,D));   % Numerical check
-    y.Post.Mode = [-0.5*(D-1)*tau2,zeros(1,D-1)];
-        
+     
 else
     sigma2 = infprob.sigma2;
     D = infprob.D;
