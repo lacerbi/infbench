@@ -149,6 +149,8 @@ switch algoset
     case {302,'acqmistep1'}; algoset = 'acqmistep1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc;
     case {303,'step1'}; algoset = 'step1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1;
     case {304,'step5'}; algoset = 'step5'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5;
+    case {305,'acqmistep5'}; algoset = 'acqmistep5'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5; algoptions.SearchAcqFcn = @acqmireg_vbmc;
+    case {306,'acq2step1'}; algoset = 'acq2step1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = {@acqfreg_vbmc,@acqmireg_vbmc};
             
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
