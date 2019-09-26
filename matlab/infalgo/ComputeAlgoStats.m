@@ -13,7 +13,9 @@ end
 % Compute Gaussianized symmetric KL-divergence with ground truth
 gp.X = X;
 gp.y = y;
-gp.meanfun = 4; % Negative quadratic mean fcn
+gp.meanfun = 4;         % Negative quadratic mean fcn
+gp.covfun = 1;          % SE ard covariance
+gp.noisefun = [1 0 0];  % Gaussian observation noise
     
 xx = gplite_sample(gp,Ns_moments);
 Mean = mean(xx,1);

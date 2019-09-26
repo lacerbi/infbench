@@ -4,7 +4,7 @@ function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabi( ...
             priorMu,        ... 3) Gaussian prior mean, 1 x D
             priorVar,       ... 4) Gaussian prior covariance, D x D
             range,          ... 5) 2 x D matrix, lower bnd top row
-            numSamples,     ... 6) Number of BBQ samples to run
+            numSamples,     ... 6) Number of function evaluations
             kernelVar,      ... 7) Initial input length scales, D x D
             lambda,         ... 8) Initial output length scale
             x0,             ... 9) Use as starting point

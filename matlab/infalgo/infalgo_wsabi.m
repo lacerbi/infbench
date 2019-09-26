@@ -12,17 +12,18 @@ algoptions.HypVar  = 1;     % Variance of GP hyperparamters (WSABI default)
 algoptions.Debug = false;
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 
-HypVar = [1e4,4*ones(1,probstruct.D)];
+HypVar = [100^2,4^2*ones(1,probstruct.D)];
+Nsearch = 2^13; % Sample for extensive acquisition fcn search
 
 % Options from current problem
 switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1; algoptions.Nsearch = 1e3; algoptions.HypVar = HypVar;
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'mm'}; algoset = 'mm'; algoptions.Method = 'M';
-    case {3,'search'}; algoset = 'search'; algoptions.Nsearch = 1e3; algoptions.HypVar = HypVar;
-    case {4,'mmsearch'}; algoset = 'mmsearch'; algoptions.Method = 'M'; algoptions.Nsearch = 1e4; algoptions.HypVar = HypVar;
-    case {5,'searchV'}; algoset = 'searchV'; algoptions.Method = 'LV'; algoptions.Nsearch = 1e3; algoptions.HypVar = HypVar;
-    case {6,'mmsearchV'}; algoset = 'mmsearchV'; algoptions.Method = 'MV'; algoptions.Nsearch = 1e4; algoptions.HypVar = HypVar;
+    case {3,'search'}; algoset = 'search'; algoptions.Nsearch = Nsearch; algoptions.HypVar = HypVar;
+    case {4,'mmsearch'}; algoset = 'mmsearch'; algoptions.Method = 'M'; algoptions.Nsearch = Nsearch; algoptions.HypVar = HypVar;
+    case {5,'searchV'}; algoset = 'searchV'; algoptions.Method = 'LV'; algoptions.Nsearch = Nsearch; algoptions.HypVar = HypVar;
+    case {6,'mmsearchV'}; algoset = 'mmsearchV'; algoptions.Method = 'MV'; algoptions.Nsearch = Nsearch; algoptions.HypVar = HypVar;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
