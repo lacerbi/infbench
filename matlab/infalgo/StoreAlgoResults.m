@@ -1,5 +1,8 @@
-function [history,post] = StoreAlgoResults(probstruct,post,Niter,X,y,mu,vvar,Xiter,yiter,TotalTime)
+function [history,post] = StoreAlgoResults(probstruct,post,Niter,X,y,mu,vvar,Xiter,yiter,TotalTime,gpiter)
 %STOREALGORESULTS Store results of running an inference algorithm.
+
+if nargin < 11; gpiter = []; end
+gp = [];
 
 history = infbench_func(); % Retrieve history
 % history.scratch.output = output;
@@ -20,7 +23,9 @@ else
 end
 X_train = history.Output.X;
 y_train = history.Output.y;
-[post.gsKL,post.Mean,post.Cov,lnZ,lnZ_var,post.Mode] = ComputeAlgoStats(X_train,y_train,probstruct,compute_lnZ);
+if ~isempty(gpiter); gp = gpiter{end}; end
+[post.gsKL,post.Mean,post.Cov,lnZ,lnZ_var,post.Mode] = ...
+    ComputeAlgoStats(X_train,y_train,probstruct,compute_lnZ,[],gp);
 if compute_lnZ
     post.lnZ = lnZ;
     post.lnZ_var = lnZ_var;
@@ -48,7 +53,9 @@ for iIter = 1:Niter
         X_train = Xiter{iIter};
         y_train = yiter{iIter};
     end
-    [gsKL,Mean,Cov,lnZ,lnZ_var,Mode] = ComputeAlgoStats(X_train,y_train,probstruct,compute_lnZ);
+    if ~isempty(gpiter); gp = gpiter{iIter}; end
+    [gsKL,Mean,Cov,lnZ,lnZ_var,Mode] = ...
+        ComputeAlgoStats(X_train,y_train,probstruct,compute_lnZ,[],gp);
     if compute_lnZ
         history.Output.lnZs(iIter) = lnZ;
         history.Output.lnZs_var(iIter) = lnZ_var;

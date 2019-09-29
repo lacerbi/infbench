@@ -21,7 +21,12 @@ vbar = sum(fs2,2)/Ns;   % Average variance across samples
 if Ns > 1; vf = sum((fmu - fbar).^2,2)/(Ns-1); else; vf = 0; end  % Sample variance
 vtot = vf + vbar;       % Total variance
 
-acq = -(2*fbar + vtot + log(expm1(vtot)));
+% Compute MAXVAR acquisition function
+logexpm1fs2 = log(expm1(fs2));
+idx = isinf(logexpm1fs2);
+if any(idx(:)); logexpm1fs2(idx) = fs2(idx); end    
+acq = -(2*fmu + fs2 + logexpm1fs2);
+acq = logsumexp(acq,2) - log(Ns);
 
 % Regularization: penalize points where GP uncertainty is below threshold
 if TolVar > 0
@@ -35,5 +40,16 @@ acq = max(acq,-realmax);
 
 % Transposed output
 if transpose_flag; acq = acq'; end
+
+end
+
+%--------------------------------------------------------------------------
+function s = logsumexp(X,dim)
+%LOGSUMEXP Compute log(sum(exp(X))) while avoiding numerical underflow.
+
+y = max(X,[],dim);  % subtract the largest in each dim
+s = y+log(sum(exp(bsxfun(@minus,X,y)),dim));
+idx = isinf(y);
+if any(idx(:)); s(idx) = y(idx); end
 
 end

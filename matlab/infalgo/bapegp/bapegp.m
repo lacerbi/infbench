@@ -40,16 +40,20 @@ end
 % Shared options between BAPE and AGP
 defopts.Algorithm = 'bape';             % Algorithm ('bape' or 'agp')
 defopts.MaxFunEvals = D*100;            % Maximum number of fcn evals
-defopts.NsMax_gp = 0;                   % Max GP hyperparameter samples (0 = optimize)
+defopts.NsMax_gp = 80;                  % Max GP hyperparameter samples (0 = optimize)
 defopts.StopGPSampling = 200 + 10*D;    % Training set size for switching to GP hyperparameter optimization (if sampling)
 defopts.AcqFun = [];                    % Acquisition function
 defopts.Plot = 0;                       % Make diagnostic plots at each iteration
 defopts.FracExpand = 0.1;               % Expand search box by this amount
 defopts.ProposalFcn = @(x) agp_proposal(x,PLB,PUB); % Proposal fcn based on PLB and PUB (unused)
-defopts.TolGPVar = 0;                   % Regularization factor below this GP variance
+defopts.TolGPVar = 1e-4;                % Regularization factor below this GP variance
+defopts.Ninit = 10;                     % Initial design
+defopts.Nstep = 5;                      % Training points at each iteration
+defopts.Nsearch = 2^13;                 % Starting search points for acquisition fcn
+defopts.NoiseSize = [];                 % Base observation noise magnitude (standard deviation)
 
 % BAPE-only options
-defopts.Meanfun = 'const';              % GP mean function for BAPE (for AGP always zero)
+defopts.Meanfun = 'negquad';            % GP mean function for BAPE (for AGP always zero)
 
 % AGP-only options for mixture-of-Gaussians posterior approximation
 defopts.Ns = 2e4;                       % Number of MCMC samples to get approximate posterior
@@ -67,19 +71,16 @@ switch lower(options.Algorithm)
     case 'bape'
         if isempty(options.AcqFun)
             options.AcqFun = @acqbapeEV;
-        end       
-        
-        gp_meanfun = options.Meanfun;
+        end        
+        gp.meanfun = options.Meanfun;
         gpsample_flag = options.Plot;   % Sample posterior from GP only for visualization
         vbgmm_flag = false;             % Does not use GMM approximation
         
-    case 'agp'
-                
+    case 'agp'                
         if isempty(options.AcqFun)
             options.AcqFun = @acqagp;
-        end
-        
-        gp_meanfun = 'zero';    % Constant-zero mean function
+        end        
+        gp.meanfun = 'zero';    % Constant-zero mean function
         gpsample_flag = true;   % Sample posterior from GP
         vbgmm_flag = true;      % Builds GMM posterior approximation
         
@@ -88,17 +89,16 @@ switch lower(options.Algorithm)
         
 end
 
-gp_covfun = 'se';           % Squared exponential kernel
-gp_noisefun = [1 0 0];      % Constant noise
-
 % Convert AcqFun to function handle if passed as a string
 if ischar(options.AcqFun); options.AcqFun = str2func(options.AcqFun); end
 
-Ninit = 20;     % Initial design
-Nstep = 10;     % Training points at each iteration
-Nsearch = 2^13; % Starting search points for acquisition fcn
+Ninit = options.Ninit;
+Nstep = options.Nstep;
 
 % GPLITE model options
+gp.covfun = 'seard';    % Squared exponential kernel
+gp.noisefun = [1 0 0];  % Constant noise
+gp.outwarpfun = [];     % Output warping function (none)
 gpopts.Nopts = 1;       % Number of hyperparameter optimization runs
 gpopts.Ninit = 2^10;    % Initial design size for hyperparameter optimization
 gpopts.Thin = 5;        % Thinning for hyperparameter sampling (if sampling)
@@ -188,9 +188,9 @@ while 1
     X_gp = X(idx,:);
     y_gp = y_gp(idx);
     
-    % Train GP
-    hypprior = getGPhypprior(X_gp);    % Get prior over GP hyperparameters    
-    [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp_covfun,gp_meanfun,gp_noisefun,[],hypprior,[],gpopts);
+    % Train GP    
+    hypprior = getGPhypprior(gp,X_gp,y_gp,PUB-PLB,options);
+    [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp.covfun,gp.meanfun,gp.noisefun,[],hypprior,gpopts);
     
     % Sample from GP, if needed
     if gpsample_flag
@@ -264,25 +264,52 @@ while 1
     % Select new points
     fprintf(' Active sampling...');
     for iNew = 1:Nstep
+                
+        fprintf(' %d..',iNew);        
+        Nsearch = options.Nsearch;
         
-        if vbgmm_flag; Nsearch_rnd = floor(Nsearch/2); else Nsearch_rnd = Nsearch; end
-        
-        fprintf(' %d..',iNew);
         % Random uniform search inside search box
+        Nsearch_rnd = floor(Nsearch/2);
         width = max(X) - min(X);
         lb = min(X) - width*options.FracExpand; ub = max(X) + width*options.FracExpand;
         lb = max(LB,min(lb,PLB)); ub = min(UB,max(ub,PUB));
         [xnew,fval] = fminfill(@(x) options.AcqFun(x,vbmodel,gp,options),[],[],[],lb,ub,[],struct('FunEvals',Nsearch_rnd));
-        
+        Nsearch = Nsearch - Nsearch_rnd;
+
         if vbgmm_flag
-            Nsearch_vbgmm = Nsearch - Nsearch_rnd;
+            Nsearch_vbgmm = Nsearch;            
             % Random search sample from vbGMM
-            xrnd = vbgmmrnd(vbmodel,Nsearch_vbgmm)';
-            xrnd = bsxfun(@min,bsxfun(@max,LB,xrnd),UB);  % Force Xs inside hard bounds
-            frnd = options.AcqFun(xrnd,vbmodel,gp,options);
-            [frnd_min,idx] = min(frnd);        
-            if frnd_min < fval; xnew = xrnd(idx,:); fval = frnd_min; end
+            Xrnd = vbgmmrnd(vbmodel,Nsearch_vbgmm)';
+            Xrnd = bsxfun(@min,bsxfun(@max,LB,Xrnd),UB);  % Force Xs inside hard bounds
+        else
+            Nhpd = Nsearch;
+            HPDFrac = 0.8;
+            
+            hpd_min = HPDFrac/8;
+            hpd_max = HPDFrac;        
+            hpdfracs = sort([rand(1,4)*(hpd_max-hpd_min) + hpd_min,hpd_min,hpd_max]);
+            Nhpd_vec = diff(round(linspace(0,Nhpd,numel(hpdfracs)+1)));
+            D = size(X,2);
+            Xrnd = [];
+            for ii = 1:numel(hpdfracs)
+                if Nhpd_vec(ii) == 0; continue; end            
+                X_hpd = gethpd(X,y,hpdfracs(ii));
+                if isempty(X_hpd)
+                    [~,idxmax] = max(y);
+                    mubar = X(idxmax,:);
+                    Sigmabar = cov(X);
+                else
+                    mubar = mean(X_hpd,1);
+                    Sigmabar = cov(X_hpd,1);
+                end
+                if isscalar(Sigmabar); Sigmabar = Sigmabar*ones(D,D); end
+                Xrnd = [Xrnd; mvnrnd(mubar,Sigmabar,Nhpd_vec(ii))];
+            end
         end
+        frnd = options.AcqFun(Xrnd,vbmodel,gp,options);
+        [frnd_min,idx] = min(frnd);
+        % [frnd_min,fval]
+        if frnd_min < fval; xnew = Xrnd(idx,:); fval = frnd_min; end
 
         % Optimize from best point with CMA-ES
         insigma = (max(X) - min(X))'/sqrt(3);
@@ -302,7 +329,9 @@ while 1
                 ynew_gp = ynew - log(py);       % Log difference
         end
 
-        gp = gplite_post(gp,xnew,ynew_gp,[],[],[],[],1);   % Rank-1 update
+        if iNew < Nstep
+            gp = gplite_post(gp,xnew,ynew_gp,[],[],[],[],1);   % Rank-1 update
+        end
         
         % Plot new candidate points
         if options.Plot
@@ -371,18 +400,109 @@ lnZ_var = var(delta)/numel(delta);
 end
 
 %--------------------------------------------------------------------------
-function hypprior = getGPhypprior(X)
+function hypprior = getGPhypprior(gp,X,y,Prange,options)
 %GETGPHYPPRIOR Define empirical Bayes prior over GP hyperparameters.
 
-D = size(X,2);
+% Get high-posterior density dataset
+HPDFrac = 0.8;
+[X_hpd,y_hpd,hpd_range] = gethpd(X,y,HPDFrac);
+[N_hpd,D] = size(X_hpd);
+s2 = [];
+
+% Get number and info for hyperparameters
+[Ncov,covinfo] = gplite_covfun('info',X_hpd,gp.covfun,[],y_hpd);
+[Nnoise,noiseinfo] = gplite_noisefun('info',X_hpd,gp.noisefun,y_hpd,s2);
+[Nmean,meaninfo] = gplite_meanfun('info',X_hpd,gp.meanfun,y_hpd);
+if ~isempty(gp.outwarpfun)
+    [Noutwarp,outwarpinfo] = gp.outwarpfun('info',y_hpd);
+else
+    Noutwarp = 0;
+end
+meanfun = meaninfo.meanfun;     % Switch to number
+Nhyp = Ncov+Nnoise+Nmean+Noutwarp;
+
+% Initial GP hyperparameters
+
+% GP covariance hyperparameters
+hyp0 = zeros(Nhyp,1);
+hyp0(1:Ncov) = covinfo.x0;
+
+% GP noise hyperparameters
+hyp0(Ncov+(1:Nnoise)) = noiseinfo.x0;
+MinNoise = 1e-3;
+noisemult = [];
+
+% Assume function with small observation noise
+noisesize = max(options.NoiseSize,MinNoise);
+if isempty(noisesize); noisesize = MinNoise; end
+noisestd = 0.5;
+hyp0(Ncov+1) = log(noisesize);
+if ~isempty(noisemult); hyp0(Ncov+2) = log(noisemult); end
+
+% GP mean function hyperparameters
+hyp0(Ncov+Nnoise+(1:Nmean)) = meaninfo.x0;
+
+% GP output warping function hyperparameters
+if Noutwarp > 0; hyp0(Ncov+Nnoise+Nmean+(1:Noutwarp)) = outwarpinfo.x0; end
+
+% Change default bounds and set priors over hyperparameters
+LB_gp = NaN(1,Nhyp);
+UB_gp = NaN(1,Nhyp);
+LB_gp(Ncov+1) = log(MinNoise);     % Increase minimum noise
+
+switch meanfun
+    case 1
+        UB_gp(Ncov+Nnoise+1) = min(y_hpd);    % Lower maximum constant mean
+    case 4
+        TolSD = 0.1;
+        deltay = max(TolSD,min(D,max(y_hpd)-min(y_hpd)));
+        UB_gp(Ncov+Nnoise+1) = max(y_hpd)+deltay; 
+    case 6
+        hyp0(Ncov+Nnoise+1) = min(y);
+        UB_gp(Ncov+Nnoise+1) = min(y_hpd);    % Lower maximum constant mean
+    case 8
+end
+
+% Set priors over hyperparameters (might want to double-check this)
 hypprior = [];
-Nhyp = D+2;
 hypprior.mu = NaN(1,Nhyp);
 hypprior.sigma = NaN(1,Nhyp);
 hypprior.df = 3*ones(1,Nhyp);    % Broad Student's t prior
-hypprior.mu(1:D) = log(std(X));
-hypprior.sigma(1:D) = max(2,log(max(X)-min(X)) - log(std(X)));
-hypprior.mu(D+2) = log(1e-2);
-hypprior.sigma(D+2) = 0.5;
+
+% Broad prior that favors short length scales
+hypprior.mu(1:D) = log(0.05*Prange);
+hypprior.sigma(1:D) = log(10);
+
+% Hyperprior over observation noise
+hypprior.mu(Ncov+1) = log(noisesize);
+hypprior.sigma(Ncov+1) = noisestd;
+if ~isempty(noisemult)
+    hypprior.mu(Ncov+2) = log(noisemult);
+    hypprior.sigma(Ncov+2) = noisemultstd;    
+end
     
+hypprior.LB = LB_gp;
+hypprior.UB = UB_gp;
+
+end
+
+%--------------------------------------------------------------------------
+function [X_hpd,y_hpd,hpd_range] = gethpd(X,y,HPDFrac)
+%GETHPD Get high-posterior density dataset.
+
+if nargin < 3 || isempty(HPDFrac); HPDFrac = 0.8; end
+
+[N,D] = size(X);
+
+% Subsample high posterior density dataset
+[~,ord] = sort(y,'descend');
+N_hpd = round(HPDFrac*N);
+X_hpd = X(ord(1:N_hpd),:);
+if nargout > 1
+    y_hpd = y(ord(1:N_hpd));
+end
+if nargout > 2
+    hpd_range = max(X_hpd)-min(X_hpd);
+end
+
 end

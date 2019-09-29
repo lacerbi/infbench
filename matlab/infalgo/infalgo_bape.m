@@ -8,14 +8,16 @@ addpath(genpath([BaseFolder filesep() AlgoFolder]));
 algoptions.Algorithm = 'bape';
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.MaxIter = Inf;
-algoptions.Nsamples = 5e3;                 % Number of samples per iteration
-algoptions.GPsamples = 80;
+algoptions.NsMax_gp = 80;
 algoptions.AcqFun = @acqbapeEV;            % Exponentiated Variance acquisition function
 algoptions.SamplingMethod = 'parallel';    % MCMC sampler for approximate posterior
 algoptions.Plot = 0;                       % Make diagnostic plots at each iteration
 algoptions.NcompMax = 30;                  % Maximum number of mixture components
 algoptions.FracExpand = 0.1;               % Expand search box by this amount
-algoptions.Meanfun = 'const';
+
+% These modifications are necessary for BAPE to converge
+algoptions.Meanfun = 'negquad';             % Negative quadratic mean function
+algoptions.TolGPVar = 1e-4;                 % GP regularization
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -28,13 +30,9 @@ end
 % Options from current problem
 switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Plot = 1;
-    case {1,'base'}; algoset = 'base';           % Use defaults
-    case {2,'long'}; algoset = 'long'; algoptions.Nsamples = 2e4;
-    case {3,'negquad'}; algoset = 'negquad'; algoptions.Meanfun = 'negquad';
-    case {4,'nqdebug'}; algoset = 'nqdebug'; algoptions.Meanfun = 'negquad'; algoptions.Plot = 1;
-    case {5,'reg'}; algoset = 'reg'; algoptions.TolGPVar = 1e-4;
-    case {6,'nqreg'}; algoset = 'nqreg'; algoptions.Meanfun = 'negquad'; algoptions.TolGPVar = 1e-4;
-    case {7,'nqreg2'}; algoset = 'nqreg2'; algoptions.Meanfun = 'negquad'; algoptions.TolGPVar = 1e-4;
+    case {1,'base'}; algoset = 'base';           % Use good defaults
+    case {2,'original'}; algoset = 'original'; algoptions.Meanfun = 'const'; algoptions.TolGPVar = 0; algoptions.NsMax_gp = 0;        
+    case {3,'step1'}; algoset = 'step1'; algoptions.Nstep = 1;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -50,8 +48,8 @@ D = size(x0,2);
 % BAPE tends to diverge on unconstrained problems, try with hard bounds
 bounds_range = PUB - PLB;
 idx = ~isfinite(bounds_range);
-LB(idx) = PLB(idx) - 3*bounds_range(idx);
-UB(idx) = PUB(idx) + 3*bounds_range(idx);
+LB(idx) = PLB(idx) - 5*bounds_range(idx);
+UB(idx) = PUB(idx) + 5*bounds_range(idx);
 
 % Add log prior to function evaluation 
 % (BAPE is agnostic of the prior)
@@ -63,12 +61,20 @@ algo_timer = tic;
 TotalTime = toc(algo_timer);
 
 Niter = numel(probstruct.SaveTicks);
-%Nmax = numel(mu);
-%idx = probstruct.SaveTicks(probstruct.SaveTicks <= Nmax);
-%mu = mu(idx);
+
+N = [output.stats.N];
+Nmax = max(N);
+idx = probstruct.SaveTicks(probstruct.SaveTicks <= Nmax);
+gpiter = [];
+for ii = 1:numel(idx)
+    pos = find(N == idx(ii),1);    
+    if ~isempty(pos)
+        gpiter{end+1} = output.stats(pos).gp;
+    end
+end
 
 [history,post] = StoreAlgoResults(...
-    probstruct,[],Niter,X,y,[],[],[],[],TotalTime);
+    probstruct,[],Niter,X,y,[],[],[],[],TotalTime,gpiter);
 
 stats = output.stats;
 
@@ -84,26 +90,5 @@ history.Output.stats = stats;
 for i = 1:numel(history.Output.stats)
     history.Output.stats(i).vbmodel = [];
 end
-
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [gsKL,Mean,Cov,Mode] = computeStats(stats,probstruct)
-%COMPUTE_STATS Compute additional statistics.
-    
-vbmodel = stats.vbmodel;
-
-% Compute Gaussianized symmetric KL-divergence with ground truth
-Ns_moments = 1e6;   Nb = 20;
-xx = [];
-for i = 1:Nb; xx = [xx; vbgmmrnd(vbmodel,Ns_moments/Nb)']; end
-Mean = mean(xx,1);
-Cov = cov(xx);
-[kl1,kl2] = mvnkl(Mean,Cov,probstruct.Post.Mean,probstruct.Post.Cov);
-gsKL = 0.5*(kl1 + kl2);
-
-% Compute mode
-opts = optimoptions('fminunc','GradObj','off','Display','off');
-Mode = fminunc(@(x) -vbgmmpdf(vbmodel,x')',stats.mode,opts);
 
 end
