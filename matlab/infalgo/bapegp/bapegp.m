@@ -163,7 +163,7 @@ end
 
 
 %% Main loop
-iter = 1;
+iter = 1; X_old = []; y_old = [];
 while 1
     fprintf('Iter %d...', iter);
     N = size(X,1);
@@ -190,7 +190,15 @@ while 1
     
     % Train GP    
     hypprior = getGPhypprior(gp,X_gp,y_gp,PUB-PLB,options);
-    [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp.covfun,gp.meanfun,gp.noisefun,[],hypprior,gpopts);
+    try
+        [gp,hyp] = gplite_train(hyp,Ns_gp,X_gp,y_gp,gp.covfun,gp.meanfun,gp.noisefun,[],hypprior,gpopts);
+    catch
+        % Failed GP training, quit with results from last valid iteration
+        X = X_old;
+        y = y_old;
+        exitflag = -1;
+        break;
+    end
     
     % Sample from GP, if needed
     if gpsample_flag
@@ -262,6 +270,8 @@ while 1
     if N >= options.MaxFunEvals; break; end
     
     % Select new points
+    X_old = X;  y_old = y;
+    
     fprintf(' Active sampling...');
     for iNew = 1:Nstep
                 
@@ -312,7 +322,9 @@ while 1
         if frnd_min < fval; xnew = Xrnd(idx,:); fval = frnd_min; end
 
         % Optimize from best point with CMA-ES
-        insigma = (max(X) - min(X))'/sqrt(3);
+        X_hpd = gethpd(gp.X,gp.y,0.8);
+        Sigma = cov(X_hpd,1);
+        insigma = sqrt(diag(Sigma));
         [xnew_cmaes,fval_cmaes] = cmaes_modded(func2str(options.AcqFun),xnew',insigma,cmaes_opts,vbmodel,gp,options,1);
         if fval_cmaes < fval; xnew = xnew_cmaes'; end
         

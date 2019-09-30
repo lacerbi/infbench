@@ -62,6 +62,7 @@ TotalTime = toc(algo_timer);
 
 Niter = numel(probstruct.SaveTicks);
 
+% Collect GPs
 N = [output.stats.N];
 Nmax = max(N);
 idx = probstruct.SaveTicks(probstruct.SaveTicks <= Nmax);
@@ -70,6 +71,8 @@ for ii = 1:numel(idx)
     pos = find(N == idx(ii),1);    
     if ~isempty(pos)
         gpiter{end+1} = output.stats(pos).gp;
+    else
+        gpiter{end+1} = [];
     end
 end
 
