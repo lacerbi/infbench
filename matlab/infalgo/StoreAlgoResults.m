@@ -47,13 +47,13 @@ end
 
 for iIter = 1:Niter
     if isempty(Xiter) || isempty(yiter)
-        X_train = history.Output.X(1:N(iIter),:);
-        y_train = history.Output.y(1:N(iIter));
+        X_train = history.Output.X(1:min(N(iIter),end),:);
+        y_train = history.Output.y(1:min(N(iIter),end));
     else
-        X_train = Xiter{iIter};
-        y_train = yiter{iIter};
+        X_train = Xiter{min(iIter,end)};
+        y_train = yiter{min(iIter,end)};
     end
-    if ~isempty(gpiter); gp = gpiter{iIter}; end
+    if ~isempty(gpiter); gp = gpiter{min(iIter,end)}; end
     [gsKL,Mean,Cov,lnZ,lnZ_var,Mode] = ...
         ComputeAlgoStats(X_train,y_train,probstruct,compute_lnZ,[],gp);
     if compute_lnZ
