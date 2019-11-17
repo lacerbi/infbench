@@ -155,6 +155,8 @@ switch algoset
     case {308,'acqmidtstep1_95'}; algoset = 'acqmidtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.95;
     case {309,'acqmidtstep1_100'}; algoset = 'acqmidtstep1_100'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 1;
     case {310,'dtstep1_99'}; algoset = 'dtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99;
+    case {311,'dtstep1_95'}; algoset = 'dtstep1_95'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.95;
+    case {312,'dtstep1_100'}; algoset = 'dtstep1_100'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 1;
             
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
