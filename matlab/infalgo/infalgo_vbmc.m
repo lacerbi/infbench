@@ -20,6 +20,7 @@ algoptions.Diagnostics = 'on';
 algoptions.InitDesign = 'plausible';    % Initial design uniform in plausible box
 algoptions.EmpiricalGPPrior = 'yes';
 algoptions.WarmupNoImproThreshold = Inf; 
+algoptions.TolStableWarmup = 15;
 algoptions.TolStableExceptions = 1/8;
 algoptions.TolStableCount = 40;
 algoptions.WarmupCheckMax = false;
@@ -131,7 +132,6 @@ switch algoset
     case {55,'acq2hedge'}; algoset = 'acq2hedge'; algoptions.AcqHedge = 1; algoptions.SearchAcqFcn = {@acqfreg_vbmc,@acqmireg_vbmc}; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {56,'acq2shapinghedge'}; algoset = 'acq2shapinghedge'; algoptions.AcqHedge = 1; algoptions.SearchAcqFcn = {@acqfreg_vbmc,@acqmireg_vbmc}; algoptions.NoiseShaping = 1; algoptions.NoiseShapingThreshold = '50*nvars'; algoptions.NoiseShapingFactor = 0.2; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {57,'acq2new'}; algoset = 'acq2new'; algoptions.SearchAcqFcn = {@acqmireg_vbmc,@acqfreg_vbmc}; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
-    case {58,'step1mi'}; algoset = 'acqstep1mi'; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {60,'step1migps'}; algoset = 'acqstep1migps'; algoptions.FunEvalsPerIter = 1; algoptions.FunEvalStart = 'D'; algoptions.KfunMax = @(N) N; algoptions.SeparateSearchGP = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {61,'lowent'}; algoset = 'lowent'; algoptions.NSentFine = '@(K) 2^12*K'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
         
@@ -151,6 +151,10 @@ switch algoset
     case {304,'step5'}; algoset = 'step5'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5;
     case {305,'acqmistep5'}; algoset = 'acqmistep5'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5; algoptions.SearchAcqFcn = @acqmireg_vbmc;
     case {306,'acq2step1'}; algoset = 'acq2step1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = {@acqfreg_vbmc,@acqmireg_vbmc};
+    case {307,'acqmidtstep1_99'}; algoset = 'acqmidtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99;
+    case {308,'acqmidtstep1_95'}; algoset = 'acqmidtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.95;
+    case {309,'acqmidtstep1_100'}; algoset = 'acqmidtstep1_100'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 1;
+    case {310,'dtstep1_99'}; algoset = 'dtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99;
             
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
@@ -166,7 +170,8 @@ if ~isempty(probstruct.Noise) || probstruct.IntrinsicNoisy
     if isempty(NoiseEstimate); NoiseEstimate = 1; end
     algoptions.SpecifyTargetNoise = true;
     % algoptions.NoiseSize = NoiseEstimate(1);
-    algoptions.TolStableIters = ceil(algoptions.TolStableIters*1.5);
+    algoptions.TolStableCount = ceil(algoptions.TolStableCount*1.5);
+    algoptions.TolStableWarmup = algoptions.TolStableWarmup*2;
 else
     algoptions.UncertaintyHandling = 'off';
 end

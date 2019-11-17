@@ -41,17 +41,17 @@ if isempty(probstruct.NoiseSigma)
         probstruct.NoiseSigma = 0; % No noise
     else
         switch(probstruct.Noise)
-            case 'lo'; probstruct.NoiseSigma = 0.25; % Low noise
-            case 'me'; probstruct.NoiseSigma = 1; % Medium noise
-            case 'hi'; probstruct.NoiseSigma = 4; % High noise
+            case 'lo'; probstruct.NoiseSigma = 1; % Low noise
+            case 'me'; probstruct.NoiseSigma = 2; % Medium noise
+            case 'hi'; probstruct.NoiseSigma = 5; % High noise
             case 'helo'     % Low heteroskedastic noise
-                probstruct.NoiseSigma = 0.25;
+                probstruct.NoiseSigma = 1;
                 probstruct.NoiseIncrement = 0.05;
             case 'heme'     % Medium heteroskedastic noise
                 probstruct.NoiseSigma = 1;
                 probstruct.NoiseIncrement = 0.1;
             case 'hehi'     % High heteroskedastic noise
-                probstruct.NoiseSigma = 4;
+                probstruct.NoiseSigma = 1;
                 probstruct.NoiseIncrement = 0.2;
         end
         if isempty(probstruct.NoiseEstimate)
@@ -64,9 +64,9 @@ end
 
 % Maximum function evaluations
 probstruct.MaxFunEvals = probstruct.MaxFunEvals*options.MaxFunEvalMultiplier;
-if probstruct.NoiseSigma > 0    % Increased budget for noisy targets
-    probstruct.MaxFunEvals = probstruct.MaxFunEvals*2;
-end
+% if probstruct.NoiseSigma > 0    % Increased budget for noisy targets
+%     probstruct.MaxFunEvals = probstruct.MaxFunEvals*2;
+% end
 probstruct.TotalMaxFunEvals = probstruct.MaxFunEvals;
 probstruct.Verbose = evalbool(options.Display);
 
