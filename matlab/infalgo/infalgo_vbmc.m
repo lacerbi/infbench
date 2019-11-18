@@ -157,7 +157,11 @@ switch algoset
     case {310,'dtstep1_99'}; algoset = 'dtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99;
     case {311,'dtstep1_95'}; algoset = 'dtstep1_95'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.95;
     case {312,'dtstep1_100'}; algoset = 'dtstep1_100'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 1;
-            
+    case {321,'step1beta'}; algoset = 'step1beta'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.ELCBOWeight = @(N) sqrt(0.2*2*log(probstruct.D*N^2*pi^2/(6*0.1))); algoptions.Plot = 1;
+    case {322,'step5beta'}; algoset = 'step5beta'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5; algoptions.ELCBOWeight = @(N) sqrt(0.2*2*log(probstruct.D*N^2*pi^2/(6*0.1))); algoptions.Plot = 1;
+    case {323,'step5K'}; algoset = 'step5K'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5; algoptions.KfunMax = @(N) min(2,max(2,round(0.5*sqrt(N)))); algoptions.Plot = 1;
+    case {324,'acqmidtstep1K_99'}; algoset = 'acqmidtstep1K_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99; algoptions.KfunMax = @(N) min(Inf,max(2,floor(0.5*sqrt(N)))); algoptions.Plot = 1;
+                    
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
         
