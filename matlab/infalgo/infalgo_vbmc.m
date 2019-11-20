@@ -37,6 +37,7 @@ algoptions.NSentFine = @(K) 2^15*K;
 algoptions.NSentBoost = [];
 algoptions.NSentFastBoost = [];
 algoptions.NSentFineBoost = [];
+algoptions.ActiveVariationalSamples = 0;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -170,6 +171,11 @@ switch algoset
                     
     % Entropy tests   
     case {401,'ent1'}; algoset = 'ent1'; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
+    case {402,'ent2'}; algoset = 'ent2'; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
+    case {403,'ent3'}; algoset = 'ent3'; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = 0; algoptions.NSentFineBoost = @(K) 2^12*K;
+    case {404,'ent2mcmc50'}; algoset = 'ent2mcmc50'; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.ActiveVariationalSamples = 50;
+    case {405,'ent2midtmcmc50'}; algoset = 'ent2midtmcmc50'; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.ActiveVariationalSamples = 50;
+    case {406,'ent2midt'}; algoset = 'ent2midt'; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
         
         
     % Variational active sampling
