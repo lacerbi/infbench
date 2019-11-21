@@ -178,6 +178,7 @@ switch algoset
     case {406,'ent2midt'}; algoset = 'ent2midt'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
     case {407,'ent2midtmcmc50step1'}; algoset = 'ent2midtmcmc50step1'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.ActiveVariationalSamples = 50;
     case {408,'ent2midtstep1'}; algoset = 'ent2midtstep1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
+    case {409,'ent1midtstep1'}; algoset = 'ent1midtstep1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
         
         
     % Variational active sampling
