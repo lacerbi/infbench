@@ -38,6 +38,7 @@ algoptions.NSentBoost = [];
 algoptions.NSentFastBoost = [];
 algoptions.NSentFineBoost = [];
 algoptions.ActiveVariationalSamples = 0;
+algoptions.FixedMaxMeanGP = false;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -141,7 +142,7 @@ switch algoset
     case {57,'acq2new'}; algoset = 'acq2new'; algoptions.SearchAcqFcn = {@acqmireg_vbmc,@acqfreg_vbmc}; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {60,'step1migps'}; algoset = 'acqstep1migps'; algoptions.FunEvalsPerIter = 1; algoptions.FunEvalStart = 'D'; algoptions.KfunMax = @(N) N; algoptions.SeparateSearchGP = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {61,'lowent'}; algoset = 'lowent'; algoptions.NSentFine = '@(K) 2^12*K'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-        
+    case {62,'mapgp'}; algoset = 'mapgp'; algoptions = newdefaults; algoptions.FixedMaxMeanGP = true;
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
