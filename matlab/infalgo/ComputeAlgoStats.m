@@ -1,9 +1,10 @@
-function [gsKL,Mean,Cov,lnZ,lnZ_var,Mode] = ComputeAlgoStats(X,y,probstruct,compute_lnZ,Ns_moments,gp)
+function [gsKL,Mean,Cov,lnZ,lnZ_var,Mode] = ComputeAlgoStats(X,y,probstruct,compute_lnZ,Ns_moments,gp,s2)
 %COMPUTEALGOSTATS Compute GP model-based statistics from given training set.
     
 if nargin < 4 || isempty(compute_lnZ); compute_lnZ = false; end
 if nargin < 5 || isempty(Ns_moments); Ns_moments = 2e4; end
 if nargin < 6; gp = []; end
+if nargin < 7; s2 = []; end
 
 try
 
@@ -17,9 +18,14 @@ try
         % Compute Gaussianized symmetric KL-divergence with ground truth
         gp.X = X;
         gp.y = y;
+        if ~isempty(s2); gp.s2 = s2; end
         gp.meanfun = 4;         % Negative quadratic mean fcn
         gp.covfun = 1;          % SE ard covariance
-        gp.noisefun = [1 0 0];  % Gaussian observation noise
+        if ~isempty(s2)
+            gp.noisefun = [1 1];  % Provided noise            
+        else
+            gp.noisefun = [1 0];  % Gaussian observation noise
+        end
     else
         gp = gplite_post(gp);   % Fill in GP
     end

@@ -255,6 +255,8 @@ t2 = toc(timer2);
 
 % Check that starting point is inside current bounds
 hyp_start = min(max(hyp_start',LB+eps(LB)),UB-eps(UB))';
+idx_fixed = (LB == UB);
+hyp_start(idx_fixed) = LB(idx_fixed);
 
 logp_prethin = [];  % Log posterior of samples
 
