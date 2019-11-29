@@ -147,6 +147,7 @@ switch algoset
     case {62,'mapgp'}; algoset = 'mapgp'; algoptions = newdefaults; algoptions.FixedMaxMeanGP = true;
     case {63,'mapgpiso'}; algoset = 'mapgpiso'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfixiso';
     case {64,'mapgp2'}; algoset = 'mapgp2'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix';
+    case {65,'mapgp3'}; algoset = 'mapgp3'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainNinit = 256; algoptions.GPTrainInitMethod = 'rand';
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -192,6 +193,7 @@ switch algoset
     case {415,'ent1midtstep1mc'}; algoset = 'ent1midtstep1mc'; algoptions = newdefaults; algoptions.NSgpMaxMain = 2; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
     case {416,'ent2midtstep1mc'}; algoset = 'ent2midtstep1mc'; algoptions = newdefaults; algoptions.NSgpMaxMain = 2; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
     case {417,'ent2midtstep1mapgp'}; algoset = 'ent2midtstep1mapgp'; algoptions = newdefaults; algoptions.FixedMaxMeanGP = true; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
+    case {418,'ent2mapgp'}; algoset = 'ent2mapgp'; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainNinit = 256; algoptions.GPTrainInitMethod = 'rand';
                 
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
