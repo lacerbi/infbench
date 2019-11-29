@@ -39,6 +39,7 @@ algoptions.NSentFastBoost = [];
 algoptions.NSentFineBoost = [];
 algoptions.ActiveVariationalSamples = 0;
 algoptions.FixedMaxMeanGP = false;
+algoptions.GPTrainNinit = 1024;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -143,6 +144,7 @@ switch algoset
     case {60,'step1migps'}; algoset = 'acqstep1migps'; algoptions.FunEvalsPerIter = 1; algoptions.FunEvalStart = 'D'; algoptions.KfunMax = @(N) N; algoptions.SeparateSearchGP = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {61,'lowent'}; algoset = 'lowent'; algoptions.NSentFine = '@(K) 2^12*K'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
     case {62,'mapgp'}; algoset = 'mapgp'; algoptions = newdefaults; algoptions.FixedMaxMeanGP = true;
+    case {63,'mapgpiso'}; algoset = 'mapgpiso'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfixiso';
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -187,6 +189,7 @@ switch algoset
     case {414,'ent1midtupmcmc50'}; algoset = 'ent1midtupmcmc50'; algoptions = newdefaults; algoptions.Plot = 1; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.ActiveVariationalSamples = 50;
     case {415,'ent1midtstep1mc'}; algoset = 'ent1midtstep1mc'; algoptions = newdefaults; algoptions.NSgpMaxMain = 2; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
     case {416,'ent2midtstep1mc'}; algoset = 'ent2midtstep1mc'; algoptions = newdefaults; algoptions.NSgpMaxMain = 2; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
+    case {417,'ent2midtstep1mapgp'}; algoset = 'ent2midtstep1mapgp'; algoptions = newdefaults; algoptions.FixedMaxMeanGP = true; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
                 
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
