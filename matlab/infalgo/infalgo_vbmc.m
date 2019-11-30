@@ -10,7 +10,9 @@ algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 % VBMC old defaults -- some of these may have changed
 algoptions.FunEvalsPerIter = 5;
 algoptions.AcqFcn = '@vbmc_acqskl';
+algoptions.SearchAcqFcn = '@acqfreg_vbmc';
 algoptions.gpMeanFun = 'negquad';
+algoptions.SearchOptimizer = 'cmaes';
 algoptions.MinIter = 0;     % No limits on iterations
 algoptions.MaxIter = Inf;
 algoptions.MinFinalComponents = 0;
@@ -148,7 +150,8 @@ switch algoset
     case {63,'mapgpiso'}; algoset = 'mapgpiso'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfixiso';
     case {64,'mapgp2'}; algoset = 'mapgp2'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix';
     case {65,'mapgp3'}; algoset = 'mapgp3'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainNinit = 256; algoptions.GPTrainInitMethod = 'rand';
-    case {65,'mapgp4'}; algoset = 'mapgp4'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand';
+    case {66,'mapgp4'}; algoset = 'mapgp4'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.Plot = 0;
+    case {67,'mapgp5'}; algoset = 'mapgp5'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.Plot = 0; algoptions.SearchAcqFcn = '@acqfreglog_vbmc'; % algoptions.SearchOptimizer = 'bads'; algoptions.SearchMaxFunEvals = '50*nvars';
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
