@@ -46,6 +46,8 @@ algoptions.GPTrainNinit = 1024;
 algoptions.DetEntropyAlpha = 0;
 algoptions.ActiveSampleFullUpdate = false;
 algoptions.GPTrainInitMethod = 'sobol';
+algoptions.VariationalInitRepo = false;
+algoptions.MaxIterStochastic = Inf;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -189,6 +191,8 @@ switch algoset
 %     case {324,'acqmidtstep1K_99'}; algoset = 'acqmidtstep1K_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99; algoptions.KfunMax = @(N) min(Inf,max(2,floor(0.5*sqrt(N)))); algoptions.Plot = 0;
      case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc;
      case {303,'acqmiup'}; algoset = 'acqmiup'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1;
+     case {304,'acqmiupfast'}; algoset = 'acqmiupfast'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D';
+     case {305,'acqmiupfastalpha'}; algoset = 'acqmiupfastalpha'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D'; algoptions.UpdateRandomAlpha = 1;
                     
     % Entropy tests   
 %     case {401,'ent1'}; algoset = 'ent1'; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
@@ -217,7 +221,7 @@ switch algoset
      case {424,'midtup'}; algoset = 'midtup'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc;
      case {425,'midt'}; algoset = 'midt'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmidtreg_vbmc;
 %     case {424,'up'}; algoset = 'upalpha0.5'; algoptions = newdefaults; algoptions.Plot = 1; algoptions.gpMeanFun = 'negquadfix'; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.ActiveSampleFullUpdate = 1; algoptions.DetEntropyAlpha = 0.5;
-%     case {425,'ent1midtmapgpfastup'}; algoset = 'ent1midtstep1mapgpfastup'; algoptions = newdefaults; algoptions.Plot = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '100*D'; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand';
+%     case {425,'ent1midtmapgpfastup'}; algoset = 'ent1midtstep1mapgpfastup'; algoptions = newdefaults; algoptions.Plot = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '100*D'; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc;
 %     case {431,'ent1midtmapgpfastupa0.5'}; algoset = 'ent1midtstep1mapgpfastup'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '100*D'; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.DetEntropyAlpha = 0;
 %     case {432,'ent1midtmapgpupa0.5'}; algoset = 'ent1midtstep1mapgpfastup'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.DetEntropyAlpha = 0;
     
