@@ -164,7 +164,7 @@ switch algoset
     case {66,'mapgp4'}; algoset = 'mapgp4'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.Plot = 0;
     case {67,'mapgp5'}; algoset = 'mapgp5'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.Plot = 0; algoptions.SearchAcqFcn = '@acqfreglog_vbmc'; % algoptions.SearchOptimizer = 'bads'; algoptions.SearchMaxFunEvals = '50*nvars';
     case {68,'mapgp2ent1'}; algoset = 'mapgp2ent1'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;        
-    case {69,'gpfast'}; algoset = 'gpfast'; algoptions = newdefaults; algoptions.GPTrainNinitFinal = 64;
+    case {69,'gpfast'}; algoset = 'gpfast'; algoptions = newdefaults; algoptions.GPTrainNinitFinal = 64; algoptions.MaxIterStochastic = '100*(2+nvars)';
 
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
