@@ -43,6 +43,7 @@ algoptions.NSentFineBoost = [];
 algoptions.ActiveVariationalSamples = 0;
 algoptions.FixedMaxMeanGP = false;
 algoptions.GPTrainNinit = 1024;
+algoptions.GPTrainNinitFinal = 1024;
 algoptions.DetEntropyAlpha = 0;
 algoptions.ActiveSampleFullUpdate = false;
 algoptions.GPTrainInitMethod = 'sobol';
@@ -162,8 +163,9 @@ switch algoset
     case {65,'mapgp3'}; algoset = 'mapgp3'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainNinit = 256; algoptions.GPTrainInitMethod = 'rand';
     case {66,'mapgp4'}; algoset = 'mapgp4'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.Plot = 0;
     case {67,'mapgp5'}; algoset = 'mapgp5'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.Plot = 0; algoptions.SearchAcqFcn = '@acqfreglog_vbmc'; % algoptions.SearchOptimizer = 'bads'; algoptions.SearchMaxFunEvals = '50*nvars';
-    case {68,'mapgp2ent1'}; algoset = 'mapgp2ent1'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
-        
+    case {68,'mapgp2ent1'}; algoset = 'mapgp2ent1'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;        
+    case {69,'gpfast'}; algoset = 'gpfast'; algoptions = newdefaults; algoptions.GPTrainNinitFinal = 64;
+
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
     case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults;
@@ -191,7 +193,7 @@ switch algoset
 %     case {324,'acqmidtstep1K_99'}; algoset = 'acqmidtstep1K_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99; algoptions.KfunMax = @(N) min(Inf,max(2,floor(0.5*sqrt(N)))); algoptions.Plot = 0;
      case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc;
      case {303,'acqmiup'}; algoset = 'acqmiup'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1;
-     case {304,'acqmiupfast'}; algoset = 'acqmiupfast'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D';
+     case {304,'acqmiupfast'}; algoset = 'acqmiupfast'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D'; algoptions.GPTrainNinitFinal = 64; algoptions.MaxIterStochastic = '100*(2+nvars)';
      case {305,'acqmiupfastalpha'}; algoset = 'acqmiupfastalpha'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D'; algoptions.UpdateRandomAlpha = 1;
                     
     % Entropy tests   
