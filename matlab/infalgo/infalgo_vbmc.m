@@ -43,6 +43,9 @@ algoptions.NSentFineBoost = [];
 algoptions.ActiveVariationalSamples = 0;
 algoptions.FixedMaxMeanGP = false;
 algoptions.GPTrainNinit = 1024;
+algoptions.DetEntropyAlpha = 0;
+algoptions.ActiveSampleFullUpdate = false;
+algoptions.GPTrainInitMethod = 'sobol';
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -84,6 +87,11 @@ newdefaults.TolStableExcptFrac = 0.2;
 newdefaults.TolStableCount = 50;
 newdefaults.WarmupCheckMax = true;
 newdefaults.SGDStepSize = 0.005;
+newdefaults.NSentFine = '@(K) 2^12*K';
+newdefaults.NSentFast = 0;
+newdefaults.gpMeanFun = 'negquadfix';
+newdefaults.GPTrainInitMethod = 'rand';
+
 
 % Options from current problem
 switch algoset
@@ -156,7 +164,7 @@ switch algoset
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
-    case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults; algoptions.Plot = 1;
+    case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults;
     case {102,'newdef3'}; algoset = 'newdef3'; algoptions = newdefaults;
 
     % Noise
@@ -203,6 +211,11 @@ switch algoset
     case {420,'ent2midtstep1mapgpfast'}; algoset = 'ent2midtstep1mapgpfast'; algoptions = newdefaults; algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '100*D'; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand';
     case {421,'ent2midtstep1mapgpfastmu'}; algoset = 'ent2midtstep1mapgpfastmu'; algoptions = newdefaults; algoptions.VariableMeans = false; algoptions.Warmup = false; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D'; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSent = 0; algoptions.NSentBoost = @(K) 100*K; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainNinit = 256; algoptions.GPTrainInitMethod = 'rand';
     case {422,'ent1midtstep1mapgpfast'}; algoset = 'ent1midtstep1mapgpfast'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '100*D'; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand';
+    case {423,'ent1mapgpup'}; algoset = 'ent1mapgpup'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = 1;
+    case {424,'ent10.5mapgpup'}; algoset = 'ent10.5mapgpup'; algoptions = newdefaults; algoptions.Plot = 1; algoptions.gpMeanFun = 'negquadfix'; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.ActiveSampleFullUpdate = 1; algoptions.DetEntropyAlpha = 0.5;
+    case {425,'ent1midtmapgpfastup'}; algoset = 'ent1midtstep1mapgpfastup'; algoptions = newdefaults; algoptions.Plot = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '100*D'; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand';
+    case {431,'ent1midtmapgpfastupa0.5'}; algoset = 'ent1midtstep1mapgpfastup'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '100*D'; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.DetEntropyAlpha = 0;
+    case {432,'ent1midtmapgpupa0.5'}; algoset = 'ent1midtstep1mapgpfastup'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainInitMethod = 'rand'; algoptions.DetEntropyAlpha = 0;
     
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
