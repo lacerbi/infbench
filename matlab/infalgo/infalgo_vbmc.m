@@ -172,6 +172,8 @@ switch algoset
     case {70,'gpfast2'}; algoset = 'gpfast2'; algoptions = newdefaults; algoptions.GPSampleThin = 1;
     case {71,'gpfast3'}; algoset = 'gpfast3'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100;
     case {72,'gpfast3up'}; algoset = 'gpfast3up'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-4;
+    case {73,'gpfast4'}; algoset = 'gpfast4'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100;
+    case {74,'gpfast3b'}; algoset = 'gpfast3b'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100;
 
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
