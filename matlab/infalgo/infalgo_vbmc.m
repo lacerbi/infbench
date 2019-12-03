@@ -180,6 +180,7 @@ switch algoset
     case {76,'gpfast5up'}; algoset = 'gpfast5up'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100; algoptions.ActiveSampleFullUpdate = 1;
     case {77,'gpfast5upalpha'}; algoset = 'gpfast5upalpha'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100; algoptions.ActiveSampleFullUpdate = 1; algoptions.UpdateRandomAlpha = 1;
     case {78,'gpfast3c'}; algoset = 'gpfast3c'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-4; algoptions.GPTolOptMCMC = 1e-3;
+    case {79,'gpfast3d'}; algoset = 'gpfast3d'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2;
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
