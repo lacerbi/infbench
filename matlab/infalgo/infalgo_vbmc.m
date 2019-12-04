@@ -100,6 +100,8 @@ newdefaults.GPTrainInitMethod = 'rand';
 newdefaults.GPTrainNinitFinal = 64;
 newdefaults.MaxIterStochastic = '100*(2+nvars)';
 newdefaults.GPSampleThin = 1;
+newdefaults.GPTolOpt = 1e-5;
+newdefaults.GPTolOptMCMC = 1e-2;
 
 
 % Options from current problem
@@ -181,8 +183,9 @@ switch algoset
     case {78,'gpfast3c'}; algoset = 'gpfast3c'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-4; algoptions.GPTolOptMCMC = 1e-3;
     case {79,'gpfast3d'}; algoset = 'gpfast3d'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; 
     case {80,'gpfast3e'}; algoset = 'gpfast3e'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.SearchCacheFrac = 0.01; algoptions.StopWarmupReliability = 100;
-    case {81,'gpfast4'}; algoset = 'gpfast4'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100;
-    case {82,'gpfast5e'}; algoset = 'gpfast3e'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.SearchCacheFrac = 0.01;
+    case {81,'gpfast4'}; algoset = 'gpfast4'; algoptions = newdefaults; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100;
+    case {82,'gpfast5e'}; algoset = 'gpfast3e'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchCacheFrac = 0.01;
+    case {83,'gpfast3f'}; algoset = 'gpfast3f'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01; algoptions.StopWarmupReliability = 100; algoptions.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
