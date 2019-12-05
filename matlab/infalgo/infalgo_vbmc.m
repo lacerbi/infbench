@@ -52,6 +52,8 @@ algoptions.MaxIterStochastic = Inf;
 algoptions.GPSampleThin = 5;
 algoptions.GPTolOpt = 1e-6;
 algoptions.GPTolOptMCMC = 0.1;
+algoptions.StopWarmupReliability = Inf;
+algoptions.WarmupKeepThresholdFalseAlarm = [];
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -102,7 +104,8 @@ newdefaults.MaxIterStochastic = '100*(2+nvars)';
 newdefaults.GPSampleThin = 1;
 newdefaults.GPTolOpt = 1e-5;
 newdefaults.GPTolOptMCMC = 1e-2;
-
+newdefaults.StopWarmupReliability = 100;
+newdefaults.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
 
 % Options from current problem
 switch algoset
@@ -177,17 +180,16 @@ switch algoset
     case {71,'gpfast3'}; algoset = 'gpfast3'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100;
     case {72,'gpfast3up'}; algoset = 'gpfast3up'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-4;
     case {74,'gpfast3b'}; algoset = 'gpfast3b'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-4; algoptions.GPTolOptMCMC = 1e-3; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100;
-    case {75,'gpfast5'}; algoset = 'gpfast5'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100;
     case {76,'gpfast5up'}; algoset = 'gpfast5up'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100; algoptions.ActiveSampleFullUpdate = 1;
     case {77,'gpfast5upalpha'}; algoset = 'gpfast5upalpha'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-4; algoptions.SearchMaxFunEvals = '200*D'; algoptions.StopWarmupReliability = 100; algoptions.ActiveSampleFullUpdate = 1; algoptions.UpdateRandomAlpha = 1;
     case {78,'gpfast3c'}; algoset = 'gpfast3c'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-4; algoptions.GPTolOptMCMC = 1e-3;
     case {79,'gpfast3d'}; algoset = 'gpfast3d'; algoptions = newdefaults; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; 
     case {80,'gpfast3e'}; algoset = 'gpfast3e'; algoptions = newdefaults; algoptions.StopWarmupReliability = 100;
     case {81,'gpfast4'}; algoset = 'gpfast4'; algoptions = newdefaults; algoptions.StopWarmupReliability = 100; algoptions.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
-    case {82,'gpfast5f'}; algoset = 'gpfast5f'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.StopWarmupReliability = 100; algoptions.WarmupKeepThresholdFalseAlarm = '50*(D+2)'; algoptions.SearchCacheFrac = 0.01;
-    case {83,'gpfast3f'}; algoset = 'gpfast3f'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01; algoptions.StopWarmupReliability = 100; algoptions.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
-    case {82,'gpfast6'}; algoset = 'gpfast6'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.StopWarmupReliability = 100; algoptions.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
-        
+    case {82,'gpfast5'}; algoset = 'gpfast5'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01;
+    case {83,'gpfast6'}; algoset = 'gpfast6'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01; algoptions.SearchMaxFunEvals = '500*(D+2)';
+    case {84,'gpfast7'}; algoset = 'gpfast7'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+    
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
     case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults;
