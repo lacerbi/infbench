@@ -126,12 +126,12 @@ switch lower(type)
                     case 'control'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
                     case {'newdef'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-new';
                     case {'outwarp5','step1','step5'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
-                    case {'gpfast3d','newdef2'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
+                    case {'gpfast4','newdef2'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
-                    case {'newdef3','oldsettings'}; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
+                    case {'newdef3','oldsettings','gpfast5'}; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'test'; defaults.color = [120 100 0]/255; defaults.marker = '>'; defaults.linewidth = 2; defaults.linestyle = ':';
                         % VBMC with noisy functions
-                    case 'dtstep1_99'; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
+                    case {'dtstep1_99'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'dtstep1_100','ent1'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-';
                     case {'acqmidtstep1_100','ent2','ent2midtstep1mc'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'ent3','ent2midtmcmc50','ent2midtmcmc50step1'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';

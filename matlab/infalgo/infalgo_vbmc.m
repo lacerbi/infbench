@@ -54,6 +54,7 @@ algoptions.GPTolOpt = 1e-6;
 algoptions.GPTolOptMCMC = 0.1;
 algoptions.StopWarmupReliability = Inf;
 algoptions.WarmupKeepThresholdFalseAlarm = [];
+algoptions.SearchMaxFunEvals = Inf;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -106,6 +107,7 @@ newdefaults.GPTolOpt = 1e-5;
 newdefaults.GPTolOptMCMC = 1e-2;
 newdefaults.StopWarmupReliability = 100;
 newdefaults.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
+newdefaults.SearchMaxFunEvals = '500*(D+2)';
 
 % Options from current problem
 switch algoset
@@ -187,8 +189,9 @@ switch algoset
     case {80,'gpfast3e'}; algoset = 'gpfast3e'; algoptions = newdefaults; algoptions.StopWarmupReliability = 100;
     case {81,'gpfast4'}; algoset = 'gpfast4'; algoptions = newdefaults; algoptions.StopWarmupReliability = 100; algoptions.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
     case {82,'gpfast5'}; algoset = 'gpfast5'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01;
-    case {83,'gpfast6'}; algoset = 'gpfast6'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01; algoptions.SearchMaxFunEvals = '500*(D+2)';
-    case {84,'gpfast7'}; algoset = 'gpfast7'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+    case {83,'gpfast6'}; algoset = 'gpfast6'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01;
+    case {84,'gpfast7'}; algoset = 'gpfast7'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+    case {85,'gpfast8'}; algoset = 'gpfast8'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -220,9 +223,10 @@ switch algoset
      case {304,'acqmiupfast'}; algoset = 'acqmiupfast'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D';
      case {305,'acqmiupfastalpha'}; algoset = 'acqmiupfastalpha'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D'; algoptions.UpdateRandomAlpha = 1;
      case {306,'fast'}; algoset = 'fast'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.SearchMaxFunEvals = '200*D';
-     case {307,'acqmiupfast0'}; algoset = 'acqmiupfast0'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.StopWarmupReliability = 100; algoptions.SearchCacheFrac = 0.01; algoptions.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
+     case {307,'acqmiupfast0'}; algoset = 'acqmiupfast0'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;  algoptions.SearchCacheFrac = 0.01;
      case {308,'upfast0'}; algoset = 'upfast0'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchMaxFunEvals = '200*D'; algoptions.ActiveSampleFullUpdate = 1; algoptions.GPTolOpt = 1e-4; algoptions.StopWarmupReliability = 100;
-     case {309,'acqmiupfast0alpha'}; algoset = 'acqmiupfast0alpha'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.StopWarmupReliability = 100; algoptions.SearchCacheFrac = 0.01; algoptions.UpdateRandomAlpha = 1;
+     case {309,'acqmiupfast0alpha'}; algoset = 'acqmiupfast0alpha'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchCacheFrac = 0.01; algoptions.UpdateRandomAlpha = 1;
+     case {310,'acqmiupfast2'}; algoset = 'acqmiupfast2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2;  algoptions.SearchCacheFrac = 0.01;
                     
     % Entropy tests   
 %     case {401,'ent1'}; algoset = 'ent1'; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
@@ -270,7 +274,7 @@ if ~isempty(probstruct.Noise) || probstruct.IntrinsicNoisy
     algoptions.SpecifyTargetNoise = true;
     % algoptions.NoiseSize = NoiseEstimate(1);
     algoptions.TolStableCount = ceil(algoptions.TolStableCount*1.5);
-    algoptions.TolStableWarmup = algoptions.TolStableWarmup*2;
+    % algoptions.TolStableWarmup = algoptions.TolStableWarmup*2;
 else
     algoptions.UncertaintyHandling = 'off';
 end
