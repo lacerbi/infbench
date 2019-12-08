@@ -41,7 +41,6 @@ algoptions.NSentBoost = [];
 algoptions.NSentFastBoost = [];
 algoptions.NSentFineBoost = [];
 algoptions.ActiveVariationalSamples = 0;
-algoptions.FixedMaxMeanGP = false;
 algoptions.GPTrainNinit = 1024;
 algoptions.GPTrainNinitFinal = 1024;
 algoptions.DetEntropyAlpha = 0;
@@ -170,7 +169,6 @@ switch algoset
     case {57,'acq2new'}; algoset = 'acq2new'; algoptions.SearchAcqFcn = {@acqmireg_vbmc,@acqfreg_vbmc}; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {60,'step1migps'}; algoset = 'acqstep1migps'; algoptions.FunEvalsPerIter = 1; algoptions.FunEvalStart = 'D'; algoptions.KfunMax = @(N) N; algoptions.SeparateSearchGP = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
     case {61,'lowent'}; algoset = 'lowent'; algoptions.NSentFine = '@(K) 2^12*K'; algoptions.Plot = 0; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;
-    case {62,'mapgp'}; algoset = 'mapgp'; algoptions = newdefaults; algoptions.FixedMaxMeanGP = true;
     case {63,'mapgpiso'}; algoset = 'mapgpiso'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfixiso';
     case {64,'mapgp2'}; algoset = 'mapgp2'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix';
     case {65,'mapgp3'}; algoset = 'mapgp3'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadfix'; algoptions.GPTrainNinit = 256; algoptions.GPTrainInitMethod = 'rand';
@@ -194,6 +192,7 @@ switch algoset
     case {85,'gpfast8'}; algoset = 'gpfast8'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2;
     case {86,'gpfast9'}; algoset = 'gpfast9'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.GPTolOptMCMC = 1e-5;
     case {87,'gpfast10'}; algoset = 'gpfast10'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.gpMeanFun = 'negquadsefix';
+    case {88,'gpfast11'}; algoset = 'gpfast11'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.gpMeanFun = 'negquadsefix';
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -231,6 +230,9 @@ switch algoset
      case {310,'acqmiupfast2'}; algoset = 'acqmiupfast2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2;  algoptions.SearchCacheFrac = 0.01;
      case {311,'acqsn2'}; algoset = 'acqsn2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc;
      case {312,'acqsn2fast'}; algoset = 'acqsn2fast'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.SearchMaxFunEvals = Inf;
+     case {313,'acqsn2fastse'}; algoset = 'acqsn2fastse'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.SearchMaxFunEvals = Inf; algoptions.gpMeanFun = 'negquadsefix';
+     case {314,'acqmiupfast2se'}; algoset = 'acqmiupfast2se'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.gpMeanFun = 'negquadsefix';
+     case {315,'acqsn2fastseup'}; algoset = 'acqsn2fastseup'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.SearchMaxFunEvals = Inf; algoptions.gpMeanFun = 'negquadsefix';
                     
     % Entropy tests   
 %     case {401,'ent1'}; algoset = 'ent1'; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
