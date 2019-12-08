@@ -193,6 +193,7 @@ switch algoset
     case {84,'gpfast7'}; algoset = 'gpfast7'; algoptions = newdefaults; algoptions.SearchCacheFrac = 0.01; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
     case {85,'gpfast8'}; algoset = 'gpfast8'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2;
     case {86,'gpfast9'}; algoset = 'gpfast9'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.GPTolOptMCMC = 1e-5;
+    case {87,'gpfast10'}; algoset = 'gpfast10'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.gpMeanFun = 'negquadsefix';
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
