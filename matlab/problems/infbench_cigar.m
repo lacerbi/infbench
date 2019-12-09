@@ -97,7 +97,7 @@ sigma = sqrt(diag(infprob.Post.Cov))';
 Tol = 1e-6;
 
 Nx = 1e4;
-MarginalBounds = zeros(D,2);
+MarginalBounds = zeros(2,D);
 MarginalPdf = zeros(D,Nx);
 
 for i = 1:D        

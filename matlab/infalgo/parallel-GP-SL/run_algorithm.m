@@ -8,6 +8,7 @@ if nargin < 12
 end
 
 %% initialize
+t_start = tic();
 gp = []; gp_optim_opt = []; P = [];
 th_tr = []; % acquired parameters
 loglik_tr = []; % corresponding log lik values
@@ -74,6 +75,7 @@ for iter = 1:nr_iter
     %% compute current posterior using the GP surrogate and compare to the true baseline 
     %% (if available) by computing TV/KL
     if graphics_on >= 2 || (graphics_on == 1 && iter == nr_iter) || (graphics_on == -1 && any(other_opt.res_ind==iter))
+        t_mcmc = tic;
     	[estim_post,mcmc_diag] = post_from_gp_surrogate(th_grid,sim_model,gp,gp_opt,loglik_tr,th_tr,P,mcmc_opt); 
         
         res_i = compare_to_true_baseline(th_grid, estim_post, sim_model);
@@ -81,8 +83,13 @@ for iter = 1:nr_iter
         if return_lvl >= 2 && other_opt.res_ind(end)==iter
             % save also the final model-based posterior estimate!
             res_i.estim_post = estim_post.epost;
-        end
+        end       
+                
+        % Save samples at each step
+        results.samples{iter} = estim_post.samples;
         results.iter{iter} = res_i;
+        results.time_mcmc(iter) = toc(t_mcmc);
+        results.funccount(iter) = size(th_tr,1);
     end
 
     %% compare to the true baseline (if available) visually
@@ -99,6 +106,8 @@ for iter = 1:nr_iter
             my_export_fig(fn,'-transparent','-pdf');
         end
     end
+    
+    results.runtime(iter) = toc(t_start);
 end
 
 % gather acquired training data and settings
@@ -128,7 +137,31 @@ opt_all.lik_opt = lik_opt;
 opt_all.other_opt = other_opt;
 end
 
+function x = catrnd(p,n)
+%CATRND Sample from categorical distribution.
 
+maxel = 1e6;
+Nel = n*numel(p);
+stride = ceil(maxel/numel(p));
+
+cdf(1,:) = cumsum(p);
+u = rand(n,1)*cdf(end);
+
+% Split for memory reasons
+if Nel <= maxel
+    x = sum(bsxfun(@lt, cdf, u),2) + 1;
+else
+    x = zeros(n,1);
+    idx_min = 1;
+    while idx_min <= n
+        idx_max = min(idx_min+stride-1,n);
+        idx = idx_min:idx_max;
+        x(idx) = sum(bsxfun(@lt, cdf, u(idx)),2) + 1;
+        idx_min = idx_max+1;
+    end
+end
+
+end
 
 
 

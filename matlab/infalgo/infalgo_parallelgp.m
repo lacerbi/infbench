@@ -12,7 +12,7 @@ algoptions.MaxIter = Inf;
 algoptions.Ninit = 10;      % # of initial locations (generated uniformly)
 algoptions.BatchSize = 1;   % Batch size
 algoptions.Niter = 1 + ceil((algoptions.MaxFunEvals - algoptions.Ninit) / algoptions.BatchSize);    % # of iterations of the algorithm
-algoptions.Plot = 0;        % Interactive plotting: plot only final result=1 / plot after each batch=2 / plot all and pause=3 / compute estimates but no plotting=-1 (for cluster)
+algoptions.Plot = -1;       % Interactive plotting: plot only final result=1 / plot after each batch=2 / plot all and pause=3 / compute estimates but no plotting=-1 (for cluster)
 algoptions.AcqMethod = 'IMIQR';    % Acquisition method
 
 if probstruct.Debug
@@ -61,9 +61,10 @@ acq_opt.display_type = 'off';
 
 %% MCMC settings (for sampling from GP-based posterior when dim > 2, grid-based computations always used when dim <= 2)
 mcmc_opt.nchains = 5; % how many chains
-mcmc_opt.nsimu = 10000; % how many samples for each chain
-mcmc_opt.nfinal = 5000; % final amount of samples after concatenating the chains and thinning
-mcmc_opt.display_type = 'on';
+mcmc_opt.nsimu = 1e4; % how many samples for each chain
+mcmc_opt.nfinal = Inf; % final amount of samples after concatenating the chains and thinning
+mcmc_opt.display_type = 'off';
+mcmc_opt.always_mcmc = 1; % Always do MCMC (instead of gridding)
 
 [grid_th,sim_model] = get_model(probstruct,algoptions);
 
@@ -79,7 +80,7 @@ lik_opt.sl.N = sim_model.N; % number of repeated samples computing SL at each ev
 
 
 %% other misc settings
-other_opt.res_ind = 1:10:algoptions.Niter; % iterations when to compute TV/KL if cluster computation
+other_opt.res_ind = 1:5:algoptions.Niter; % iterations when to compute TV/KL if cluster computation
 other_opt.viz_ind = 1:algoptions.Niter; % iterations when to plot the figures
 other_opt.viz_save = 0; % whether the save the plotted figures
 other_opt.viz_demomode2d = 0; % 'demomode' for plotting 2d illustrations
@@ -111,9 +112,29 @@ else
 end
 s2 = max(s2,1e-12);
 
+% Store samples at each iteration
+Nmax = results.funccount(end);
+idx = probstruct.SaveTicks(probstruct.SaveTicks <= Nmax);
+time_mcmc = zeros(size(idx));
+time_algo = zeros(size(idx));
+for i = 1:numel(idx)
+    ii = find(idx(i) == results.funccount,1);
+    if isempty(ii); continue; end
+    samples_iter{i} = results.samples{ii};
+    time_mcmc(i) = results.time_mcmc(ii);
+    time_algo(i) = results.runtime(ii);
+end
+
+% Adjust total runtime (only consider the last sampling time)
+TotalTime = TotalTime - cumsum(time_mcmc) + time_mcmc(end);
+
 Niter = numel(probstruct.SaveTicks);
 [history,post] = StoreAlgoResults(...
-    probstruct,[],Niter,X,y,[],[],[],[],TotalTime,[],s2);
+    probstruct,[],Niter,X,y,[],[],[],[],TotalTime,samples_iter,s2);
+
+% Correct for sampling time (only consider the one for the current iteration)
+history.ElapsedTime = time_algo - cumsum(time_mcmc) + time_mcmc;
+
 
 end
 

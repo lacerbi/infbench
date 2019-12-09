@@ -201,6 +201,7 @@ switch algoset
     case {92,'gpfast8bup'}; algoset = 'gpfast8bup'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 2; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.ActiveSampleFullUpdate = true;
     case {93,'gpfast8bup0'}; algoset = 'gpfast8bup0'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 2; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = true;
     case {94,'gpfast6c'}; algoset = 'gpfast6c'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 1;
+    case {95,'gpfast6d'}; algoset = 'gpfast6d'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 5;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -337,11 +338,17 @@ if ~ControlRunFlag
         idx = find(stats.funccount == history.SaveTicks(iIter),1);
         if isempty(idx); continue; end
         
+        history.ElapsedTime(iIter) = stats.timer(idx).totalruntime;        
+        
         % Compute variational solution that VBMC would return at a given iteration
+        t = tic();
         [vp,~,~,idx_best] = ...
             best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack,algoptions.RankCriterion);                
         [vp,elbo,elbo_sd] = ...
             finalboost_vbmc(vp,idx_best,[],stats,options_vbmc);
+        
+        % Take actual runtime at the end of each iteration and add boost time
+        history.ElapsedTime(iIter) = stats.timer(idx).totalruntime + toc(t);
         
         history.Output.N(iIter) = history.SaveTicks(iIter);
         history.Output.lnZs(iIter) = elbo;
@@ -440,19 +447,6 @@ Nopts = 1 + round(100/vp.K);
 Mode = vbmc_mode(vp,Nopts,1);
 
 % Compute marginal total variation
-nkde = 2^12;
-MTV = zeros(1,vp.D);
-for i = 1:vp.D
-    [~,yy1,xmesh] = kde(xx(:,i),nkde);
-    yy1 = yy1/(qtrapz(yy1)*(xmesh(2)-xmesh(1))); % Ensure normalization
-    yy_true = probstruct.Post.MarginalPdf(i,:);
-    xx_true = linspace(probstruct.Post.MarginalBounds(1,i),probstruct.Post.MarginalBounds(2,i),size(yy_true,2));    
-    f = @(x) abs(interp1(xmesh,yy1,x,'spline',0) - interp1(xx_true,yy_true,x,'spline',0));    
-    bb = sort([xx_true([1,end]),xmesh([1,end])]);
-    for j = 1:3
-        xx_range = linspace(bb(j),bb(j+1),1e6);
-        MTV(i) = MTV(i) + 0.5*qtrapz(f(xx_range))*(xx_range(2)-xx_range(1));
-    end
-end
+MTV = ComputeMarginalTotalVariation(xx,probstruct);
 
 end

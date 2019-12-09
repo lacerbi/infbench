@@ -4,7 +4,9 @@ function [post,mcmc_diag] = post_from_gp_surrogate(th_grid,sim_model,gp,gp_opt,l
 
 mcmc_diag = [];
 d = th_grid.dim;
-if d <= 2
+if ~isfield(mcmc_opt,'always_mcmc'); mcmc_opt.always_mcmc = 0; end
+
+if d <= 2 && ~mcmc_opt.always_mcmc
     if d == 1
         th_eval_grid = th_grid.theta(:);
     else
@@ -173,6 +175,7 @@ else % dim > 2
     % Compute marginals in the grid using KDE
     post.epost = kde_for_abc(th_grid,samples,1);
     post.epost = post.epost';
+    post.samples = samples;
 end
 end
 

@@ -1,4 +1,4 @@
-function [gsKL,Mean,Cov,lnZ,lnZ_var,Mode] = ComputeAlgoStats(X,y,probstruct,compute_lnZ,Ns_moments,gp,s2)
+function [gsKL,Mean,Cov,lnZ,lnZ_var,Mode,MTV] = ComputeAlgoStats(X,y,probstruct,compute_lnZ,Ns_moments,gp,s2)
 %COMPUTEALGOSTATS Compute GP model-based statistics from given training set.
     
 if nargin < 4 || isempty(compute_lnZ); compute_lnZ = false; end
@@ -26,11 +26,16 @@ try
         else
             gp.noisefun = [1 0];  % Gaussian observation noise
         end
-    else
+    elseif isstruct(gp)
         gp = gplite_post(gp);   % Fill in GP
-    end
+    end    
 
-    xx = gplite_sample(gp,Ns_moments);
+    if isstruct(gp)
+        gp.Nopts = 2;   % Perform two restarts
+        xx = gplite_sample(gp,Ns_moments);
+    else
+        xx = gp;    % GP was passed as samples
+    end
     Mean = mean(xx,1);
     Cov = cov(xx);
     [kl1,kl2] = mvnkl(Mean,Cov,probstruct.Post.Mean,probstruct.Post.Cov);
@@ -62,7 +67,16 @@ try
     end
 
     if nargout > 5
-        Mode = gplite_fmin(gp,[],1);    % Max flag - finds maximum
+        if isstruct(gp)
+            Mode = gplite_fmin(gp,[],1);    % Max flag - finds maximum
+        else
+            Mode = NaN(1,size(xx,2));       % No mode for now with samples
+        end
+    end
+    
+    % Compute Marginal Total Variation (MTV)
+    if nargout > 6
+        MTV = ComputeMarginalTotalVariation(xx,probstruct);
     end
     
 catch ME    
@@ -77,6 +91,7 @@ catch ME
     lnZ = NaN;
     lnZ_var = NaN;
     Mode = NaN(1,D);
+    MTV = NaN(1,D);
 end
 
 end

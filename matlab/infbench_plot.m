@@ -199,7 +199,7 @@ for iFig = 1:nfigs
                 if isempty(history); continue; end
         
                 
-                x = []; lnZs = []; gsKLs = []; costs = []; D = []; FunCallsPerIter = [];
+                x = []; lnZs = []; gsKLs = []; MMTVs = []; costs = []; D = []; FunCallsPerIter = [];
                 AverageOverhead = zeros(1,numel(history));
                 FractionOverhead = [];
                 Errs = []; Zscores = [];
@@ -227,12 +227,14 @@ for iFig = 1:nfigs
                     
                     lZs_new = history{i}.Output.lnZs(idx_valid);    lZs_new = lZs_new(:)';                   
                     lZs_var_new = history{i}.Output.lnZs_var(idx_valid);    lZs_var_new = lZs_var_new(:)';                 
-                    gsKLs_new = history{i}.Output.gsKL(idx_valid);                        
+                    gsKLs_new = history{i}.Output.gsKL(idx_valid);
+                    MMTVs_new = mean(history{i}.Output.MTV(idx_valid,:),2)';
 
                     lnZ_true = history{i}.lnZpost_true;                
                     
                     lnZs = [lnZs; lZs_new];
                     gsKLs = [gsKLs; gsKLs_new];
+                    MMTVs = [MMTVs; MMTVs_new];
                     
                     Errs = [Errs; abs(lZs_new - lnZ_true)];
                     Zscores = [Zscores; (lZs_new - lnZ_true)./ sqrt(lZs_var_new)];
@@ -267,6 +269,8 @@ for iFig = 1:nfigs
                         FractionOverhead = [FractionOverhead, (history{i}.ElapsedTime(last)/sum(history{i}.FuncTime(1:last))-1)];                        
                     %end
                     
+                    
+                    % I am not sure this is computed correctly - double check!
                     FuncCumTime = cumsum(history{i}.FuncTime);
                     difftime = [history{i}.ElapsedTime(1),diff(history{i}.ElapsedTime)];
                     diffticks = [history{i}.SaveTicks(1),diff(history{i}.SaveTicks)];
@@ -312,6 +316,8 @@ for iFig = 1:nfigs
                             [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,gsKLs,iLayer,varargin{dimlayers},options);
                         case 'costs'
                             [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,costs,iLayer,varargin{dimlayers},options);
+                        case 'mmtv'
+                            [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,MMTVs,iLayer,varargin{dimlayers},options);                            
                     end
                     
                     % Save summary information
@@ -481,6 +487,8 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
 %PANELITERATIONS Finalize panel for plotting iterations
 
     NumZero = options.NumZero;
+    thresh = 1;
+    yticklabel = [];    
 
     switch lower(options.PlotType)
         case 'lnz'
@@ -489,6 +497,11 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
             ystring = 'Median gsKL';
         case 'costs'
             ystring = 'Median algorithmic cost per function evaluation (s)';
+        case 'mmtv'
+            ystring = 'Median MMTV';
+            options.AbsolutePlot = 1;
+            ylims = [0,1];
+            thresh = 0.2;
     end
 
     string = [];
@@ -536,8 +549,8 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
                 end
                 
                 if options.AbsolutePlot
-                    ylims = [lnZ_true-30,lnZ_true+30];
-                    ytick = [];
+                    % ylims = [lnZ_true-30,lnZ_true+30];
+                    ytick = linspace(ylims(1),ylims(end),6);
                 else
                     ylims = [NumZero,YlimMax];
                     %ytick = [0.001,0.01,0.1,1,10,100,1e3,1e4,1e5];
@@ -554,6 +567,8 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
             end
             if isempty(ytick)
                 set(gca,'Ylim',ylims);                        
+            elseif isempty(yticklabel)
+                set(gca,'Ylim',ylims,'YTick',ytick);
             else
                 set(gca,'Ylim',ylims,'YTick',ytick,'YTickLabel',yticklabel);
             end
@@ -575,7 +590,7 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
     set(gca,'FontSize',12);
     box off;
     % plot(xlims,liney,'k--','Linewidth',0.5);
-    plot(xlims,[1 1],'k--','Linewidth',0.5);
+    plot(xlims,thresh*[1 1],'k--','Linewidth',0.5);
     
 %--------------------------------------------------------------------------
 function [xx,yy,yyerr,MeanMinFval] = plotNoisy(y,MinBag,iLayer,arglayer,options)

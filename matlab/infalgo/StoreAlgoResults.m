@@ -1,6 +1,7 @@
 function [history,post] = StoreAlgoResults(probstruct,post,Niter,X,y,mu,vvar,Xiter,yiter,TotalTime,gpiter,s2,s2iter)
 %STOREALGORESULTS Store results of running an inference algorithm.
 
+% GPITER can be a GP but also a struct of samples at different iterations
 if nargin < 11; gpiter = []; end
 if nargin < 12; s2 = []; end
 if nargin < 13; s2iter = []; end
@@ -28,7 +29,7 @@ X_train = history.Output.X;
 y_train = history.Output.y;
 s2_train = history.Output.s2;
 if ~isempty(gpiter); gp = gpiter{end}; end
-[post.gsKL,post.Mean,post.Cov,lnZ,lnZ_var,post.Mode] = ...
+[post.gsKL,post.Mean,post.Cov,lnZ,lnZ_var,post.Mode,post.MTV] = ...
     ComputeAlgoStats(X_train,y_train,probstruct,compute_lnZ,[],gp,s2_train);
 if compute_lnZ
     post.lnZ = lnZ;
@@ -63,7 +64,7 @@ for iIter = 1:Niter
         if ~isempty(s2iter); s2_train = s2iter{min(iIter,end)}; end
     end
     if ~isempty(gpiter); gp = gpiter{min(iIter,end)}; end
-    [gsKL,Mean,Cov,lnZ,lnZ_var,Mode] = ...
+    [gsKL,Mean,Cov,lnZ,lnZ_var,Mode,MTV] = ...
         ComputeAlgoStats(X_train,y_train,probstruct,compute_lnZ,[],gp,s2_train);
     if compute_lnZ
         history.Output.lnZs(iIter) = lnZ;
@@ -72,7 +73,8 @@ for iIter = 1:Niter
     history.Output.Mean(iIter,:) = Mean;
     history.Output.Cov(iIter,:,:) = Cov;
     history.Output.gsKL(iIter) = gsKL;
-    history.Output.Mode(iIter,:) = Mode;    
+    history.Output.Mode(iIter,:) = Mode;
+    history.Output.MTV(iIter,:) = MTV;    
 end
 
 
