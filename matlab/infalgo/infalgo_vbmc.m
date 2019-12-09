@@ -202,6 +202,8 @@ switch algoset
     case {93,'gpfast8bup0'}; algoset = 'gpfast8bup0'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 2; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = true;
     case {94,'gpfast6c'}; algoset = 'gpfast6c'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 1;
     case {95,'gpfast6d'}; algoset = 'gpfast6d'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 5;
+    case {96,'up'}; algoset = 'up'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true;
+        
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;

@@ -228,7 +228,10 @@ for iFig = 1:nfigs
                     lZs_new = history{i}.Output.lnZs(idx_valid);    lZs_new = lZs_new(:)';                   
                     lZs_var_new = history{i}.Output.lnZs_var(idx_valid);    lZs_var_new = lZs_var_new(:)';                 
                     gsKLs_new = history{i}.Output.gsKL(idx_valid);
-                    MMTVs_new = mean(history{i}.Output.MTV(idx_valid,:),2)';
+                    MMTVs_new = [];
+                    if isfield(history{i}.Output,'MTV')
+                        MMTVs_new = mean(history{i}.Output.MTV(idx_valid,:),2)';
+                    end
 
                     lnZ_true = history{i}.lnZpost_true;                
                     
@@ -253,8 +256,8 @@ for iFig = 1:nfigs
                         if isfield(history{i},'SaveTicks')
                             % Take only until it resets (one run)
                             last = find(isfinite(history{i}.ElapsedTime),1,'last');
-                            last_first = find(diff(history{i}.ElapsedTime(1:last)) < 0,1);
-                            if ~isempty(last_first); last = last_first; end
+                            %last_first = find(diff(history{i}.ElapsedTime(1:last)) < 0,1);
+                            %if ~isempty(last_first); last = last_first; end
                             try
                                 AverageOverhead(i) = speedfactor * ...
                                     (history{i}.ElapsedTime(last) - sum(history{i}.FuncTime(1:last)))/history{1}.SaveTicks(last);
@@ -499,8 +502,9 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
             ystring = 'Median algorithmic cost per function evaluation (s)';
         case 'mmtv'
             ystring = 'Median MMTV';
-            options.AbsolutePlot = 1;
-            ylims = [0,1];
+            options.AdaptiveYlim = false;
+            % NumZero = 0.005; options.YlimMax = 1;
+            options.AbsolutePlot = 1; ylims = [0,1];
             thresh = 0.2;
     end
 
