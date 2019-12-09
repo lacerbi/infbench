@@ -74,6 +74,7 @@ if isempty(x)
     y.Post.Mean = (priorCov*((priorCov + y.Cov)\y.Mean(:)) + y.Cov*((priorCov + y.Cov)\priorMean(:)))';
     y.Post.Cov = priorCov*((priorCov + y.Cov)\y.Cov);
     y.Post.Mode = y.Post.Mean;
+    [y.Post.MarginalBounds,y.Post.MarginalPdf] = ComputeMarginals(y);
     
     y.R = R;
     y.ell = ell;
@@ -82,3 +83,34 @@ else
     y = mvnlogpdf(x,infprob.Mean,infprob.Cov);
     % y(~isfinite(y)) = log(realmin);
 end
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [MarginalBounds,MarginalPdf] = ComputeMarginals(infprob)
+
+D = infprob.D;
+mu = infprob.Post.Mean(:)';
+sigma = sqrt(diag(infprob.Post.Cov))';
+
+% Compute bounds for marginal total variation
+Tol = 1e-6;
+
+Nx = 1e4;
+MarginalBounds = zeros(D,2);
+MarginalPdf = zeros(D,Nx);
+
+for i = 1:D        
+    % Find lower/upper bound
+    x_lb = norminv(Tol,mu(i),sigma(i));
+    x_ub = norminv(1-Tol,mu(i),sigma(i));    
+    MarginalBounds(:,i) = [x_lb;x_ub];
+    
+    % Evaluate marginal pdf
+    x_range = linspace(x_lb,x_ub,Nx);
+    MarginalPdf(i,:) = normpdf(x_range,mu(i),sigma(i));
+end
+
+
+end
+

@@ -241,6 +241,11 @@ if isempty(x)
         y.Post.lnZ = lnZ_mcmc;
         y.Post.Cov = Cov_mcmc;
         
+        % Read marginals from file
+        marginals = load('goris2015_marginals.mat');
+        y.Post.MarginalBounds = marginals.MarginalBounds{n};
+        y.Post.MarginalPdf = marginals.MarginalPdf{n};
+        
         % Save data and coordinate transformation struct
         y.Data = data;
         y.Data.trinfo = trinfo;

@@ -132,9 +132,10 @@ if isempty(x)
             np = @(x_) -tpdf((x_-Mu(i))/Sigma(i),Df(i))/Sigma(i) .* normpdf(x_,priorMean(i),sqrt(priorSigma2(i)));
             y.Post.Mode(i) = fminunc(np,y.Post.Mean(i),options);            
         end
-                
+        y.Z = Z;    % Save normalization constant                
         y.Post.lnZ = sum(log(Z));
-        y.Post.Cov = diag(PostSigma2);        
+        y.Post.Cov = diag(PostSigma2);
+        [y.Post.MarginalBounds,y.Post.MarginalPdf] = ComputeMarginals(y);
     end
 elseif nargout > 0
     %xprime = bsxfun(@power,abs(x),infprob.Power).*sign(x);
@@ -158,5 +159,42 @@ else
     end
     cornerplot(xrnd);
 end
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [MarginalBounds,MarginalPdf] = ComputeMarginals(infprob)
+
+D = infprob.D;
+Mu = infprob.Mu;
+Sigma = infprob.Sigma;
+Df = infprob.Df;
+Z = infprob.Z;
+
+priorMean = infprob.Prior.Mean;
+priorSigma = sqrt(diag(infprob.Prior.Cov)');
+
+postMean = infprob.Post.Mean;
+postSigma = sqrt(diag(infprob.Post.Cov)');
+
+% Compute bounds for marginal total variation
+Tol = 1e-6;
+
+Nx = 1e4;
+MarginalBounds = zeros(D,2);
+MarginalPdf = zeros(D,Nx);
+
+for i = 1:D    
+    % Find approximate lower/upper bound
+    x_lb = norminv(Tol,postMean(i),2*postSigma(i));
+    x_ub = norminv(1-Tol,postMean(i),2*postSigma(i));    
+    MarginalBounds(:,i) = [x_lb;x_ub];
+    
+    % Evaluate marginal pdf
+    fun = @(x_) tpdf((x_-Mu(i))/Sigma(i),Df(i))/Sigma(i) .* normpdf(x_,priorMean(i),priorSigma(i))/Z(i);
+    x_range = linspace(x_lb,x_ub,Nx);
+    MarginalPdf(i,:) = fun(x_range);
+end
+
 
 end

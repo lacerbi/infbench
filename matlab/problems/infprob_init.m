@@ -112,7 +112,15 @@ if evalbool(options.ScaleVariables)
         probstruct.Post.Mean = warpvars(probstruct.ProbInfo.Post.Mean,'d',probstruct.trinfo);        
         probstruct.Post.Mode = warpvars(probstruct.ProbInfo.Post.Mode,'d',probstruct.trinfo);        
         probstruct.Post.Cov = diag(1./probstruct.trinfo.delta)*probstruct.ProbInfo.Post.Cov*diag(1./probstruct.trinfo.delta);
+        if isfield(probstruct.ProbInfo.Post,'MarginalBounds')
+            probstruct.Post.MarginalBounds = warpvars(probstruct.ProbInfo.Post.MarginalBounds,'d',probstruct.trinfo);
+            if any(probstruct.trinfo.type ~= 0)
+                warning('Marginal pdf transform assumes only an affine rescaling of variables!');
+            end
+            probstruct.Post.MarginalPdf = bsxfun(@times,probstruct.Post.MarginalPdf,probstruct.trinfo.delta');
+        end
     end
+    
 end
 
 % Store Gaussian prior mean and variance

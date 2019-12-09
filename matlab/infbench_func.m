@@ -16,6 +16,7 @@ if nargin < 1   % No arguments return history log
     historyOut.Output.lnZs = NaN(1,Nticks);
     historyOut.Output.lnZs_var = NaN(1,Nticks);
     historyOut.Output.gsKL = NaN(1,Nticks);
+    historyOut.Output.MTV = NaN(Nticks,history.D);
     historyOut.Output.Mean = NaN(0,history.D);
     historyOut.Output.Cov = NaN(0,history.D,history.D);
     historyOut.Output.Mode = NaN(Nticks,history.D);

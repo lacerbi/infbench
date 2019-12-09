@@ -235,9 +235,9 @@ if isempty(x)
         
         y.Post.lnZ = log(sum(y.Post.w));
         y.Post.w = y.Post.w/sum(y.Post.w);
-        [y.Post.Mean,y.Post.Cov,y.Post.Mode] = gmmstats(y.Post.w,y.Post.Mu,y.Post.Sigma);
-                
-    end    
+        [y.Post.Mean,y.Post.Cov,y.Post.Mode,y.Post.MarginalBounds,y.Post.MarginalPdf] = ...
+            gmmstats(y.Post.w,y.Post.Mu,y.Post.Sigma,y);
+    end
 elseif nargout > 0
     y = log(max(pdf(x,infprob.w,infprob.Mu,infprob.Sigma),realmin));
 else
@@ -265,7 +265,34 @@ end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [Mean,Cov,Mode] = gmmstats(w,Mu,Sigma)
+function y = cdf1(x,w,mu,sigma)
+
+n = size(x,1);
+y = zeros(n,1);
+M = numel(w);
+
+for m = 1:M
+    y = y + w(m)*normcdf(x,mu(m),sigma(m));
+end
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function y = pdf1(x,w,mu,sigma)
+
+n = size(x,1);
+y = zeros(n,1);
+M = numel(w);
+
+for m = 1:M
+    y = y + w(m)*normpdf(x,mu(m),sigma(m));
+end
+
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [Mean,Cov,Mode,MarginalBounds,MarginalPdf] = gmmstats(w,Mu,Sigma,infprob)
 
 [M,D] = size(Mu);   % number of components and dims
 options.Display = 'off';
@@ -281,4 +308,34 @@ Cov = zeros(D,D);
 for m = 1:M
     Cov = Cov + w(m)*squeeze(Sigma(m,:,:)) + w(m)*(Mu(m,:)-Mean)'*(Mu(m,:)-Mean);
 end
+
+% Compute bounds for marginal total variation
+LB = zeros(1,D);
+UB = zeros(1,D);
+Tol = 1e-6;
+
+Nx = 1e4;
+MarginalBounds = zeros(2,D);
+MarginalPdf = zeros(D,Nx);
+w = w(:)';
+
+for i = 1:D
+    mu_vec = Mu(:,i)';
+    sigma_vec(1,:) = squeeze(sqrt(Sigma(:,i,i)));
+    
+    LB(i) = min(mu_vec - 6*sigma_vec);
+    UB(i) = max(mu_vec + 6*sigma_vec);    
+    cdf = @(x) cdf1(x,w,mu_vec,sigma_vec);
+    
+    % Find lower/upper bound
+    x_lb = fminbnd(@(x) abs(cdf(x) - Tol),LB(i),UB(i));
+    x_ub = fminbnd(@(x) abs(cdf(x) - (1-Tol)),LB(i),UB(i));
+    MarginalBounds(:,i) = [x_lb;x_ub];
+    
+    % Evaluate marginal pdf
+    x_range = linspace(x_lb,x_ub,Nx)';
+    MarginalPdf(i,:) = pdf1(x_range,w,mu_vec,sigma_vec)';
+end
+
+
 end

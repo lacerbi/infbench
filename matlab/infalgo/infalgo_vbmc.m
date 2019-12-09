@@ -120,6 +120,7 @@ switch algoset
     case {6,'narrow'}; algoset = 'narrow'; algoptions.InitDesign = 'narrow';                % Narrow initialization
     case {7,'control2'}; algoset = 'control2'; ControlRunFlag = true;                       % Control experiment, repeated
     case {8,'test2'}; algoset = 'test2'; algoptions.FeatureTest = true;                     % Test feature (second case)
+    case {9,'fastdebug'}; algoset = 'fastdebug'; algoptions.Debug = true; algoptions.Plot = 'off'; algoptions.FeatureTest = true; algoptions.MinFinalComponents = 0;
 
     % Fixed number of mixture components
     case {11,'K1'}; algoset = 'K1'; algoptions.Kfun = 1; algoptions.KfunMax = 1; algoptions.Kwarmup = 1;
@@ -196,11 +197,16 @@ switch algoset
     case {88,'gpfast11'}; algoset = 'gpfast11'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.gpMeanFun = 'negquadsefix';
     case {89,'gpfastup'}; algoset = 'gpfastup'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.ActiveSampleFullUpdate = true;
     case {90,'gpfast6b'}; algoset = 'gpfast6b'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 2;
+    case {91,'gpfast8b'}; algoset = 'gpfast8b'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 2; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2;
+    case {92,'gpfast8bup'}; algoset = 'gpfast8bup'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 2; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.ActiveSampleFullUpdate = true;
+    case {93,'gpfast8bup0'}; algoset = 'gpfast8bup0'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 2; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = true;
+    case {94,'gpfast6c'}; algoset = 'gpfast6c'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 1;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
     case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults;
     case {102,'newdef3'}; algoset = 'newdef3'; algoptions = newdefaults;
+    case {150,'newdefdebug'}; algoset = 'newdefdebug'; algoptions = newdefaults; algoptions.MinFinalComponents = 0;
 
     % Noise
     case {201,'acqf2new'}; algoset = 'acqf2new'; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.gpQuadraticMeanBound = 1; algoptions.EmpiricalGPPrior = 0; algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint); algoptions.TolStableExcptFrac = 0.2; algoptions.TolStableCount = 50; algoptions.WarmupCheckMax = true; algoptions.SGDStepSize = 0.005;        
@@ -236,6 +242,7 @@ switch algoset
      case {313,'acqsn2fastse'}; algoset = 'acqsn2fastse'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.SearchMaxFunEvals = Inf; algoptions.gpMeanFun = 'negquadsefix';
      case {314,'acqmiupfast2se'}; algoset = 'acqmiupfast2se'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.gpMeanFun = 'negquadsefix';
      case {315,'acqsn2fastseup'}; algoset = 'acqsn2fastseup'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.SearchMaxFunEvals = Inf; algoptions.gpMeanFun = 'negquadsefix';
+     case {316,'acqsn2fastup0'}; algoset = 'acqsn2fastup0'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.UpperGPLengthFactor = 2; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchMaxFunEvals = Inf;
                     
     % Entropy tests   
 %     case {401,'ent1'}; algoset = 'ent1'; algoptions = newdefaults; algoptions.NSentFast = 0; algoptions.NSentFastBoost = 0; algoptions.NSentFine = @(K) 2^12*K; algoptions.NSentFineBoost = @(K) 2^12*K;
@@ -320,7 +327,7 @@ if ~ControlRunFlag
     post.lnZ_var = elbo_sd^2;
     fprintf('Calculating VBMC output at iteration...\n');
     fprintf('%d..',0);
-    [post.gsKL,post.Mean,post.Cov,post.Mode] = computeStats(vp,probstruct);
+    [post.gsKL,post.Mean,post.Cov,post.Mode,post.MTV] = computeStats(vp,probstruct);
 
     % Return estimate, SD of the estimate, and gauss-sKL with true moments
     Nticks = numel(history.SaveTicks);
@@ -339,11 +346,12 @@ if ~ControlRunFlag
         history.Output.N(iIter) = history.SaveTicks(iIter);
         history.Output.lnZs(iIter) = elbo;
         history.Output.lnZs_var(iIter) = elbo_sd^2;
-        [gsKL,Mean,Cov,Mode] = computeStats(vp,probstruct);
+        [gsKL,Mean,Cov,Mode,MTV] = computeStats(vp,probstruct);
         history.Output.Mean(iIter,:) = Mean;
         history.Output.Cov(iIter,:,:) = Cov;
         history.Output.gsKL(iIter) = gsKL;
-        history.Output.Mode(iIter,:) = Mode;    
+        history.Output.Mode(iIter,:) = Mode;
+        history.Output.MTV(iIter,:) = MTV;        
     end
     fprintf('\n');
 else
@@ -416,7 +424,7 @@ history.Output.stats = stats;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [gsKL,Mean,Cov,Mode] = computeStats(vp,probstruct)
+function [gsKL,Mean,Cov,Mode,MTV] = computeStats(vp,probstruct)
 %COMPUTE_STATS Compute additional statistics.
     
 % Compute Gaussianized symmetric KL-divergence with ground truth
@@ -430,5 +438,21 @@ gsKL = 0.5*(kl1 + kl2);
 % Compute mode
 Nopts = 1 + round(100/vp.K);
 Mode = vbmc_mode(vp,Nopts,1);
+
+% Compute marginal total variation
+nkde = 2^12;
+MTV = zeros(1,vp.D);
+for i = 1:vp.D
+    [~,yy1,xmesh] = kde(xx(:,i),nkde);
+    yy1 = yy1/(qtrapz(yy1)*(xmesh(2)-xmesh(1))); % Ensure normalization
+    yy_true = probstruct.Post.MarginalPdf(i,:);
+    xx_true = linspace(probstruct.Post.MarginalBounds(1,i),probstruct.Post.MarginalBounds(2,i),size(yy_true,2));    
+    f = @(x) abs(interp1(xmesh,yy1,x,'spline',0) - interp1(xx_true,yy_true,x,'spline',0));    
+    bb = sort([xx_true([1,end]),xmesh([1,end])]);
+    for j = 1:3
+        xx_range = linspace(bb(j),bb(j+1),1e6);
+        MTV(i) = MTV(i) + 0.5*qtrapz(f(xx_range))*(xx_range(2)-xx_range(1));
+    end
+end
 
 end
