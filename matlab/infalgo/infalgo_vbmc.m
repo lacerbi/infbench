@@ -55,6 +55,7 @@ algoptions.StopWarmupReliability = Inf;
 algoptions.WarmupKeepThresholdFalseAlarm = [];
 algoptions.SearchMaxFunEvals = Inf;
 algoptions.UpperGPLengthFactor = 0;
+algoptions.TolGPVarMCMC = 1e-4;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -203,7 +204,7 @@ switch algoset
     case {94,'gpfast6c'}; algoset = 'gpfast6c'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 1;
     case {95,'gpfast6d'}; algoset = 'gpfast6d'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 5;
     case {96,'up'}; algoset = 'up'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true;
-    case {97,'upfast'}; algoset = 'upfast'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2;
+    case {97,'upfast'}; algoset = 'upfast'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4;
         
     
     % New defaults
