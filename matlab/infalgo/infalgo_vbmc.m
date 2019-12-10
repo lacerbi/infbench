@@ -203,6 +203,7 @@ switch algoset
     case {94,'gpfast6c'}; algoset = 'gpfast6c'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 1;
     case {95,'gpfast6d'}; algoset = 'gpfast6d'; algoptions = newdefaults; algoptions.UpperGPLengthFactor = 5;
     case {96,'up'}; algoset = 'up'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true;
+    case {97,'upfast'}; algoset = 'upfast'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2;
         
     
     % New defaults
@@ -310,9 +311,12 @@ D = size(x0,2);
 probstruct.AddLogPrior = true;
 
 algo_timer = tic;
+MinFinalComponents = algoptions.MinFinalComponents; % Skip final boosting here, do it later
+algoptions.MinFinalComponents = 0;
 [vp,elbo,elbo_sd,exitflag,~,output,stats] = ...
     vbmc(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
+algoptions.MinFinalComponents = MinFinalComponents;
 
 % Get preprocessed OPTIONS struct
 options_vbmc = setupoptions_vbmc(D,algoptions,algoptions);
