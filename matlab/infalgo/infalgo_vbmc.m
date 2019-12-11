@@ -207,8 +207,9 @@ switch algoset
     case {97,'upfast'}; algoset = 'upfast'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4; algoptions.SkipActiveSamplingAfterWarmup = 0;
     case {98,'upfast2'}; algoset = 'upfast2'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4;
     case {99,'upfast3'}; algoset = 'upfast3'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4; algoptions.SkipActiveSamplingAfterWarmup = 0; algoptions.GPSampleThin = 5;
+    case {100,'upfast4'}; algoset = 'upfast4'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4; algoptions.SkipActiveSamplingAfterWarmup = 0;
+    case {101,'up2'}; algoset = 'up2'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSentActive = '@(K) 20*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0;
         
-    
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
     case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults;
