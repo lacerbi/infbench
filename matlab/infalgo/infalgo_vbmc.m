@@ -214,6 +214,7 @@ switch algoset
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
     case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults;
     case {102,'newdef3'}; algoset = 'newdef3'; algoptions = newdefaults;
+    case {104,'newdef4'}; algoset = 'newdef4'; algoptions = newdefaults;
     case {150,'newdefdebug'}; algoset = 'newdefdebug'; algoptions = newdefaults; algoptions.MinFinalComponents = 0;
 
     % Noise
