@@ -206,6 +206,7 @@ switch algoset
     case {96,'up'}; algoset = 'up'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true;
     case {97,'upfast'}; algoset = 'upfast'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4; algoptions.SkipActiveSamplingAfterWarmup = 0;
     case {98,'upfast2'}; algoset = 'upfast2'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4;
+    case {99,'upfast3'}; algoset = 'upfast3'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4; algoptions.SkipActiveSamplingAfterWarmup = 0; algoptions.GPSampleThin = 5;
         
     
     % New defaults
