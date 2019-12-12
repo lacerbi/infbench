@@ -184,7 +184,7 @@ switch algoset
     case {61,'actfull'}; algoset = 'actfull'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true;
     case {62,'up4'}; algoset = 'up4'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.NSentBoost = '@(K) 200*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0; algoptions.StableGPvpK = 10;
     case {63,'fast'}; algoset = 'fast'; algoptions = newdefaults; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.NSentBoost = '@(K) 200*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0; algoptions.StableGPvpK = 10;
-    case {64,'up5'}; algoset = 'up5'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.GPTolOptActive = 1e-2;
+    case {64,'actfull2'}; algoset = 'actfull2'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.GPTolOptActive = 1e-2;
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
