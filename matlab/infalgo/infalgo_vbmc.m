@@ -109,6 +109,7 @@ newdefaults.GPTolOptMCMC = 1e-2;
 newdefaults.StopWarmupReliability = 100;
 newdefaults.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
 newdefaults.SearchMaxFunEvals = '500*(D+2)';
+newdefaults.NSentActive = '@(K) 20*K.^(2/3)';
 
 % Options from current problem
 switch algoset
@@ -209,6 +210,7 @@ switch algoset
     case {99,'upfast3'}; algoset = 'upfast3'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSgpMaxWarmup = 2; algoptions.NSgpMaxMain = 2; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4; algoptions.SkipActiveSamplingAfterWarmup = 0; algoptions.GPSampleThin = 5;
     case {100,'upfast4'}; algoset = 'upfast4'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4; algoptions.SkipActiveSamplingAfterWarmup = 0;
     case {101,'up2'}; algoset = 'up2'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSentActive = '@(K) 20*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0;
+    case {102,'up3'}; algoset = 'up3'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.NSentBoost = '@(K) 200*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0;
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
