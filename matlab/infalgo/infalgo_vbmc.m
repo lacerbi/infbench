@@ -198,7 +198,7 @@ switch algoset
         
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
-    case {302,'acqmi'}; algoset = 'acqmiup'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.GPTolOptActive = 1e-2;
+    case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.GPTolOptActive = 1e-2;
      case {305,'acqmiupfastalpha'}; algoset = 'acqmiupfastalpha'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D'; algoptions.UpdateRandomAlpha = 1;
      case {307,'acqmiupfast0'}; algoset = 'acqmiupfast0'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;  algoptions.SearchCacheFrac = 0.01;
      case {308,'upfast0'}; algoset = 'upfast0'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchMaxFunEvals = '200*D'; algoptions.ActiveSampleFullUpdate = 1; algoptions.GPTolOpt = 1e-4; algoptions.StopWarmupReliability = 100;
