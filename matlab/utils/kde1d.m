@@ -1,4 +1,4 @@
-function [bandwidth,density,xmesh,cdf]=kde(data,n,MIN,MAX)
+function [bandwidth,density,xmesh,cdf]=kde1d(data,n,MIN,MAX)
 % Reliable and extremely fast kernel density estimator for one-dimensional data;
 %        Gaussian kernel is assumed and the bandwidth is chosen automatically;
 %        Unlike many other implementations, this one is immune to problems
@@ -40,7 +40,7 @@ n=2^ceil(log2(n)); % round up n to the next power of 2;
 if nargin<4 %define the default  interval [MIN,MAX]
     minimum=min(data); maximum=max(data);
     Range=maximum-minimum;
-    MIN=minimum-Range/2; MAX=maximum+Range/2;
+    MIN=minimum-Range/10; MAX=maximum+Range/10;
 end
 % set up the grid over which the density estimate is computed;
 R=MAX-MIN; dx=R/(n-1); xmesh=MIN+[0:dx:R]; N=length(unique(data));
