@@ -56,6 +56,7 @@ algoptions.WarmupKeepThresholdFalseAlarm = [];
 algoptions.SearchMaxFunEvals = Inf;
 algoptions.UpperGPLengthFactor = 0;
 algoptions.TolGPVarMCMC = 1e-4;
+algoptions.StableGPvpK = Inf;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -211,6 +212,7 @@ switch algoset
     case {100,'upfast4'}; algoset = 'upfast4'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.TolGPVarMCMC = 0; algoptions.GPTolOptMCMC = 1e-4; algoptions.SkipActiveSamplingAfterWarmup = 0;
     case {101,'up2'}; algoset = 'up2'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSentActive = '@(K) 20*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0;
     case {102,'up3'}; algoset = 'up3'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.NSentBoost = '@(K) 200*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0;
+    case {103,'up4'}; algoset = 'up4'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.NSentBoost = '@(K) 200*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0; algoptions.StableGPvpK = 10;
         
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
