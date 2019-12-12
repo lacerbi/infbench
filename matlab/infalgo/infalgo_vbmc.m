@@ -198,24 +198,7 @@ switch algoset
         
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
-%     case {302,'acqmistep1'}; algoset = 'acqmistep1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmireg_vbmc;
-%     case {303,'step1'}; algoset = 'step1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1;
-%     case {304,'step5'}; algoset = 'step5'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5;
-%     case {305,'acqmistep5'}; algoset = 'acqmistep5'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5; algoptions.SearchAcqFcn = @acqmireg_vbmc;
-%     case {306,'acq2step1'}; algoset = 'acq2step1'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = {@acqfreg_vbmc,@acqmireg_vbmc};
-%     case {307,'acqmidtstep1_99'}; algoset = 'acqmidtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99;
-%     case {308,'acqmidtstep1_95'}; algoset = 'acqmidtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.95;
-%     case {309,'acqmidtstep1_100'}; algoset = 'acqmidtstep1_100'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 1;
-%     case {310,'dtstep1_99'}; algoset = 'dtstep1_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99;
-%     case {311,'dtstep1_95'}; algoset = 'dtstep1_95'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.95;
-%     case {312,'dtstep1_100'}; algoset = 'dtstep1_100'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqfdtreg_vbmc; algoptions.RepeatedAcqDiscount = 1;
-%     case {321,'step1beta'}; algoset = 'step1beta'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.ELCBOWeight = @(N) sqrt(0.2*2*log(probstruct.D*N^2*pi^2/(6*0.1))); algoptions.Plot = 1;
-%     case {322,'step5beta'}; algoset = 'step5beta'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5; algoptions.ELCBOWeight = @(N) sqrt(0.2*2*log(probstruct.D*N^2*pi^2/(6*0.1))); algoptions.Plot = 1;
-%     case {323,'step5K'}; algoset = 'step5K'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 5; algoptions.KfunMax = @(N) min(2,max(2,round(0.5*sqrt(N)))); algoptions.Plot = 1;
-%     case {324,'acqmidtstep1K_99'}; algoset = 'acqmidtstep1K_99'; algoptions = newdefaults; algoptions.FunEvalsPerIter = 1; algoptions.SearchAcqFcn = @acqmidtreg_vbmc; algoptions.RepeatedAcqDiscount = 0.99; algoptions.KfunMax = @(N) min(Inf,max(2,floor(0.5*sqrt(N)))); algoptions.Plot = 0;
-     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc;
-     case {303,'acqmiup'}; algoset = 'acqmiup'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1;
-     case {304,'acqmiupfast'}; algoset = 'acqmiupfast'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D';
+    case {302,'acqmi'}; algoset = 'acqmiup'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.GPTolOptActive = 1e-2;
      case {305,'acqmiupfastalpha'}; algoset = 'acqmiupfastalpha'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 3; algoptions.NSgpMaxMain = 3; algoptions.SearchMaxFunEvals = '200*D'; algoptions.UpdateRandomAlpha = 1;
      case {307,'acqmiupfast0'}; algoset = 'acqmiupfast0'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;  algoptions.SearchCacheFrac = 0.01;
      case {308,'upfast0'}; algoset = 'upfast0'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchMaxFunEvals = '200*D'; algoptions.ActiveSampleFullUpdate = 1; algoptions.GPTolOpt = 1e-4; algoptions.StopWarmupReliability = 100;
