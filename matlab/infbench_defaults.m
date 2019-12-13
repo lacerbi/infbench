@@ -195,6 +195,11 @@ switch lower(type)
                 defaults.marker = '+';
                 defaults.name = 'bape';
                 
+            case {'parallelgp'}
+                switch algoset
+                    case 'base'; defaults.color = [60 220 200]/255; defaults.marker = 'o'; defaults.name = 'gp';
+                    case 'reg'; defaults.color = [255 88 169]/255; defaults.marker = '*';
+                end                 
                                 
         end
         
