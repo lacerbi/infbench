@@ -58,7 +58,8 @@ algoptions.UpperGPLengthFactor = 0;
 algoptions.TolGPVarMCMC = 1e-4;
 algoptions.StableGPvpK = Inf;
 algoptions.SkipActiveSamplingAfterWarmup = true;
-
+algoptions.PosteriorMCMC = 0;
+algoptions.VarThresh = Inf;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -185,6 +186,7 @@ switch algoset
     case {62,'up4'}; algoset = 'up4'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.NSentBoost = '@(K) 200*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0; algoptions.StableGPvpK = 10;
     case {63,'fast'}; algoset = 'fast'; algoptions = newdefaults; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.NSentBoost = '@(K) 200*K.^(2/3)'; algoptions.SkipActiveSamplingAfterWarmup = 0; algoptions.StableGPvpK = 10;
     case {64,'actfull2'}; algoset = 'actfull2'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.GPTolOptActive = 1e-2;
+    case {65,'postmcmc'}; algoptions = newdefaults; algoptions.PosteriorMCMC = 1e3;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -202,10 +204,8 @@ switch algoset
     case {303,'acqmidebug'}; algoset = 'acqmidebug'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveVariationalSamples = 100; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1;
     case {304,'acqmi2'}; algoset = 'acqmi2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.ActiveVariationalSamples = 100;
     case {305,'acqmi3'}; algoset = 'acqmi3'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.ActiveVariationalSamples = 100; algoptions.ScaleLowerBound = 0;
-    case {306,'acqmi4'}; algoset = 'acqmi4'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.ActiveVariationalSamples = 100; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.Plot = 1;
-        
-        
-        
+    case {306,'acqmi4'}; algoset = 'acqmi4'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.ActiveVariationalSamples = 100; algoptions.ScaleLowerBound = 0; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 5e3; algoptions.Plot = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Warmup = 0;
+                
     case {350,'acqmivar'}; algoset = 'acqmivar'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1; ...
             algoptions.VariableMeans = 0; algoptions.NSent = 0; algoptions.NSentActive = 0; algoptions.NSentBoost = 0; algoptions.NSentFine = '@(K) 200*K.^(2/3)'; algoptions.NSentFineActive = '@(K) 200*K.^(2/3)'; algoptions.Warmup = 0;
                         
@@ -243,7 +243,7 @@ probstruct.AddLogPrior = true;
 algo_timer = tic;
 MinFinalComponents = algoptions.MinFinalComponents; % Skip final boosting here, do it later
 algoptions.MinFinalComponents = 0;
-[vp,elbo,elbo_sd,exitflag,~,output,stats] = ...
+[vp,elbo,elbo_sd,exitflag,~,gp,output,stats] = ...
     vbmc(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
 algoptions.MinFinalComponents = MinFinalComponents;
@@ -264,7 +264,8 @@ if ~ControlRunFlag
     post.lnZ_var = elbo_sd^2;
     fprintf('Calculating VBMC output at iteration...\n');
     fprintf('%d..',0);
-    [post.gsKL,post.Mean,post.Cov,post.Mode,post.MTV] = computeStats(vp,probstruct);
+    [post.gsKL,post.Mean,post.Cov,post.Mode,post.MTV] = ...
+        computeStats(vp,gp,probstruct,algoptions.PosteriorMCMC,algoptions.VarThresh);
 
     % Return estimate, SD of the estimate, and gauss-sKL with true moments
     Nticks = numel(history.SaveTicks);
@@ -282,6 +283,7 @@ if ~ControlRunFlag
             best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack,algoptions.RankCriterion);                
         [vp,elbo,elbo_sd] = ...
             finalboost_vbmc(vp,idx_best,[],stats,options_vbmc);
+        gp = stats.gp(idx_best);    % Get GP corresponding to chosen iter
         
         % Take actual runtime at the end of each iteration and add boost time
         history.ElapsedTime(iIter) = stats.timer(idx).totalruntime + toc(t);
@@ -289,7 +291,7 @@ if ~ControlRunFlag
         history.Output.N(iIter) = history.SaveTicks(iIter);
         history.Output.lnZs(iIter) = elbo;
         history.Output.lnZs_var(iIter) = elbo_sd^2;
-        [gsKL,Mean,Cov,Mode,MTV] = computeStats(vp,probstruct);
+        [gsKL,Mean,Cov,Mode,MTV] = computeStats(vp,gp,probstruct,algoptions.PosteriorMCMC,algoptions.VarThresh);
         history.Output.Mean(iIter,:) = Mean;
         history.Output.Cov(iIter,:,:) = Cov;
         history.Output.gsKL(iIter) = gsKL;
@@ -367,12 +369,22 @@ history.Output.stats = stats;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [gsKL,Mean,Cov,Mode,MTV] = computeStats(vp,probstruct)
+function [gsKL,Mean,Cov,Mode,MTV] = computeStats(vp,gp,probstruct,PosteriorMCMC,VarThresh)
 %COMPUTE_STATS Compute additional statistics.
     
 % Compute Gaussianized symmetric KL-divergence with ground truth
-Ns_moments = 1e6;
-xx = vbmc_rnd(vp,Ns_moments,1,1);
+if PosteriorMCMC == 0
+    Ns_moments = 1e6;
+    xx = vbmc_rnd(vp,Ns_moments,1,1);
+else
+    Ns_moments = PosteriorMCMC;
+    proppdf = @(x) vbmc_pdf(vp,x,0,0,1);
+    proprnd = @(x) vbmc_rnd(vp,1,0,0);
+    x0 = proprnd();
+    % xx = gplite_sample(gp,Ns_moments,x0,'slicesample',[],VarThresh,proppdf,proprnd);
+    xx = gplite_sample(gp,Ns_moments,x0,'slicesample',[],VarThresh);
+    xx = warpvars_vbmc(xx,'inv',vp.trinfo);
+end
 Mean = mean(xx,1);
 Cov = cov(xx);
 [kl1,kl2] = mvnkl(Mean,Cov,probstruct.Post.Mean,probstruct.Post.Cov);
@@ -384,5 +396,8 @@ Mode = vbmc_mode(vp,Nopts,1);
 
 % Compute marginal total variation
 MTV = ComputeMarginalTotalVariation(xx,probstruct);
+
+gsKL
+MTV
 
 end
