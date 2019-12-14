@@ -213,11 +213,6 @@ switch algoset
     case {312,'acqopt3'}; algoset = 'acqopt1'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.SampleExtraVPMeans = '@(K)10+K'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.OptimisticVariationalBound = 3;
     case {313,'acqopt10'}; algoset = 'acqopt1'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.SampleExtraVPMeans = '@(K)10+K'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.OptimisticVariationalBound = 10;
     case {314,'acqopt06'}; algoset = 'acqopt1'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.SampleExtraVPMeans = '@(K)10+K'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.OptimisticVariationalBound = 0.6745;
-    case {315,'opt06'}; algoset = 'opt06'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.OptimisticVariationalBound = 0.6745;
-    case {316,'opt3'}; algoset = 'opt06'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.OptimisticVariationalBound = 3;
-    
-        
-        
         
     case {350,'acqmivar'}; algoset = 'acqmivar'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1; ...
             algoptions.VariableMeans = 0; algoptions.NSent = 0; algoptions.NSentActive = 0; algoptions.NSentBoost = 0; algoptions.NSentFine = '@(K) 200*K.^(2/3)'; algoptions.NSentFineActive = '@(K) 200*K.^(2/3)'; algoptions.Warmup = 0;
@@ -395,7 +390,7 @@ else
     proprnd = @(x) vbmc_rnd(vp,1,0,0);
     x0 = proprnd();
     % xx = gplite_sample(gp,Ns_moments,x0,'slicesample',[],VarThresh,proppdf,proprnd);
-    xx = gplite_sample(gp,Ns_moments,x0,'slicesample',[],VarThresh);
+    xx = gplite_sample(gp,Ns_moments,x0,'parallel',[],[],VarThresh);
     xx = warpvars_vbmc(xx,'inv',vp.trinfo);
 end
 Mean = mean(xx,1);

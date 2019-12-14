@@ -32,7 +32,7 @@ try
 
     if isstruct(gp)
         gp.Nopts = 2;   % Perform two restarts
-        xx = gplite_sample(gp,Ns_moments);
+        xx = gplite_sample(gp,Ns_moments,[],'parallel');
     else
         xx = gp;    % GP was passed as samples
     end
