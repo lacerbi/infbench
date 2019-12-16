@@ -490,6 +490,8 @@ else
     
     w_is = (1./w_is1)/(sum(1./w_is1));
     log_w_is = log(w_is);
+    % ess = numel(w_is) / (1 + var(w_is))
+    
     % FINITENESS CHECKING OF IS WEIGHTS
     if any(~isfinite(log_w_is)) || any(~isfinite(th_is(:)))
         %keyboard;
