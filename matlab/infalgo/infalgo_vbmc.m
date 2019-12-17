@@ -188,16 +188,20 @@ switch algoset
     case {64,'actfull2'}; algoset = 'actfull2'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = true; algoptions.GPTolOptActive = 1e-2;
     case {65,'postmcmc'}; algoptions = newdefaults; algoptions.PosteriorMCMC = 1e3;
     case {66,'trust'}; algoset = 'trust'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfregtr_vbmc;
+    case {67,'trust2'}; algoset = 'trust2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmaxiqrregtr_vbmc; algoptions.Plot = 1;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
     case {101,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults;    % Current best
     case {102,'newdef3'}; algoset = 'newdef3'; algoptions = newdefaults;
-    case {104,'newdef4'}; algoset = 'newdef4'; algoptions = newdefaults;
+    case {104,'newdef4'}; algoset = 'newdef4'; algoptions = newdefaults; algoptions.Plot = 1;
     case {150,'newdefdebug'}; algoset = 'newdefdebug'; algoptions = newdefaults; algoptions.MinFinalComponents = 0;
 
     % Noise
     case {201,'acqsn2'}; algoset = 'acqsn2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc;
+    case {202,'heur'}; algoset = 'heur'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2regtrheur_vbmc; algoptions.Plot = 1; algoptions.ActiveSampleFullUpdate = 1;
+    case {203,'heur2'}; algoset = 'heur2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2regtrheurlog_vbmc; algoptions.Plot = 0; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.NSentActive = 0; algoptions.NSentFastActive = 0; algoptions.NSentFineActive = 0; 
+    case {204,'heur3'}; algoset = 'heur3'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmiregtrheurlog_vbmc; algoptions.Plot = 1; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.SampleExtraVPMeans = '@(K)10+K';
         
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
@@ -216,6 +220,8 @@ switch algoset
     case {314,'acqopt06'}; algoset = 'acqopt1'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.SampleExtraVPMeans = '@(K)10+K'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.OptimisticVariationalBound = 0.6745;
     case {315,'acqopt06tr'}; algoset = 'acqopt1'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmiregtr_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.SampleExtraVPMeans = '@(K)10+K'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.OptimisticVariationalBound = 0.6745;
     case {316,'acqmitr'}; algoset = 'acqmitr'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmiregtr_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
+    case {317,'heurmi'}; algoset = 'heurmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmiregtrheur_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1;
+    case {318,'acqmix'}; algoset = 'acqmix'; algoptions = newdefaults; algoptions.SearchAcqFcn = {@acqmiregtrheur_vbmc,@acqfsn2regtrheur_vbmc}; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)';
         
     case {350,'acqmivar'}; algoset = 'acqmivar'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1; ...
             algoptions.VariableMeans = 0; algoptions.NSent = 0; algoptions.NSentActive = 0; algoptions.NSentBoost = 0; algoptions.NSentFine = '@(K) 200*K.^(2/3)'; algoptions.NSentFineActive = '@(K) 200*K.^(2/3)'; algoptions.Warmup = 0;
