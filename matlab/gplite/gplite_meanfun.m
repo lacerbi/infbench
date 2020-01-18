@@ -48,6 +48,8 @@ if isa(meanfun,'function_handle')
     return;
 end
 
+if iscell(meanfun); meanfun = meanfun{1}; end
+
 [N,D] = size(X);            % Number of training points and dimension
 
 % Read number of mean function hyperparameters

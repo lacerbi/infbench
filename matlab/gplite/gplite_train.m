@@ -457,7 +457,12 @@ compute_grad = nargout > 1 && ~gpflag;
 
 if gpflag
     if isfield(gp,'outwarpfun'); outwarpfun = gp.outwarpfun; else; outwarpfun = []; end
-    gp = gplite_post(hyp(1:end,:),gp.X,gp.y,gp.covfun,gp.meanfun,gp.noisefun,gp.s2,[],outwarpfun);
+    if isfield(gp,'intmeanfun') && gp.intmeanfun > 0
+        meanfun = {gp.meanfun,gp.intmeanfun,gp.intmeanfun_mean,gp.intmeanfun_var};
+    else
+        meanfun = gp.meanfun;
+    end
+    gp = gplite_post(hyp(1:end,:),gp.X,gp.y,gp.covfun,meanfun,gp.noisefun,gp.s2,[],outwarpfun);
     nlZ = gp;
 else
 
