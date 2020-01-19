@@ -112,11 +112,14 @@ if gp.intmeanfun > 0
     betabar = zeros(1,size(H,1));
     if any(~plus_idx)
         T_plus = diag(1./BB(plus_idx)) + H(plus_idx,:)*(L\(L'\H(plus_idx,:)')/sl);
-        betabar(plus_idx) = T_plus \ (bb(plus_idx)./BB(plus_idx) + H(plus_idx,:)*alpha);
+        T_chol = chol(T_plus);
+        betabar(plus_idx) = T_chol \ (T_chol' \ (bb(plus_idx)./BB(plus_idx) + H(plus_idx,:)*alpha));
         betabar(~plus_idx) = bb(~plus_idx);
     else
         T_plus = diag(1./BB) + H*(L\(L'\H')/sl);
-        betabar(:) = T_plus \ (bb./BB + H*alpha);
+        T_chol = chol(T_plus);
+%        betabar(:) = T_plus \ (bb./BB + H*alpha);
+        betabar(:) = T_chol \ (T_chol' \ (bb./BB + H*alpha));
     end
 else
     Kinv = [];
@@ -146,7 +149,9 @@ if compute_nlZ
             if precany_flag
                 HBH_prec = H(prec_idx,:)'*bsxfun(@times,BB(prec_idx),H(prec_idx,:));
                 N_mat = L'*L*sl + HBH_prec;
-                Ninv = N_mat\eye(N);
+                N_chol = chol(N_mat);                
+                % Ninv = N_mat\eye(N);
+                Ninv = N_chol\(N_chol'\eye(N));
                 nlZ_1 = nu'*(Ninv*nu)/2;
             else
                 nlZ_1 = nu'*(L\(L'\nu))/sl/2;
@@ -282,7 +287,7 @@ if nargout > 2
     if gp.intmeanfun > 0
         post.intmean.HKinv = H*(L\(L'\eye(N))/sl);
          % Inverse reduced T (only positive variances)
-        post.intmean.Tplusinv = T_plus\eye(size(T_plus));
+        post.intmean.Tplusinv = T_chol \ (T_chol' \eye(size(T_chol)));
         post.intmean.betabar = betabar;
     end
 end

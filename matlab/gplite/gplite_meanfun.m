@@ -101,7 +101,13 @@ switch meanfun
         meanfun = 14;
     case {15,'15','posquadsefix'}
         Nmean = 3 + D;
-        meanfun = 15;        
+        meanfun = 15;
+    case {16,'16','negquadonly'}
+        Nmean = D;
+        meanfun = 16;
+    case {17,'17','posquadonly'}
+        Nmean = D;
+        meanfun = 17;        
     otherwise
         if isnumeric(meanfun); meanfun = num2str(meanfun); end
         error('gplite_meanfun:UnknownMeanFun',...
@@ -114,16 +120,19 @@ if ischar(hyp)
     if nargout > 1
         ToL = 1e-6;
         Big = exp(3);
+        w = max(X) - min(X);                    % Width
+        
         dm.LB = -Inf(1,Nmean);
         dm.UB = Inf(1,Nmean);
         dm.PLB = -Inf(1,Nmean);
         dm.PUB = Inf(1,Nmean);
         dm.x0 = NaN(1,Nmean);
         dm.extras = [];
+
         
         if numel(y) <= 1; y = [0;1]; end
         
-        if meanfun >= 1                     % m0
+        if meanfun >= 1 && meanfun <= 15                     % m0
             h = max(y) - min(y);    % Height
             dm.LB(1) = min(y) - 0.5*h;
             dm.UB(1) = max(y) + 0.5*h;
@@ -133,7 +142,6 @@ if ischar(hyp)
         end
         
         if meanfun >= 2 && meanfun <= 3     % a for linear part
-            w = max(X) - min(X);    % Width
             delta = w./h;
             dm.LB(2:D+1) = -delta*Big;
             dm.UB(2:D+1) = delta*Big;
@@ -189,8 +197,6 @@ if ischar(hyp)
                     dm.x0(1) = median(y);
             end
             
-            w = max(X) - min(X);                    % Width
-
             if meanfun >= 4 && meanfun <= 9
                 dm.LB(2:D+1) = min(X) - 0.5*w;          % xm
                 dm.UB(2:D+1) = max(X) + 0.5*w;
@@ -272,6 +278,13 @@ if ischar(hyp)
                 end                
                 dm.extras = X(idx,:);
             end
+            
+        elseif meanfun >=16 && meanfun <= 17
+            dm.LB(1:D) = log(w) + log(ToL);   % omega
+            dm.UB(1:D) = log(w) + log(Big);
+            dm.PLB(1:D) = log(w) + 0.5*log(ToL);
+            dm.PUB(1:D) = log(w);
+            dm.x0(1:D) = log(std(X));            
         end
         
         % Plausible starting point
@@ -296,11 +309,11 @@ if ischar(hyp)
             case 13; dm.meanfun_name = 'posquadfix';
             case 14; dm.meanfun_name = 'negquadsefix';
             case 15; dm.meanfun_name = 'posquadsefix';
+            case 16; dm.meanfun_name = 'negquadonly';
+            case 17; dm.meanfun_name = 'posquadonly';
         end
         
     end
-    
-    
     
     return;
 end
@@ -446,6 +459,14 @@ switch meanfun
             dm(:,D+2) = -sgn*sum(z2_se,2).*se;
             dm(:,D+3) = sgn*h_se - sgn*h_se*se0;
         end        
+    case {16,17}  % Negative (16) and positive (17) quadratic only
+        if meanfun == 16; sgn = -1; else; sgn = 1; end
+        omega = exp(hyp(1:D))';
+        z2 = bsxfun(@rdivide,X,omega).^2;
+        m = sgn*0.5*sum(z2,2);
+        if compute_grad
+            dm(:,1:D) = (-sgn)*z2;        
+        end
         
 end
 

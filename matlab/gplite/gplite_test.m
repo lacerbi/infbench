@@ -104,6 +104,14 @@ if any(strcmpi(test,'rank1')) || all_flag
     update1_errs
 end
 
+if any(strcmpi(test,'meangrad')) || all_flag
+    fprintf('---------------------------------------------------------------------------------\n');
+    fprintf('Check mean function gradient computation...\n\n');
+    f = @(x) gplite_meanfun(x,X(1,:),meanfun,y(1));
+    hyp0_mean = hyp0(Ncov+Nnoise+1:Ncov+Nnoise+Nmean);    
+    derivcheck(f,hyp0_mean.*exp(0.1*rand(size(hyp0_mean))));
+end
+
 if any(strcmpi(test,'intmean')) || all_flag
     fprintf('---------------------------------------------------------------------------------\n');
     fprintf('Check integrated mean function...\n\n');
