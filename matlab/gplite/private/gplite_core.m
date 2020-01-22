@@ -121,8 +121,6 @@ if gp.intmeanfun > 0
 %        betabar(:) = T_plus \ (bb./BB + H*alpha);
         betabar(:) = T_chol \ (T_chol' \ (bb./BB + H*alpha));
     end
-else
-    Kinv = [];
 end
 
 

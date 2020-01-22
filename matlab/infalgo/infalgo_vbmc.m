@@ -198,7 +198,7 @@ switch algoset
     case {150,'newdefdebug'}; algoset = 'newdefdebug'; algoptions = newdefaults; algoptions.MinFinalComponents = 0;
 
     % Noise
-    case {201,'acqsn2'}; algoset = 'acqsn2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc;
+    case {201,'acqsn2'}; algoset = 'acqsn2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.Plot = 1; algoptions.MaxRepeatedObservations = 0;
     case {202,'heur'}; algoset = 'heur'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2regtrheur_vbmc; algoptions.Plot = 1; algoptions.ActiveSampleFullUpdate = 1;
     case {203,'heur2'}; algoset = 'heur2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2regtrheurlog_vbmc; algoptions.Plot = 0; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.NSentActive = 0; algoptions.NSentFastActive = 0; algoptions.NSentFineActive = 0; 
     case {204,'heur3'}; algoset = 'heur3'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmiregtrheurlog_vbmc; algoptions.Plot = 1; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.SampleExtraVPMeans = '@(K)10+K';
@@ -223,16 +223,27 @@ switch algoset
     case {317,'heurmi'}; algoset = 'heurmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmiregtrheur_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1;
     case {318,'acqmix'}; algoset = 'acqmix'; algoptions = newdefaults; algoptions.SearchAcqFcn = {@acqmiregtrheur_vbmc,@acqfsn2regtrheur_vbmc}; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '50*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)';
     case {319,'acqminofix'}; algoset = 'acqminofix'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquad'; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1; algoptions.SampleExtraVPMeans = '@(K)10+K'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+    case {320,'acqmiopt'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 1;
         
-
+    case {330,'acqimi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 1; algoptions.SampleExtraVPMeans = '@(K)20+K';
+    case {331,'acqimi2'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.ActiveSampleFullUpdate = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4;
+    case {332,'acqmaxiqr'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmaxiqrreg_vbmc; algoptions.ActiveSampleFullUpdate = 2; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = 'Inf'; algoptions.WarmupKeepThresholdFalseAlarm = 'Inf'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4;
+    
         
     case {350,'acqmivar'}; algoset = 'acqmivar'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1; ...
             algoptions.VariableMeans = 0; algoptions.NSent = 0; algoptions.NSentActive = 0; algoptions.NSentBoost = 0; algoptions.NSentFine = '@(K) 200*K.^(2/3)'; algoptions.NSentFineActive = '@(K) 200*K.^(2/3)'; algoptions.Warmup = 0;
     
     % Integrated mean function
     case {400,'intmean'}; algoset = 'intmean'; algoptions = newdefaults; algoptions.gpIntMeanFun = 3; algoptions.gpMeanFun = 'zero'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 0;
-    case {401,'intmeanlin'}; algoset = 'intmeanlin'; algoptions = newdefaults; algoptions.FunEvalStart = 30; algoptions.gpIntMeanFun = 2; algoptions.gpMeanFun = 'negquadonly';  algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+    case {401,'intmeanlin'}; algoset = 'intmeanlin'; algoptions = newdefaults; algoptions.FunEvalStart = 10; algoptions.gpIntMeanFun = 2; algoptions.gpMeanFun = 'negquadonly';  algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
     case {402,'intmeanconst'}; algoset = 'intmeanconst'; algoptions = newdefaults; algoptions.FunEvalStart = 10; algoptions.gpIntMeanFun = 1; algoptions.gpMeanFun = 'negquadfixonly';  algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+    case {403,'intmeanfull'}; algoset = 'intmeanfull'; algoptions = newdefaults; algoptions.gpIntMeanFun = 4; algoptions.gpMeanFun = 'zero'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 0;
+    case {404,'gpopt'}; algoset = 'gpopt'; algoptions = newdefaults; algoptions.FunEvalStart = 10; algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+    case {410,'intmeanacqmi'}; algoset = 'intmean'; algoptions = newdefaults; algoptions.gpIntMeanFun = 3; algoptions.gpMeanFun = 'zero'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1; algoptions.SampleExtraVPMeans = '@(K)10+K';
+    case {412,'intmeanconstacqmi'}; algoset = 'intmeanconst'; algoptions = newdefaults; algoptions.FunEvalStart = 10; algoptions.gpIntMeanFun = 1; algoptions.gpMeanFun = 'negquadfixonly';  algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 0; algoptions.Plot = 0;
+    case {420,'intmeanacqimi'}; algoset = 'intmean'; algoptions = newdefaults; algoptions.gpIntMeanFun = 3; algoptions.gpMeanFun = 'zero'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.ActiveSampleFullUpdate = 2; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)';
+    case {421,'intmeanlinacqimi'}; algoset = 'intmean'; algoptions = newdefaults; algoptions.gpIntMeanFun = 2; algoptions.gpMeanFun = 'negquadonly'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 0; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.ActiveSampleFullUpdate = 2; algoptions.Plot = 1; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)';
+    case {422,'intmeanconstacqimi'}; algoset = 'intmeanconst'; algoptions = newdefaults; algoptions.FunEvalStart = 10; algoptions.gpIntMeanFun = 1; algoptions.gpMeanFun = 'negquadfixonly';  algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.ActiveSampleFullUpdate = 0; algoptions.Plot = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4;
                 
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 

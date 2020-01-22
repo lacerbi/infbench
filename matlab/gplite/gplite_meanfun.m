@@ -95,7 +95,7 @@ switch meanfun
         meanfun = 12;
     case {13,'13','posquadfix'}
         Nmean = 1 + D;
-        meanfun = 13;        
+        meanfun = 13;
     case {14,'14','negquadsefix'}
         Nmean = 3 + D;
         meanfun = 14;
@@ -108,6 +108,12 @@ switch meanfun
     case {17,'17','posquadonly'}
         Nmean = D;
         meanfun = 17;        
+    case {18,'18','negquadfixonly'}
+        Nmean = D;
+        meanfun = 18;
+    case {19,'19','posquadfixonly'}
+        Nmean = D;
+        meanfun = 19;
     otherwise
         if isnumeric(meanfun); meanfun = num2str(meanfun); end
         error('gplite_meanfun:UnknownMeanFun',...
@@ -270,16 +276,7 @@ if ischar(hyp)
                 dm.x0(D+3) = log(1);
             end
             
-            if meanfun >= 10 && meanfun <= 15
-                if any(meanfun == [10,12,14])   % find max/min
-                    [~,idx] = max(y);
-                else
-                    [~,idx] = min(y);
-                end                
-                dm.extras = X(idx,:);
-            end
-            
-        elseif meanfun >=16 && meanfun <= 17
+        elseif meanfun >=16 && meanfun <= 19
             dm.LB(1:D) = log(w) + log(ToL);   % omega
             dm.UB(1:D) = log(w) + log(Big);
             dm.PLB(1:D) = log(w) + 0.5*log(ToL);
@@ -287,6 +284,16 @@ if ischar(hyp)
             dm.x0(1:D) = log(std(X));            
         end
         
+        % Fixed quadratic mean location
+        if meanfun >= 10 && meanfun <= 15 || meanfun >= 18 && meanfun <= 19
+            if any(meanfun == [10,12,14,18])   % find max/min
+                [~,idx] = max(y);
+            else
+                [~,idx] = min(y);
+            end                
+            dm.extras = X(idx,:);
+        end
+                
         % Plausible starting point
         idx_nan = isnan(dm.x0);
         dm.x0(idx_nan) = 0.5*(dm.PLB(idx_nan) + dm.PUB(idx_nan));
@@ -311,6 +318,8 @@ if ischar(hyp)
             case 15; dm.meanfun_name = 'posquadsefix';
             case 16; dm.meanfun_name = 'negquadonly';
             case 17; dm.meanfun_name = 'posquadonly';
+            case 18; dm.meanfun_name = 'negquadfixonly';
+            case 19; dm.meanfun_name = 'posquadfixonly';
         end
         
     end
@@ -426,7 +435,7 @@ switch meanfun
         if compute_grad
             dm(:,1) = ones(N,1);
             dm(:,2) = (-sgn)*sum(z2,2);        
-        end        
+        end
     case {12,13}  % Negative (12) and positive (13) quadratic, fixed-location
         if meanfun == 12; sgn = -1; else; sgn = 1; end
         m0 = hyp(1);
@@ -467,6 +476,16 @@ switch meanfun
         if compute_grad
             dm(:,1:D) = (-sgn)*z2;        
         end
+    case {18,19}  % Negative (18) and positive (19) quadratic, fixed-location, no shift
+        if meanfun == 18; sgn = -1; else; sgn = 1; end
+        xm = extras(1:D);
+        omega = exp(hyp(1:D))';
+        z2 = bsxfun(@rdivide,bsxfun(@minus,X,xm),omega).^2;
+        m = (sgn*0.5)*sum(z2,2);
+        if compute_grad
+            dm(:,1:D) = (-sgn)*z2;        
+        end
+                
         
 end
 

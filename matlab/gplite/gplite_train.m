@@ -144,7 +144,7 @@ PLB = min(max(PLB,LB),UB);
 PUB = max(min(PUB,UB),LB);
 
 %% Hyperparameter optimization
-gptrain_options = optimoptions('fmincon','GradObj','on','Display','off');    
+gptrain_options = optimoptions('fmincon','GradObj','on','Display','off');
 
 if Ns > 0
     gptrain_options.TolFun = TolOptMCMC;  % Limited optimization

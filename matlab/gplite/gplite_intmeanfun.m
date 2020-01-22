@@ -44,10 +44,13 @@ switch intmeanfun
         Nb = 1;
     case {2,'2','linear'}
         intmeanfun = 2;
-        Nb = D + 1;
+        Nb = 1 + D;
     case {3,'3','quadratic'}
         intmeanfun = 3;
-        Nb = 2*D + 1;
+        Nb = 1 + 2*D;
+    case {4,'4','full','fullquad','fullquadratic'}
+        intmeanfun = 4;
+        Nb = 1 + 2*D + D*(D-1)/2;
     otherwise
         if isnumeric(intmeanfun); intmeanfun = num2str(intmeanfun); end
         error('gplite_intmeanfun:UnknownMeanFun',...
@@ -64,6 +67,13 @@ if intmeanfun >= 2
 end
 if intmeanfun >= 3
     H(D+2:2*D+1,:) = X'.^2;
+end
+if intmeanfun >= 4
+    idx = 0;
+    for d = 1:D-1
+        H(1+2*D+idx+(1:D-d),:) = bsxfun(@times,X(:,d)',X(:,d+1:D)');
+        idx = idx + D-d;
+    end
 end
     
 end
