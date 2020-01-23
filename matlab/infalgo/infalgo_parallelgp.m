@@ -88,9 +88,14 @@ other_opt.display_type = 'iter';
 other_opt.output_folder = ['../results/',sim_model.name];
 other_opt.output_filename = [algoptions.AcqMethod,acq_opt.batch_method];
 
+PLB = probstruct.PLB;
+PUB = probstruct.PUB;
 x0 = probstruct.InitPoint;
 D = size(x0,2);
 
+% Initial point reservoir drawn within the plausible box
+N0 = algoptions.Ninit - size(x0,1);
+x0 = [x0; bsxfun(@plus,bsxfun(@times,rand(N0,D),PUB-PLB),PLB)];
 grid_th.theta0 = x0;
 
 % Do not add log prior to fcn evaluation, already passed to the algorithm
