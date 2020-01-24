@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Usage: makejobs job# [file#]"
+echo "Usage: noisyjobs job# [file#]"
 
 PROJECT="infbench"
 #source ${HOME}/MATLAB/setroot.sh
@@ -27,9 +27,8 @@ VBMC18="{'lumpy','studentt','cigar'}"
 # Default job list
 PROBSET="'vbmc18'"
 PROBS=${VBMC18}
-#DIMS="{'2D','4D','6D','8D','10D'}"
-DIMS="{'2D','4D','8D'}"
-NOISE="'[]'"
+DIMS="{'2D','4D','6D','8D','10D'}"
+NOISE="'me'"
 ALGOS="{'vbmc'}"
 ALGOSET="'base'"
 IDS="{'1:2','3:4','5:6','7:8','9:10','11:12','13:14','15:16','17:18','19:20'}"
@@ -46,19 +45,43 @@ case "${1}" in
 	1)	ALGOSET="{'base'}"
 		IDS=${IDS_SINGLE}
 		;;
-	2)      ALGOSET="{'newbnd'}"
+	2a)     ALGOSET="{'acqmi'}"
 		IDS=${IDS_SINGLE}
 		;;
-        3)      ALGOSET="{'cheapgpentsqrtk'}"
-		IDS=${IDS_SINGLE}
-                ;;
-        4)      ALGOSET="{'acqus'}"
-		IDS=${IDS_SINGLE}
-                ;;
-        4b)     ALGOSET="{'acqf1'}"
+        2b)     ALGOSET="{'acqmi2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4c)      ALGOSET="{'acqi'}"
+        2c)     ALGOSET="{'acqmi3'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        2d)     ALGOSET="{'acqmi4'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        2e)     ALGOSET="{'acqmiss'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        2f)     ALGOSET="{'acqmiss2'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        3a)     ALGOSET="{'acqopt1'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        3b)     ALGOSET="{'acqopt3'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        3c)     ALGOSET="{'acqopt10'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        3d)     ALGOSET="{'acqopt06'}"
+                IDS=${IDS_SINGLE}
+                ;;
+      	4)      ALGOSET="{'intmeanconstacqimi'}"
+		IDS=${IDS_SINGLE}
+                ;;
+        4b)     ALGOSET="{'acqimiqrnoise'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        4c)      ALGOSET="{'acqimiqrnoisenegquad'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4d)     ALGOSET="{'gpthreshruncov'}"
@@ -89,46 +112,40 @@ case "${1}" in
         4i)     ALGOSET="{'oldsettings'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4j)     ALGOSET="{'trust'}"
+        4j)     ALGOSET="{'step1'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4k)     ALGOSET="{'acqmitr'}"
+        4k)     ALGOSET="{'step5'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4l)     ALGOSET="{'up3'}"
+        4l)     ALGOSET="{'acqmistep5'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4m)     ALGOSET="{'fast'}"
+        4m)     ALGOSET="{'acq2step1'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4n)     ALGOSET="{'up'}"
+        4n)     ALGOSET="{'se'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4o)     ALGOSET="{'newdef4'}"
+        4o)     ALGOSET="{'test'}"
                 IDS=${IDS_SINGLE}
                 ;;
-       	4p)    	ALGOSET="{'acqmi2'}"
+       	4p)    	ALGOSET="{'finalK'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4q)     ALGOSET="{'acqmi'}"
+        4q)     ALGOSET="{'step1'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4r)     ALGOSET="{'actfull2'}"
+        4r)     ALGOSET="{'newdef2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4s)     ALGOSET="{'newdef2'}"
+        4s)     ALGOSET="{'step1mi'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4t)     ALGOSET="{'gpfast10'}"
+        4t)     ALGOSET="{'newdef3'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4u)     ALGOSET="{'gpfast3d'}"
-               :IDS=${IDS_SINGLE}
-                ;;
-        4v)     ALGOSET="{'band'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4w)     ALGOSET="{'fixgpmean'}"
+        4u)     ALGOSET="{'outnoise'}"
                 IDS=${IDS_SINGLE}
                 ;;
         5)      ALGOSET="{'noempgp'}"
@@ -196,6 +213,20 @@ case "${1}" in
        26)      ALGOSET="{'acqpropcontrol'}"
                 IDS=$IDS_SINGLE
                 ;;
+
+	30)     ALGOS="{'parallelgp'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        30b)    ALGOS="{'parallelgp'}"
+                IDS=${IDS_SINGLE}
+		NOISE="'hi'"
+                ;;
+
+        31)     ALGOS="{'parallelgp'}"
+		ALGOSET="{'fast'}"
+                IDS=${IDS_SINGLE}
+                ;;
+
 
 	50)     ALGOS="{'wsabi'}"
 		IDS=${IDS_SINGLE} 
@@ -322,62 +353,62 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104j)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@trust'}"
+                ALGOS="{'vbmc@step1'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104k)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqmitr'}"
+                ALGOS="{'vbmc@step5'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104l)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@up3'}"
+                ALGOS="{'vbmc@acqmistep5'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104m)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@fast'}"
+                ALGOS="{'vbmc@acq2step1'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104n)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@up'}"
+                ALGOS="{'vbmc@se'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104o)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@newdef4'}"
+                ALGOS="{'vbmc@test'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104p)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqmi2'}"
+                ALGOS="{'vbmc@finalK'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104q)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqmi'}"
+                ALGOS="{'vbmc@step1'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104r)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@actfull2'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104s)   PROBS="{'goris2015'}"
                 ALGOS="{'vbmc@newdef2'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
+        104s)   PROBS="{'goris2015'}"
+                ALGOS="{'vbmc@step1mi'}"
+                DIMS="{'S7','S8'}"
+                IDS=$IDS_CENTO
+                ;;
         104t)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@gpfast10'}"
+                ALGOS="{'vbmc@newdef3'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104u)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@gpfast3d'}"
+                ALGOS="{'vbmc@outnoise'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
