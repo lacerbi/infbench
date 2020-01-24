@@ -199,6 +199,8 @@ switch lower(type)
                 switch algoset
                     case 'base'; defaults.color = [60 220 200]/255; defaults.marker = 'o'; defaults.name = 'gp';
                     case 'reg'; defaults.color = [255 88 169]/255; defaults.marker = '*';
+                    otherwise; defaults.color = [128 177 48]/255;
+                        
                 end                 
                                 
         end
