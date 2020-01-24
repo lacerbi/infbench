@@ -14,6 +14,14 @@ algoptions.BatchSize = 1;   % Batch size
 algoptions.Niter = 1 + ceil((algoptions.MaxFunEvals - algoptions.Ninit) / algoptions.BatchSize);    % # of iterations of the algorithm
 algoptions.Plot = -1;       % Interactive plotting: plot only final result=1 / plot after each batch=2 / plot all and pause=3 / compute estimates but no plotting=-1 (for cluster)
 algoptions.AcqMethod = 'IMIQR';    % Acquisition method
+algoptions.AcqOptInit = 2000;  % # of initial points for the multistart optimization
+algoptions.AcqOptNstarts = 10; % # of the best initial points that are actually used for multistart optimization
+algoptions.AcqOptMCMCnchains = 5; % how many MCMC chains for importance sampling
+algoptions.AcqOptMCMCnsamples = 1e4; % how many MCMC samples for each importance sampling chain
+algoptions.MCMCnchains = 5;     % how many MCMC chains for importance sampling
+algoptions.MCMCnsamples = 1e4;  % how many MCMC samples for each chain
+algoptions.NsamplesIS = 500;    % how many samples from the importance distribution
+algoptions.GridSizeD2 = 2500;   % # grid points for 2D integral
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -25,6 +33,7 @@ switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Plot = 1;
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'maxiqr'}; algoset = 'maxiqr'; algoptions.AcqMethod = 'MAXIQR';
+    case {3,'fast'}; algoset = 'fast'; algoptions.AcqOptInit = 500; algoptions.AcqOptNstarts = 3; algoptions.AcqOptMCMCnchains = 3; algoptions.AcqOptMCMCnsamples = 1e3; algoptions.NsamplesIS = 200; algoptions.GridSizeD2 = 500;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -47,21 +56,23 @@ acq_opt.optim_alg = 'fmincon'; % which optimisation algoritm for obtaining the d
 %acq_opt.optim_alg = 'rs'; % random search
 %acq_opt.optim_alg = 'direct';
 acq_opt.rs.nr_init = 1000; % number of evals in random search
-acq_opt.fmincon.nr_inits = 2000; % number of initial points for the multistart optimization
-acq_opt.fmincon.nr_inits_grad = 10; % number of the best initial points that are actually used for multistart optimization
+acq_opt.fmincon.nr_inits = algoptions.AcqOptInit; % number of initial points for the multistart optimization
+acq_opt.fmincon.nr_inits_grad = algoptions.AcqOptNstarts; % number of the best initial points that are actually used for multistart optimization
 acq_opt.fmincon.tolf = 1e-5; % error tolerances for fmincon optimizer
 acq_opt.fmincon.tolx = 1e-5;
 acq_opt.direct.maxevals = 1000; % max. number of function evals  (default is 20)
 acq_opt.direct.maxits = 100; % max. number of iterations  (default is 10)
 acq_opt.direct.maxdeep = 100; % max. number of rect. divisions (default is 100)
-acq_opt.exp.is_samples = 500; % how many samples from the importance distribution 
+acq_opt.exp.is_samples = algoptions.NsamplesIS; % how many samples from the importance distribution 
 acq_opt.exp.nr_grid.dim1 = 100; % number of grid points for grid integration
-acq_opt.exp.nr_grid.dim2 = 50;
+acq_opt.exp.nr_grid.dim2 = ceil(sqrt(algoptions.GridSizeD2));
+acq_opt.exp.nchains = algoptions.AcqOptMCMCnchains;
+acq_opt.exp.nsimu = algoptions.AcqOptMCMCnsamples;
 acq_opt.display_type = 'off';
 
 %% MCMC settings (for sampling from GP-based posterior when dim > 2, grid-based computations always used when dim <= 2)
-mcmc_opt.nchains = 5; % how many chains
-mcmc_opt.nsimu = 1e4; % how many samples for each chain
+mcmc_opt.nchains = algoptions.MCMCnchains; % how many chains
+mcmc_opt.nsimu = algoptions.MCMCnsamples; % how many samples for each chain
 mcmc_opt.nfinal = Inf; % final amount of samples after concatenating the chains and thinning
 mcmc_opt.display_type = 'off';
 mcmc_opt.always_mcmc = 1; % Always do MCMC (instead of gridding)

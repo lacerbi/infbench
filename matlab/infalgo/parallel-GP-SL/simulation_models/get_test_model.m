@@ -391,8 +391,8 @@ try
     load(fn,'post_kde');
     post = post_kde;
 catch
-    error('Baseline posterior could not be loaded.');
-    %warning('Baseline posterior could not be loaded.');
+    %error('Baseline posterior could not be loaded.');
+    warning('Baseline posterior could not be loaded.');
     post = []; % if the precomputed baseline posterior is not found
 end
 end

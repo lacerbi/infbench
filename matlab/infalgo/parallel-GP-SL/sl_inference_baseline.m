@@ -47,7 +47,9 @@ use_grid = 0;
 
 if ~plot_res
     % map given id to an index to the model and repeated run
-    [run_id,model_id] = run_inds(nruns,nmodels,id);
+    %[run_id,model_id] = run_inds(nruns,nmodels,id);
+    run_id = 1;
+    model_id = 2;
     if ~cluster_run
         % some debug printing:
         model_id, run_id, cur_model=models{model_id}, cur_N=Ns(model_id)
@@ -62,7 +64,7 @@ if ~plot_res
     sl_mcmc_opt.nsimu = 100000;
     sl_mcmc_opt.nchains = 1;
     sl_mcmc_opt.nfinal = 5000;
-    sl_mcmc_opt.display_type = 'off';
+    sl_mcmc_opt.display_type = 'on';
     %...
     
     sl_opt.N = Ns(model_id);

@@ -600,8 +600,8 @@ end
 
 % Additional MCMC settings
 nfinal = acq_opt.exp.is_samples;
-nchains = 5;
-options.nsimu = 10000;
+nchains = acq_opt.exp.nchains;
+options.nsimu = acq_opt.exp.nsimu;
 options.qcov = 1/10^2*diag((th_grid.theta(:,1)-th_grid.theta(:,end)).^2);
 options.method = 'am';
 options.updatesigma = 0;
