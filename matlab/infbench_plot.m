@@ -228,6 +228,7 @@ for iFig = 1:nfigs
                     lZs_new = history{i}.Output.lnZs(idx_valid);    lZs_new = lZs_new(:)';                   
                     lZs_var_new = history{i}.Output.lnZs_var(idx_valid);    lZs_var_new = lZs_var_new(:)';                 
                     gsKLs_new = history{i}.Output.gsKL(idx_valid);
+
                     MMTVs_new = [];
                     if isfield(history{i}.Output,'MTV')
                         MMTVs_new = mean(history{i}.Output.MTV(idx_valid,:),2)';
