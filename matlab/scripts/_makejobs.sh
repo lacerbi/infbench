@@ -27,8 +27,8 @@ VBMC18="{'lumpy','studentt','cigar'}"
 # Default job list
 PROBSET="'vbmc18'"
 PROBS=${VBMC18}
-#DIMS="{'2D','4D','6D','8D','10D'}"
-DIMS="{'2D','4D','8D'}"
+DIMS="{'2D','6D','10D'}"
+#DIMS="{'2D','4D','8D'}"
 NOISE="'[]'"
 ALGOS="{'vbmc'}"
 ALGOSET="'base'"
@@ -107,19 +107,19 @@ case "${1}" in
         4o)     ALGOSET="{'newdef4'}"
                 IDS=${IDS_SINGLE}
                 ;;
-       	4p)    	ALGOSET="{'acqmi2'}"
+       	4p)    	ALGOSET="{'new'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4q)     ALGOSET="{'acqmi'}"
+        4q)     ALGOSET="{'new2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4r)     ALGOSET="{'actfull2'}"
+        4r)     ALGOSET="{'new3'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4s)     ALGOSET="{'newdef2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4t)     ALGOSET="{'gpfast10'}"
+        4t)     ALGOSET="{'newdef3'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4u)     ALGOSET="{'gpfast3d'}"
@@ -352,17 +352,17 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104p)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqmi2'}"
+                ALGOS="{'vbmc@new'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104q)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqmi'}"
+                ALGOS="{'vbmc@new2'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104r)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@actfull2'}"
+                ALGOS="{'vbmc@new3'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
@@ -372,7 +372,7 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104t)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@gpfast10'}"
+                ALGOS="{'vbmc@newdef3'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;

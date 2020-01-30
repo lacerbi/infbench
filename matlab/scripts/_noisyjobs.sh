@@ -27,7 +27,7 @@ VBMC18="{'lumpy','studentt','cigar'}"
 # Default job list
 PROBSET="'vbmc18'"
 PROBS=${VBMC18}
-DIMS="{'2D','4D','6D','8D','10D'}"
+DIMS="{'2D','6D','10D'}"
 NOISE="'me'"
 ALGOS="{'vbmc'}"
 ALGOSET="'base'"
@@ -81,73 +81,36 @@ case "${1}" in
         4b)     ALGOSET="{'acqimiqrnoise'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4c)      ALGOSET="{'acqimiqrnoisenegquad'}"
+        4c)     ALGOSET="{'acqimiqrnoisenegquad'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4d)     ALGOSET="{'gpthreshruncov'}"
+        4c2)    ALGOSET="{'acqimiqrnoisenegquad'}"
+                IDS=${IDS_SINGLE}
+		NOISE="{'hi'}"
+                ;;
+        4d)     ALGOSET="{'acqimiqrnoisenegquadbox'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4e)     ALGOSET="{'acqf'}"
+        4d2)    ALGOSET="{'acqimiqrnoisenegquadbox'}"
+                IDS=${IDS_SINGLE}
+                NOISE="{'hi'}"
+                ;;
+        4e)     ALGOSET="{'acqimiqrnoisenegquadbox2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4f)     ALGOSET="{'acqfv2'}"
+        4e2)    ALGOSET="{'acqimiqrnoisenegquadbox2'}"
+                IDS=${IDS_SINGLE}
+                NOISE="{'hi'}"
+                ;;
+        4f)     ALGOSET="{'acqimiqrnoisenegquadbox3'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4g)     ALGOSET="{'acqf2reg'}"
+        4f2)    ALGOSET="{'acqimiqrnoisenegquadbox3'}"
                 IDS=${IDS_SINGLE}
+                NOISE="{'hi'}"
                 ;;
-        4h)     ALGOSET="{'acqfreg2','acqpropreg2'}"
-                DIMS="{'20D'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4h1)    ALGOSET="{'K1'}"
-                IDS=${IDS_SINGLE}
-		;;
-	4h2)    ALGOSET="{'K2'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4h5)    ALGOSET="{'K5'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4i)     ALGOSET="{'oldsettings'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4j)     ALGOSET="{'step1'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4k)     ALGOSET="{'step5'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4l)     ALGOSET="{'acqmistep5'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4m)     ALGOSET="{'acq2step1'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4n)     ALGOSET="{'se'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4o)     ALGOSET="{'test'}"
-                IDS=${IDS_SINGLE}
-                ;;
-       	4p)    	ALGOSET="{'finalK'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4q)     ALGOSET="{'step1'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4r)     ALGOSET="{'newdef2'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4s)     ALGOSET="{'step1mi'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4t)     ALGOSET="{'newdef3'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4u)     ALGOSET="{'outnoise'}"
-                IDS=${IDS_SINGLE}
-                ;;
+
+
         5)      ALGOSET="{'noempgp'}"
                 IDS=${IDS_SINGLE}
 		;;
