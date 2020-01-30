@@ -149,10 +149,23 @@ end
 
 % Check if need to pass probstruct
 try
+    fsd = 0;
     if strfind(probstruct.func,'probstruct_')
-        tfun = tic; fval_orig = func(x,probstruct); t = toc(tfun);
+        tfun = tic;
+        if nargout > 1
+            [fval_orig,fsd] = func(x,probstruct);            
+        else
+            fval_orig = func(x,probstruct);
+        end
+         t = toc(tfun);
     else
-        tfun = tic; fval_orig = func(x); t = toc(tfun);
+        tfun = tic;
+        if nargout > 1
+            [fval_orig,fsd] = func(x);            
+        else
+            fval_orig = func(x);
+        end
+        t = toc(tfun);
     end
     if isfield(probstruct,'trinfo') && addJacobian
         fval = fval_orig + dy;
@@ -202,13 +215,14 @@ if ~debug
     sigma = history.NoiseSigma + history.NoiseIncrement*abs(fval);
     if sigma > 0
         fval = fval + randn()*sigma;
+        fsd = sqrt(fsd^2 + sigma^2);
     end
 end
 
 % x
 
 if nargout > 1
-    varargout = {fval,sigma};
+    varargout = {fval,fsd};
 else
     varargout = {fval};
 end

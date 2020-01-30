@@ -8,6 +8,8 @@ function [llik,llik_std] = noisy_loglik_estim(sim_model,opt,theta,method,use_boo
 
 % Modified by Luigi Acerbi for the inference benchmark
 
+ww = warning('off','MATLAB:nearlySingularMatrix');
+
 if nargin < 4
     method = 'sl';
 end
@@ -66,10 +68,13 @@ end
 %% Some individual possibly very large loglik values occurring near some boundaries can 
 %% make fitting the GP problematic so we deal with those cases by lower bounding the loglik
 %trunclik = -Inf;
-trunclik = -10^5;
+trunclik = -10^4;
 llik = max(trunclik,llik);
-llik_std(llik<=trunclik) = 100;
+llik_std(llik<=trunclik) = 1e3;
 %llik = soft_loglik_lb(llik);
+
+warning(ww.state,'MATLAB:nearlySingularMatrix');
+
 
 end
 
