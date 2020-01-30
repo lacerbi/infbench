@@ -7,11 +7,16 @@ if isempty(x)
     if isempty(infprob) % Generate this document        
         fprintf('\n');
 
+        % Add sampler directory to MATLAB path
+        pathstr = fileparts(mfilename('fullpath'));
+        addpath([pathstr,filesep(),'..',filesep(),'infalgo',filesep(),'parallel-GP-SL',filesep(),'utils',filesep(),'mcmcstat-master']);
+        
+        
         for n = 1
             switch n
                 case 1
-                    xmin = [138.8505216444501 2.38317564009549 0.682321320237262 1.1613095607596 1 0.231748337632257 -0.272638945416596 3.10117864852662 72.8822298534178 0.00789002312857097 0.101380347749067 0.693895739234024];
-                    fval = -2594.08310420223;
+                    % xmin = [138.8505216444501 2.38317564009549 0.682321320237262 1.1613095607596 1 0.231748337632257 -0.272638945416596 3.10117864852662 72.8822298534178 0.00789002312857097 0.101380347749067 0.693895739234024];
+                    % fval = -2594.08310420223;
             end
             
             infprob = infbench_wood2010([],n);
@@ -57,7 +62,7 @@ if isempty(x)
                 else
                     mcmc_opt.nsimu = 1e5;
                 end
-                mcmc_opt.nfinal = min(mcmc_opt.nsimu,5000);
+                mcmc_opt.nfinal = min(mcmc_opt.nsimu,1e3);
                 mcmc_opt.display_type = 'on';
                 
                 model.ssfun = @(x,data) -2*logpost(x,infprob);
@@ -111,8 +116,8 @@ if isempty(x)
         n = infprob(1);
         
         % Add problem directory to MATLAB path
-        pathstr = fileparts(mfilename('fullpath'));
-        addpath([pathstr,filesep(),'synthlike']);
+        % pathstr = fileparts(mfilename('fullpath'));
+        % addpath([pathstr,filesep(),'synthlike']);
                 
         xmin = NaN(1,3);       fval = Inf;
         xmin_post = NaN(1,3);  fval_post = Inf;
@@ -238,9 +243,9 @@ else
     
     % Compute log likelihood of data and possibly std of log likelihood
     if nargout > 1
-        [LL,y_std] = noisy_loglik_estim(infprob.SimModel,sl_opt,x_orig);
+        [LL,y_std] = infbench_synthetic_loglik_estim(infprob.SimModel,sl_opt,x_orig);
     else
-        LL = noisy_loglik_estim(infprob.SimModel,sl_opt,x_orig);
+        LL = infbench_synthetic_loglik_estim(infprob.SimModel,sl_opt,x_orig);
     end    
     y = LL - dy;
     

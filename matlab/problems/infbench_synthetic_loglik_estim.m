@@ -1,4 +1,4 @@
-function [llik,llik_std] = noisy_loglik_estim(sim_model,opt,theta,method,use_boot)
+function [llik,llik_std] = infbench_synthetic_loglik_estim(sim_model,opt,theta,method,use_boot)
 % Computes a noisy log likelihood estimate by simulating N datasets and using SL 
 % approximation. Also estimate of the variance of the lik value can be computed using the
 % bootstrap.
@@ -30,7 +30,7 @@ summaries_th = NaN(sim_model.summary_dim,N); % each column one summary vector
 
 % repeated sampling for SL (this could be parallelized in practice)
 for i = 1:N
-    data_i = sim_model.gen(theta, sim_model.n_data);
+    data_i = sim_model.gen(theta,sim_model.n_data);
     summaries_th(:,i) = sim_model.comp_summaries(data_i,sim_model.data);
 end
 
