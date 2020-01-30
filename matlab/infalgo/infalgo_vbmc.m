@@ -60,6 +60,10 @@ algoptions.StableGPvpK = Inf;
 algoptions.SkipActiveSamplingAfterWarmup = true;
 algoptions.PosteriorMCMC = 0;
 algoptions.VarThresh = Inf;
+algoptions.TolGPNoise = 1e-3;
+algoptions.GPLengthPriorMean = 0.05;
+algoptions.GPLengthPriorStd = log(10);
+algoptions.ActiveSearchBound = Inf;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -190,6 +194,8 @@ switch algoset
     case {66,'trust'}; algoset = 'trust'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfregtr_vbmc;
     case {67,'trust2'}; algoset = 'trust2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmaxiqrregtr_vbmc; algoptions.Plot = 1;
     case {68,'new'}; algoset = 'new'; algoptions = newdefaults; algoptions.TolGPNoise = sqrt(1e-5); algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25;
+    case {69,'new2'}; algoset = 'new'; algoptions = newdefaults; algoptions.TolGPNoise = sqrt(1e-5); algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.gpMeanFun = 'negquad';
+    case {70,'new3'}; algoset = 'new'; algoptions = newdefaults; algoptions.TolGPNoise = sqrt(1e-4); algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.gpMeanFun = 'negquad'; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;

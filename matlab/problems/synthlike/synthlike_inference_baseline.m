@@ -1,0 +1,85 @@
+function [] = synthlike_inference_baseline(model_id,run_id)
+% Computes the baseline posterior density for the real test problems whose exact 
+% likelihood is unavailable. The results are saved to file to be used for comparisons in
+% the GP-ABC code. This same code can also be used for plotting the resulting posterior
+% once the MCMC has first been run and results saved. 
+%
+% NOTE 1: The Lorenz model is much more costly than the other models so handle it
+% seperately in cluster.
+% NOTE 2: prior bounds are not set here because the MCMC never really seem to run
+% issues with the boundaries anyway. This may not be the case with some other models not
+% considered here though!
+% NOTE 3: m tells which model results to plot when 'plot_res' is 1
+
+TEST_MODE = 0;
+
+if nargin < 1 || isempty(model_id); model_id = 2; end
+if nargin < 2 || isempty(run_id); run_id = 1; end
+
+root = '../results/sl_baseline/';
+
+% 5 models, 5 runs per model
+nruns = 5;
+models = {'lorenz','ricker','ricker_12','gk_model','ma2'};
+%Ns = [100,100,100,100,100]; % N for SL
+Ns = [50,80,80,20,20]; % N for SL
+if TEST_MODE
+    % For testing...
+    ind = 5;
+    models = models(ind);
+    Ns = Ns(ind);
+    %nruns = 1;
+end
+use_grid = 0;
+
+% get test model settings
+[grid_th,sim_model] = get_test_model(models{model_id},[],Ns(model_id));
+
+%% SL settings
+% mcmc related settings
+sl_mcmc_opt.init = sim_model.true_theta; % USE THE 'TRUE VALUE' AS INITIAL POINT FOR MCMC
+sl_mcmc_opt.nsimu = 100000;
+sl_mcmc_opt.nchains = 1;
+sl_mcmc_opt.nfinal = 5000;
+sl_mcmc_opt.display_type = 'on';
+%...
+
+sl_opt.N = Ns(model_id);
+sl_opt.estimator = 'sl'; % 'sl','ubsl','ublogsl'
+
+
+%% run SL-MCMC inference
+sl_seed = 42 + id; % different seed for each run
+rng(sl_seed);
+try
+    [sl_samples,init_sl_samples,mcmc_diag] = standard_sl_inference(sim_model,...
+        grid_th,sl_opt,sl_mcmc_opt,use_grid);
+catch err
+    % save which settings etc. caused the error
+    fid = fopen('errorfile.txt','a+');
+    fprintf(fid, '--------------------\n');
+    fprintf(fid, 'run_id: %i, model_id: %i', run_id, model_id);
+    fprintf(fid, '\n');
+    fprintf(fid, '%s', err.getReport('extended','hyperlinks','off'));
+    fprintf(fid, '\n--------------------\n');
+    fprintf(fid, '\n');
+    fclose(fid);
+end
+
+% compute marginals from the SL-MCMC samples
+post_kde = kde_for_abc(grid_th,sl_samples);
+if sim_model.dim == 2
+    post_kde = vec_to_grid_matrix(post_kde, grid_th);
+end
+
+%% save thinned set of samples, initial 1000 samples and the final estimated density
+fn = [root,'/',models{model_id},'_run',num2str(run_id)];
+save(fn,'sl_samples','init_sl_samples','post_kde','mcmc_diag','grid_th',...
+    'sim_model','sl_mcmc_opt','sl_opt');
+
+end
+
+
+
+
+

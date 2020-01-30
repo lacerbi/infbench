@@ -8,7 +8,7 @@ if nargin < 4
     method = 'sl';
 end
 if nargin < 5
-    use_boot = 0;
+    use_boot = 1;
 end
 bootvar = NaN;
 
