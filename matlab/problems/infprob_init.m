@@ -90,8 +90,14 @@ end
 %     warning('Could not load optimum location/value from file.');
 % end
 
+if isfield(probstruct,'ScaleVariables') && ~isempty(probstruct.ScaleVariables)
+    ScaleVariables = probstruct.ScaleVariables;
+else
+    ScaleVariables = evalbool(options.ScaleVariables);
+end
+
 % Center and rescale variables (potentially transform to log space)
-if evalbool(options.ScaleVariables)
+if ScaleVariables
     probstruct.trinfo = warpvars(probstruct.D,probstruct.LB,probstruct.UB,probstruct.PLB,probstruct.PUB);
     if any(probstruct.trinfo.type > 0); error('Nonlinear transforms unsupported yet.'); end
     probstruct.LB = warpvars(probstruct.LB,'d',probstruct.trinfo);
@@ -123,9 +129,17 @@ if evalbool(options.ScaleVariables)
     
 end
 
+% Default prior is Gaussian
+if ~isfield(probstruct,'PriorType') || isempty(probstruct.PriorType)
+    probstruct.PriorType = 'gaussian';
+end
+
 % Store Gaussian prior mean and variance
 probstruct.PriorMean = 0.5*(probstruct.PLB+probstruct.PUB);
 probstruct.PriorVar = (0.5*(probstruct.PUB-probstruct.PLB)).^2;
+
+% Total volume (used for uniform flat prior)
+probstruct.PriorVolume = prod(probstruct.UB - probstruct.LB);
 
 % if isfield(probstruct,'TrueMinFval') && isfinite(probstruct.TrueMinFval)
 %     display(['Known minimum function value: ' num2str(probstruct.TrueMinFval,'%.3f')]);

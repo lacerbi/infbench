@@ -64,6 +64,8 @@ if isempty(x)
                 mcmc_opt.nfinal = min(mcmc_opt.nsimu,1e3);
                 mcmc_opt.display_type = 'on';
                 
+                infprob.Ns = 400;   % High precision
+                
                 model.ssfun = @(x,data) -2*logpost(x,infprob);
                 model.N = 1;
                 data = [];
@@ -89,18 +91,25 @@ if isempty(x)
                 tic
                 [output,Xs,~,s2chain] = mcmcrun(model,data,params,options);
                 toc
-                lls = -0.5*s2chain;
                 exitflag = 0;
                 
                 % Remove burn-in
                 Ns = size(Xs,1);
                 Xs = Xs(ceil(Ns/2):Ns,:);
-                lls = lls(ceil(Ns/2):Ns);
                 
                 % Thin remaining samples
                 idx = round(linspace(1,size(Xs,1),mcmc_opt.nfinal))';                
                 Xs = Xs(idx,:);
-                lls = lls(idx);
+                
+                % Re-evaluate final lls with very high precision
+                fprintf('Re-evaluate log posteriors...\n');
+                infprob.Ns = 8e3;
+                lls = zeros(size(Xs,1));
+                for i = 1:size(Xs,1)
+                    lls(i) = logpost(Xs(i,:),infprob);
+                    if mod(i,ceil(size(Xs,1)/10))==0; fprintf('%d/%d..',i,size(Xs,1)); end
+                end
+                fprintf('\nDone.\n');
                                 
                 filename = ['wood2010_mcmc_n' num2str(n) '_id' num2str(id) '.mat'];
                 save(filename,'Xs','lls','exitflag','output');                
@@ -113,6 +122,9 @@ if isempty(x)
     else
         % Initialization call -- define problem and set up data
         n = infprob(1);
+        
+        % Are we transforming the entire problem to unconstrained space?
+        transform_to_unconstrained_coordinates = false;
         
         % Add problem directory to MATLAB path
         % pathstr = fileparts(mfilename('fullpath'));
@@ -139,10 +151,13 @@ if isempty(x)
         noise = [];
         
         D = sim_model.dim;
-        trinfo = warpvars(D,lb,ub,plb,pub);     % Transform to unconstrained space
-        trinfo.mu = zeros(1,D);     % Necessary for retro-compatibility
-        trinfo.delta = ones(1,D);
-        
+        if transform_to_unconstrained_coordinates
+            trinfo = warpvars(D,lb,ub,plb,pub);     % Transform to unconstrained space
+            trinfo.mu = zeros(1,D);     % Necessary for retro-compatibility
+            trinfo.delta = ones(1,D);
+        else
+            trinfo = [];
+        end
         
         switch n
             case 1  % 
@@ -180,8 +195,8 @@ if isempty(x)
         y.Ns = 80;          % # samples for synthetic likelihood
                 
         y.D = D;
-        y.LB = -Inf(1,D);   % Using unconstrained space
-        y.UB = Inf(1,D);
+        y.LB = warpvars(lb,'d',trinfo);
+        y.UB = warpvars(ub,'d',trinfo);
         y.PLB = warpvars(plb,'d',trinfo);
         y.PUB = warpvars(pub,'d',trinfo);
         

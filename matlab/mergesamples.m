@@ -70,6 +70,7 @@ end
 fprintf('\n\tMean_mcmc = %s;\n\tCov_mcmc = %s;\n', mat2str(mean(X,1)), mat2str(cov(X)));
 
 if Nml > 0
+    N = size(X,1);
     % Compute approximation of marginal likelihood
     if N > Nml
         idx = round(linspace(1,N,Nml))';
