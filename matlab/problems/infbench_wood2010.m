@@ -25,6 +25,12 @@ if isempty(x)
             D = sim_model.dim;            
             trinfo = sim_model.trinfo;
             
+            % Prior used for sampling
+            infprob.PriorMean = infprob.Prior.Mean;
+            infprob.PriorVar = diag(infprob.Prior.Cov)';
+            infprob.PriorVolume = prod(infprob.UB - infprob.LB);
+            infprob.PriorType = 'uniform';            
+            
             if id == 0
             
                 % First, check optimum            
@@ -270,10 +276,6 @@ end
 %--------------------------------------------------------------------------
 function y = logpost(x,infprob)
     y = infbench_wood2010(x,infprob);
-    %infprob.PriorMean = infprob.Prior.Mean;
-    %infprob.PriorVar = diag(infprob.Prior.Cov)';
-    infprob.PriorType = 'uniform';
-    infprob.PriorVolume = prod(infprob.UB - infprob.LB);
     lnp = infbench_lnprior(x,infprob);
     y = y + lnp;
 end
