@@ -10,8 +10,7 @@ if isempty(x)
         % Add sampler directory to MATLAB path
         pathstr = fileparts(mfilename('fullpath'));
         addpath([pathstr,filesep(),'..',filesep(),'infalgo',filesep(),'parallel-GP-SL',filesep(),'utils',filesep(),'mcmcstat-master']);
-        
-        
+                
         for n = 1
             switch n
                 case 1

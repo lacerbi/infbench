@@ -23,8 +23,8 @@ rr975 = zeros(n,npar1);
 rr50  = zeros(n,npar1);
 
 for i=1:n
-  rr975(i,:) = psrf(chain,0.05,[],e(i));
-  rr50(i,:)  = psrf(chain,0.5,[],e(i));
+  rr975(i,:) = psrf_dram(chain,0.05,[],e(i));
+  rr50(i,:)  = psrf_dram(chain,0.5,[],e(i));
 %  keyboard
 end
 

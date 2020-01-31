@@ -28,7 +28,13 @@ for iFile = 1:M
         
         Xs(:,:,iter) = temp.Xs;
         lls(:,iter) = temp.lls;        
-        funccount(iter) = temp.output.funccount;
+        if isfield(temp.output,'funccount')
+            funccount(iter) = temp.output.funccount;
+        elseif isfield(temp.output,'nsimu')
+            funccount(iter) = temp.output.nsimu;
+        else
+            funccount(iter) = NaN;
+        end
         fprintf('%d..', iter);
         iter = iter + 1;
         if iter > MaxIter
