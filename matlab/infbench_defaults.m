@@ -135,7 +135,7 @@ switch lower(type)
                     case {'acqmi2'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-';
                     case {'acqmidtstep1_100','ent2','ent2midtstep1mc'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'ent3','ent2midtmcmc50','ent2midtmcmc50step1'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
-                    case 'acqimiqrnoisenegquadbox3'; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '--';
+                    case 'acqimiqrnoisenegquadbox4'; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '--';
                     case {'acqimiqrnoisenegquad','new3'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = ':';
                         
                     otherwise
