@@ -1,4 +1,4 @@
-function y = infbench_funnel(x,infprob)
+function [y,y_std] = infbench_funnel(x,infprob)
 %INFBENCH_FUNNEL Inference benchmark log pdf -- Neal's funnel density.
 
 if isempty(x)
@@ -63,6 +63,7 @@ else
     y = -0.5*x(:,1).^2/sigma2 -0.5*log(sigma2) ...
         - 0.5*sum(x(:,2:D).^2,2)./exp(x(:,1)) - 0.5*(D-1)*x(:,1) ...
         - 0.5*D*log(2*pi);
+    y_std = zeros(size(x,1),1);
 end
 
 end

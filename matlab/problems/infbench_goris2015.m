@@ -1,4 +1,4 @@
-function y = infbench_goris2015(x,infprob,mcmc_params)
+function [y,y_std] = infbench_goris2015(x,infprob,mcmc_params)
 %INFBENCH_GORIS2015 Inference benchmark log pdf -- neuronal model from Goris et al. (2015).
 
 if nargin < 3; mcmc_params = []; end
@@ -270,6 +270,7 @@ else
     % Compute log likelihood of data (fcn returns nLL)
     LL = -TPGiveBof(xfull, infprob.Data.sTP, infprob.Data.sSF);    
     y = LL - dy;
+    y_std = 0;
     
 end
 

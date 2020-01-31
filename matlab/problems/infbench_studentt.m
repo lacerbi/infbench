@@ -1,4 +1,4 @@
-function y = infbench_studentt(x,infprob)
+function [y,y_std] = infbench_studentt(x,infprob)
 %INFBENCH_STUDENTT Inference benchmark log pdf -- Student's t density.
 
 if isempty(x)
@@ -150,6 +150,8 @@ elseif nargout > 0
     for i = 1:infprob.D
         y = y + tlogpdf(x(:,i),mu(i),sigma(i),df(i));
     end
+    y_std = zeros(size(x,1),1);    
+    
 else
     Nrnd = 1e5;
     D = infprob.D;

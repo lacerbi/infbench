@@ -1,4 +1,4 @@
-function y = infbench_normal(x,infprob)
+function [y,y_std] = infbench_normal(x,infprob)
 %INFBENCH_NORMAL Inference benchmark log pdf -- multivariate normal density.
 
 if isempty(x)
@@ -144,6 +144,7 @@ elseif nargout > 0
     for i = 1:infprob.D
         y = y + normlogpdf(x(:,i),mu(i),sigma(i));
     end
+    y_std = zeros(size(x,1),1);
 else
     Nrnd = 1e5;
     D = infprob.D;

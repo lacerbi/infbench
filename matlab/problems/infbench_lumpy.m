@@ -1,4 +1,4 @@
-function y = infbench_lumpy(x,infprob)
+function [y,y_std] = infbench_lumpy(x,infprob)
 %INFBENCH_LUMPY Inference benchmark log pdf -- lumpy density.
 
 if isempty(x)
@@ -240,6 +240,7 @@ if isempty(x)
     end
 elseif nargout > 0
     y = log(max(pdf(x,infprob.w,infprob.Mu,infprob.Sigma),realmin));
+    y_std = 0;
 else
     M = numel(infprob.w);
     h = sample_hist(infprob.w,1e5);    

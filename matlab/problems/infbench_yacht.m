@@ -1,4 +1,4 @@
-function y = infbench_yacht(x,infprob,mcmc_params)
+function [y,y_std] = infbench_yacht(x,infprob,mcmc_params)
 %INFBENCH_YACHT Inference benchmark log pdf -- neuronal model from Goris et al. (2015).
 
 if nargin < 3; mcmc_params = []; end
@@ -217,7 +217,8 @@ else
     catch
         nlZ = Inf;
     end        
-    y = -nlZ;    
+    y = -nlZ;
+    y_std = 0;
         
 end
 

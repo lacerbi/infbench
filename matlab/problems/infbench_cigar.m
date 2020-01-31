@@ -1,4 +1,4 @@
-function y = infbench_cigar(x,infprob)
+function [y,y_std] = infbench_cigar(x,infprob)
 %INFBENCH_CIGAR Inference benchmark log pdf -- cigar density.
 
 if isempty(x)
@@ -82,6 +82,7 @@ if isempty(x)
 else
     y = mvnlogpdf(x,infprob.Mean,infprob.Cov);
     % y(~isfinite(y)) = log(realmin);
+    y_std = 0;
 end
 
 end
