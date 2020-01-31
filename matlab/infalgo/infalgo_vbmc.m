@@ -64,6 +64,7 @@ algoptions.TolGPNoise = 1e-3;
 algoptions.GPLengthPriorMean = 0.05;
 algoptions.GPLengthPriorStd = log(10);
 algoptions.ActiveSearchBound = Inf;
+algoptions.BoxSearchFrac = 0;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -107,7 +108,7 @@ newdefaults.WarmupCheckMax = true;
 newdefaults.SGDStepSize = 0.005;
 newdefaults.NSentFine = '@(K) 2^12*K';
 newdefaults.NSentFast = 0;
-newdefaults.gpMeanFun = 'negquadfix';
+newdefaults.gpMeanFun = 'negquad';
 newdefaults.GPTrainInitMethod = 'rand';
 newdefaults.GPTrainNinitFinal = 64;
 newdefaults.MaxIterStochastic = '100*(2+nvars)';
@@ -122,8 +123,11 @@ newdefaults.NSent = '@(K) 100*K.^(2/3)';
 newdefaults.NSentBoost = '@(K) 200*K.^(2/3)';
 newdefaults.SkipActiveSamplingAfterWarmup = 0;
 newdefaults.StableGPvpK = 10;
-
-
+newdefaults.TolGPNoise = sqrt(1e-5);
+newdefaults.GPLengthPriorMean = 'sqrt(D/6)';
+newdefaults.GPLengthPriorStd = 0.5*log(1e3);
+newdefaults.ActiveSearchBound = 2; 
+newdefaults.BoxSearchFrac = 0.25;
 
 % Options from current problem
 switch algoset
@@ -220,6 +224,7 @@ switch algoset
     case {210,'acqimiqrnoisenegquadbox2'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0;
     case {211,'acqimiqrnoisenegquadbox3'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0; algoptions.GPLengthPriorMean = 1;
     case {212,'acqimiqrnoisenegquadbox4'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0; algoptions.TolGPNoise = sqrt(1e-5); algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3);
+    case {213,'acqimiqrnoisenegquadbox5'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2reg_vbmc;
         
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
