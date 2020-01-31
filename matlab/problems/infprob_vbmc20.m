@@ -21,16 +21,12 @@ probstruct.func = ['@(x_,probstruct_) infbench_' probstruct.Prob '(x_(:)'',probs
 probstruct.Noise = noise;
 probstruct.NoiseEstimate = 0;       % Function is intrinsically not-noisy
 
-
 switch prob
     case 'wood2010'
         probstruct.ScaleVariables = false;  % Do not rescale
         probstruct.PriorType = 'uniform';   % Use uniform prior
     otherwise
 end
-
-
-
 
 %--------------------------------------------------------------------------
 function probstruct = initprob(prob,problist,ProbSet,SubProb,id,D)

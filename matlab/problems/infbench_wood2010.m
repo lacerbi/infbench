@@ -75,7 +75,7 @@ if isempty(x)
                 model.ssfun = @(x,data) -2*logpost(x,infprob);
                 model.N = 1;
                 data = [];
-
+                
                 % Starting point
                 x0 = infprob.Post.Mode;
                 params = cell(D,1);
@@ -229,7 +229,7 @@ if isempty(x)
         y.Post.Cov = Cov_mcmc;
         
         % Read marginals from file
-        % marginals = load('goris2015_marginals.mat');
+        % marginals = load('wood2010_marginals.mat');
         % y.Post.MarginalBounds = marginals.MarginalBounds{n};
         % y.Post.MarginalPdf = marginals.MarginalPdf{n};
         

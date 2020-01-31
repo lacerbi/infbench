@@ -175,7 +175,7 @@ sim_model.N = NaN; % for SL
 sim_model.name = probstruct.Prob;
 for i = 1:D; sim_model.theta_names{i} = ['x_' num2str(i)]; end
 
-sim_model.true_theta = probstruct.Post.Mode;
+sim_model.true_theta = probstruct.ProbInfo.Post.Mode;
 sim_model.dim = D;
 
 sim_model.loglik_eval = @(theta) infbench_func(theta,probstruct);

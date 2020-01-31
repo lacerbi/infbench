@@ -5,9 +5,16 @@ D = size(xx,2);
 nkde = 2^13;
 MTV = zeros(1,D);
 
+LB = probstruct.LB;
+UB = probstruct.UB;
+
 % Compute marginal total variation
 for i = 1:D
-    [~,yy1,xmesh] = kde1d(xx(:,i),nkde);
+    if isinf(LB(i)) || isinf(UB(i))
+        [~,yy1,xmesh] = kde1d(xx(:,i),nkde);
+    else
+        [~,yy1,xmesh] = kde1d(xx(:,i),nkde,LB(i),UB(i));            
+    end
     yy1 = yy1/(qtrapz(yy1)*(xmesh(2)-xmesh(1))); % Ensure normalization
     yy_true = probstruct.Post.MarginalPdf(i,:);
     xx_true = linspace(probstruct.Post.MarginalBounds(1,i),probstruct.Post.MarginalBounds(2,i),size(yy_true,2));    
