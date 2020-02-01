@@ -125,8 +125,9 @@ if ScaleVariables
             end
             probstruct.Post.MarginalPdf = bsxfun(@times,probstruct.Post.MarginalPdf,probstruct.trinfo.delta');
         end
-    end
-    
+    end    
+else    
+    probstruct.Post = probstruct.ProbInfo.Post;    
 end
 
 % Default prior is Gaussian

@@ -5,7 +5,7 @@ function [MarginalBounds,MarginalPdf] = readmcmcmarginals(prob,subprobs)
 % (To be launched from the goris2015mcmc data folder).
 
 nkde = 2^13;
-inffun = str2func(['infbench_' prob '.m']);
+inffun = str2func(['infbench_' prob]);
 
 for iSubprob = 1:numel(subprobs)
     subprob = subprobs(iSubprob);    

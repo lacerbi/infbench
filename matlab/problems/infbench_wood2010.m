@@ -180,7 +180,7 @@ if isempty(x)
                 % R_max = 1.000. Ntot = 100000. Neff_min = 96017.0. Total funccount = 10000000.
                 Mean_mcmc = [4.12484938732745 9.29180259639864 0.148197569365525];
                 Cov_mcmc = [0.0131387600210079 -0.0353652137125237 -0.00630261383808421;-0.0353652137125237 0.174248272892472 0.0151250479087484;-0.00630261383808421 0.0151250479087484 0.0104536897496717];
-                lnZ_mcmc = -23.4042922688787;        
+                lnZ_mcmc = -23.4880891394316;
         end
         
         sim_model.true_theta = theta_orig;
@@ -232,9 +232,9 @@ if isempty(x)
         y.Post.Cov = Cov_mcmc;
         
         % Read marginals from file
-        % marginals = load('wood2010_marginals.mat');
-        % y.Post.MarginalBounds = marginals.MarginalBounds{n};
-        % y.Post.MarginalPdf = marginals.MarginalPdf{n};
+        marginals = load('wood2010_marginals.mat');
+        y.Post.MarginalBounds = marginals.MarginalBounds{n};
+        y.Post.MarginalPdf = marginals.MarginalPdf{n};
         
         % Save data and coordinate transformation struct
         sim_model.trinfo = trinfo;
