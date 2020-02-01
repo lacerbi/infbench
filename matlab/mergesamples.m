@@ -27,7 +27,7 @@ for iFile = 1:M
         end
         
         Xs(:,:,iter) = temp.Xs;
-        lls(:,iter) = temp.lls;        
+        lls(:,iter) = temp.lls(:,1);        
         if isfield(temp.output,'funccount')
             funccount(iter) = temp.output.funccount;
         elseif isfield(temp.output,'nsimu')
