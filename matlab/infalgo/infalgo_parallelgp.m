@@ -80,12 +80,12 @@ mcmc_opt.always_mcmc = 1; % Always do MCMC (instead of gridding)
 [grid_th,sim_model] = get_model(probstruct,algoptions);
 
 %% SL estimator settings
-lik_opt.method = 'sl'; % which method to obtain log-lik estimates: 'sl', 'lfire' ('lfire' not implemented')
-if isfield(sim_model,'loglik_eval')
-    lik_opt.method = 'exact'; % if exact log-likelihood evaluations are obtained (synthetic 2D examples only)
-    gp_opt.noise_model = 2;
-    gp_opt.sigma_n_const = probstruct.NoiseSigma;
-end
+lik_opt.method = 'noisy_exact'; % which method to obtain log-lik estimates
+%if isfield(sim_model,'loglik_eval')
+%    lik_opt.method = 'exact'; % if exact log-likelihood evaluations are obtained (synthetic 2D examples only)
+%    gp_opt.noise_model = 2;
+%    gp_opt.sigma_n_const = probstruct.NoiseSigma;
+%end
 lik_opt.sl.estimator = 'sl'; % which SL estimator: 'sl', 'ubsl', 'ublogsl'
 lik_opt.sl.N = sim_model.N; % number of repeated samples computing SL at each evaluation location
 

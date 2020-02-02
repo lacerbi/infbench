@@ -98,7 +98,7 @@ else % dim > 2
     
     params = cell(npar,1);
     for i = 1:npar
-        params{i} = {sprintf('\\theta_{%d}',i), init(i), th_grid.theta(i,1), th_grid.theta(i,end)};
+        params{i} = {sprintf('\\theta_{%d}',i),init(i),th_grid.theta(i,1),th_grid.theta(i,end)};
     end
     
     % Additional MCMC settings

@@ -16,6 +16,10 @@ bootvar = NaN;
 if strcmp(method,'exact')
     llik = sim_model.loglik_eval(theta);
     return;
+elseif strcmp(method,'noisy_exact')
+    [llik,llik_std] = sim_model.loglik_eval(theta);
+    bootvar = llik_std.^2;
+    return;
 end
 
 %% SL or LFIRE case:
