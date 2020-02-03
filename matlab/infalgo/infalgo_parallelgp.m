@@ -41,7 +41,13 @@ end
 
 
 %% GP settings
-gp_opt.noise_model = 1; % 0=constant GP noise term, 1=uses bootstrapped noise variance estimates in GP, 2=known constant GP
+if ~isempty(probstruct.Noise) || probstruct.IntrinsicNoisy
+    gp_opt.noise_model = 1; % 0=constant GP noise term (to be inferred), 1=heteroskedastic noise (provided), 2 known constant GP noise term
+else
+    gp_opt.noise_model = 2;
+    gp_opt.sigma_n_const = sqrt(1e-5);
+end
+
 gp_opt.meanf = 1; % 0 is zero mean GP prior, 1 enables const/lin/quadratic terms
 gp_opt.hyp_upd_freq = 1; % how often GP hypers are updated using MAP-estimation
 gp_opt.display_type = 'off';

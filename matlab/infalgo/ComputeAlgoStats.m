@@ -1,4 +1,4 @@
-function [gsKL,Mean,Cov,lnZ,lnZ_var,Mode,MTV] = ComputeAlgoStats(X,y,probstruct,compute_lnZ,Ns_moments,gp,s2)
+function [gsKL,Mean,Cov,lnZ,lnZ_var,Mode,MTV,xx] = ComputeAlgoStats(X,y,probstruct,compute_lnZ,Ns_moments,gp,s2)
 %COMPUTEALGOSTATS Compute GP model-based statistics from given training set.
     
 if nargin < 4 || isempty(compute_lnZ); compute_lnZ = false; end
@@ -92,6 +92,7 @@ catch ME
     lnZ_var = NaN;
     Mode = NaN(1,D);
     MTV = NaN(1,D);
+    xx = [];
 end
 
 end

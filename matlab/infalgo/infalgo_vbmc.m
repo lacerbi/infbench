@@ -329,7 +329,7 @@ if ~ControlRunFlag
     post.lnZ_var = elbo_sd^2;
     fprintf('Calculating VBMC output at iteration...\n');
     fprintf('%d..',0);
-    [post.gsKL,post.Mean,post.Cov,post.Mode,post.MTV] = ...
+    [post.gsKL,post.Mean,post.Cov,post.Mode,post.MTV,post.samples] = ...
         computeStats(vp,gp,probstruct,algoptions.PosteriorMCMC,algoptions.VarThresh);
 
     % Return estimate, SD of the estimate, and gauss-sKL with true moments
@@ -434,7 +434,7 @@ history.Output.stats = stats;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [gsKL,Mean,Cov,Mode,MTV] = computeStats(vp,gp,probstruct,PosteriorMCMC,VarThresh)
+function [gsKL,Mean,Cov,Mode,MTV,xx] = computeStats(vp,gp,probstruct,PosteriorMCMC,VarThresh)
 %COMPUTE_STATS Compute additional statistics.
     
 % Compute Gaussianized symmetric KL-divergence with ground truth

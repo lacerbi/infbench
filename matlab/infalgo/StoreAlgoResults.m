@@ -29,7 +29,7 @@ X_train = history.Output.X;
 y_train = history.Output.y;
 s2_train = history.Output.s2;
 if ~isempty(gpiter); gp = gpiter{end}; end
-[post.gsKL,post.Mean,post.Cov,lnZ,lnZ_var,post.Mode,post.MTV] = ...
+[post.gsKL,post.Mean,post.Cov,lnZ,lnZ_var,post.Mode,post.MTV,post.samples] = ...
     ComputeAlgoStats(X_train,y_train,probstruct,compute_lnZ,[],gp,s2_train);
 if compute_lnZ
     post.lnZ = lnZ;
