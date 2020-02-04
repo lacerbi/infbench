@@ -4,6 +4,7 @@ function [X,lls,funccount] = mergesamples(filepattern,MaxIter,Nml,psrf_flag)
 if nargin < 2 || isempty(MaxIter); MaxIter = Inf; end
 if nargin < 3 || isempty(Nml); Nml = 2e4; end
 if nargin < 4 || isempty(psrf_flag); psrf_flag = true; end
+if nargin < 5; infprob = []; end
 
 files = dir(filepattern);
 M = numel(files);
@@ -69,7 +70,7 @@ for m = 1:M
 end
 fprintf('\n\tMean_mcmc = %s;\n\tCov_mcmc = %s;\n', mat2str(mean(X,1)), mat2str(cov(X)));
 
-if Nml > 0
+if Nml > 0    
     N = size(X,1);
     % Compute approximation of marginal likelihood
     if N > Nml
