@@ -43,7 +43,6 @@ if isempty(x)
                 % Compute optimum
                 Nopts = 5;
                 
-                
                 opts = optimoptions('fmincon','Display','off','MaxFunEvals',5e4);
 
                 for iOpt = 1:Nopts                
@@ -80,17 +79,17 @@ if isempty(x)
                 logpfun = @(x) logpost(x,infprob);
                 
                 % Number of samples
-                if numel(mcmc_params) > 2
-                    Ns = mcmc_params(3);
+                if numel(mcmc_params) > 1
+                    Ns = mcmc_params(2);
                 else
                     Ns = 1e3;
                 end
                 
                 W = 2*(infprob.D+1);    % Number of walkers
                 
-                sampleopts.Burnin = Ns*3;
-                sampleopts.Thin = 3;
-                sampleopts.Display = 'iter';
+                sampleopts.Thin = 23;
+                sampleopts.Burnin = Ns*sampleopts.Thin;
+                sampleopts.Display = 'notify';
                 sampleopts.Diagnostics = false;
                 sampleopts.VarTransform = false;
                 sampleopts.InversionSample = false;
@@ -108,8 +107,6 @@ if isempty(x)
             end
             
         end
-           
-        
         
     else
         % Initialization call -- define problem and set up data
