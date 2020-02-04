@@ -22,6 +22,7 @@ algoptions.MCMCnchains = 5;     % how many MCMC chains for importance sampling
 algoptions.MCMCnsamples = 1e4;  % how many MCMC samples for each chain
 algoptions.NsamplesIS = 500;    % how many samples from the importance distribution
 algoptions.GridSizeD2 = 2500;   % # grid points for 2D integral
+algoptions.GPUpdateFreq = 1;    % How often GP hyperparameters are updated via MAP estimation
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -34,6 +35,7 @@ switch algoset
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'maxiqr'}; algoset = 'maxiqr'; algoptions.AcqMethod = 'MAXIQR';
     case {3,'fast'}; algoset = 'fast'; algoptions.AcqOptInit = 500; algoptions.AcqOptNstarts = 3; algoptions.AcqOptMCMCnchains = 3; algoptions.AcqOptMCMCnsamples = 1e3; algoptions.NsamplesIS = 200; algoptions.GridSizeD2 = 500;
+    case {4,'fast2'}; algoset = 'fast2'; algoptions.AcqOptInit = 500; algoptions.AcqOptNstarts = 3; algoptions.AcqOptMCMCnchains = 3; algoptions.AcqOptMCMCnsamples = 1e3; algoptions.NsamplesIS = 200; algoptions.GridSizeD2 = 500; algoptions.GPUpdateFreq = 5;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -49,7 +51,7 @@ else
 end
 
 gp_opt.meanf = 1; % 0 is zero mean GP prior, 1 enables const/lin/quadratic terms
-gp_opt.hyp_upd_freq = 1; % how often GP hypers are updated using MAP-estimation
+gp_opt.hyp_upd_freq = algoptions.GPUpdateFreq; % how often GP hypers are updated using MAP-estimation
 gp_opt.display_type = 'off';
 
 %% acq settings

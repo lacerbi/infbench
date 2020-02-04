@@ -220,13 +220,15 @@ switch algoset
     case {206,'acqimiqrnoisesmallns'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingVPSamples = 10; algoptions.ActiveImportanceSamplingBoxSamples = 10;
     case {207,'acqimiqrnoisenegquad'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1;
     case {208,'acqimiqrnoisenegquadis2'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingVPSamples = 0; algoptions.ActiveImportanceSamplingBoxSamples = 200;
-    case {209,'acqimiqrnoisenegquadbox'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
-    case {210,'acqimiqrnoisenegquadbox2'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0;
-    case {211,'acqimiqrnoisenegquadbox3'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0; algoptions.GPLengthPriorMean = 1;
-    case {212,'acqimiqrnoisenegquadbox4'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0; algoptions.TolGPNoise = sqrt(1e-5); algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3);
-    case {213,'acqimiqrnoisenegquadbox5'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2reg_vbmc;
-    case {214,'acqimiqrnoisenegquadbox6'}; algoset = 'acqimiqrnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
-    case {215,'acqimiqrnoisenegquadbox7'}; algoset = 'acqimiqrnoise'; algoptions.NSgpMaxMain = 0; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
+    case {209,'acqimiqrnoisenegquadbox'}; algoset = 'acqimiqrnoisenegquadbox'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
+    case {210,'acqimiqrnoisenegquadbox2'}; algoset = 'acqimiqrnoisenegquadbox2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0;
+    case {211,'acqimiqrnoisenegquadbox3'}; algoset = 'acqimiqrnoisenegquadbox3'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0; algoptions.GPLengthPriorMean = 1;
+    case {212,'acqimiqrnoisenegquadbox4'}; algoset = 'acqimiqrnoisenegquadbox4'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.gpMeanFun = 'negquad'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.BoxSearchFrac = 0.25; algoptions.Plot = 0; algoptions.SearchOptimizer = 'cmaes'; algoptions.ActiveSampleFullUpdate = 0; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.ActiveSearchBound = 2; algoptions.IntegrateGPMean = 0; algoptions.TolGPNoise = sqrt(1e-5); algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3);
+    case {213,'acqimiqrnoisenegquadbox5'}; algoset = 'acqimiqrnoisenegquadbox5'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2reg_vbmc;
+    case {214,'acqimiqrnoisenegquadbox6'}; algoset = 'acqimiqrnoisenegquadbox6'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
+    case {215,'acqimiqrnoisenegquadbox7'}; algoset = 'acqimiqrnoisenegquadbox7'; algoptions = newdefaults; algoptions.NSgpMaxMain = 0; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
+    case {216,'acqimiqrnoisenegquadbox8'}; algoset = 'acqimiqrnoisenegquadbox8'; algoptions = newdefaults; algoptions.NSgpMaxMain = 0; algoptions.WarmupOptions.ActiveSampleFullUpdate = 2; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
+    case {217,'acqimiqrnoisenegquadbox9'}; algoset = 'acqimiqrnoisenegquadbox9'; algoptions = newdefaults; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupOptions.ActiveSampleFullUpdate = 2; algoptions.SearchAcqFcn = @acqimiqrreg_vbmc; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1; algoptions.ActiveImportanceSamplingMCMCSamples = 200;
     
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
@@ -284,12 +286,22 @@ end
 % Increase base noise with noisy functions
 if ~isempty(probstruct.Noise) || probstruct.IntrinsicNoisy
     algoptions.UncertaintyHandling = 'on';
-    NoiseEstimate = probstruct.NoiseEstimate;
-    if isempty(NoiseEstimate); NoiseEstimate = 1; end
-    algoptions.SpecifyTargetNoise = true;
-    % algoptions.NoiseSize = NoiseEstimate(1);
+    
+    if probstruct.InferNoise
+        algoptions.SpecifyTargetNoise = false;        
+        NoiseEstimate = probstruct.NoiseEstimate;
+        % if isempty(NoiseEstimate); NoiseEstimate = 1; end
+        if ~isempty(NoiseEstimate)
+            algoptions.NoiseSize = NoiseEstimate(1);
+        else
+            algoptions.NoiseSize = [];            
+        end
+    else
+        algoptions.SpecifyTargetNoise = true;
+    end    
+    
     algoptions.TolStableCount = ceil(algoptions.TolStableCount*1.5);
-    % algoptions.TolStableWarmup = algoptions.TolStableWarmup*2;
+    % algoptions.TolStableWarmup = algoptions.TolStableWarmup*2;    
 else
     algoptions.UncertaintyHandling = 'off';
 end
@@ -329,7 +341,7 @@ if ~ControlRunFlag
     post.lnZ_var = elbo_sd^2;
     fprintf('Calculating VBMC output at iteration...\n');
     fprintf('%d..',0);
-    [post.gsKL,post.Mean,post.Cov,post.Mode,post.MTV,post.samples] = ...
+    [post.gsKL,post.Mean,post.Cov,post.Mode,post.MTV,post.samples,post.Test] = ...
         computeStats(vp,gp,probstruct,algoptions.PosteriorMCMC,algoptions.VarThresh);
 
     % Return estimate, SD of the estimate, and gauss-sKL with true moments
@@ -356,12 +368,13 @@ if ~ControlRunFlag
         history.Output.N(iIter) = history.SaveTicks(iIter);
         history.Output.lnZs(iIter) = elbo;
         history.Output.lnZs_var(iIter) = elbo_sd^2;
-        [gsKL,Mean,Cov,Mode,MTV] = computeStats(vp,gp,probstruct,algoptions.PosteriorMCMC,algoptions.VarThresh);
+        [gsKL,Mean,Cov,Mode,MTV,~,Test] = computeStats(vp,gp,probstruct,algoptions.PosteriorMCMC,algoptions.VarThresh);
         history.Output.Mean(iIter,:) = Mean;
         history.Output.Cov(iIter,:,:) = Cov;
         history.Output.gsKL(iIter) = gsKL;
         history.Output.Mode(iIter,:) = Mode;
-        history.Output.MTV(iIter,:) = MTV;        
+        history.Output.MTV(iIter,:) = MTV;
+        history.Output.Test{iIter} = Test;
     end
     fprintf('\n');
 else
@@ -434,7 +447,7 @@ history.Output.stats = stats;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [gsKL,Mean,Cov,Mode,MTV,xx] = computeStats(vp,gp,probstruct,PosteriorMCMC,VarThresh)
+function [gsKL,Mean,Cov,Mode,MTV,xx,Test] = computeStats(vp,gp,probstruct,PosteriorMCMC,VarThresh)
 %COMPUTE_STATS Compute additional statistics.
     
 % Compute Gaussianized symmetric KL-divergence with ground truth
@@ -460,7 +473,20 @@ Nopts = 1 + round(100/vp.K);
 Mode = vbmc_mode(vp,Nopts,1);
 
 % Compute marginal total variation
-MTV = ComputeMarginalTotalVariation(xx,probstruct);
+try
+    MTV = ComputeMarginalTotalVariation(xx,probstruct);
+catch
+    MTV = NaN(1,vp.D);
+end
+
+% Compute test statistics (problem-specific)
+if probstruct.ComputeTestStatistics
+    fun = str2func(['infbench_' probstruct.Prob]);
+    Test = fun('test',probstruct.ProbInfo,xx);
+    Test
+else
+    Test = [];
+end
 
 gsKL
 MTV

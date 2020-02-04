@@ -1,7 +1,7 @@
 function probstruct = infprob_vbmc20(prob,subprob,noise,id,options)
 
 % Problem names (ordered)
-problist = {'wood2010'};
+problist = {'wood2010','nnetcancer'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
@@ -9,6 +9,8 @@ if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
 switch prob
     case 'wood2010'
         subprobString = ['D' num2str(D)];
+    case 'nnetcancer'
+        subprobString = ['D' num2str(D)];        
     otherwise
         subprobString = ['D' num2str(D)];
 end
@@ -25,6 +27,13 @@ switch prob
     case 'wood2010'
         probstruct.ScaleVariables = false;  % Do not rescale
         probstruct.PriorType = 'uniform';   % Use uniform prior
+    case 'nnetcancer'
+        probstruct.IntrinsicNoisy = true;
+        probstruct.ScaleVariables = false;  % Do not rescale
+        probstruct.PriorType = 'uniform';   % Use uniform prior
+        probstruct.InferNoise = true;       % Noise is unknown
+        probstruct.NoiseEstimate = [];
+        probstruct.ComputeTestStatistics = true;
     otherwise
 end
 
@@ -39,4 +48,4 @@ probstruct.Number = find(strcmp(problist,prob),1);
 probstruct.Prob = prob;
 probstruct.SubProb = SubProb;
 probstruct.Id = id;
-probstruct.ProbInfo = fun([],D);
+probstruct.ProbInfo = fun([],[D,id]);

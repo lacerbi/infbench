@@ -182,6 +182,17 @@ if ~isfield(probstruct,'IntrinsicNoisy') || isempty(probstruct.IntrinsicNoisy)
     probstruct.IntrinsicNoisy = (f1 ~= f2);
 end
 
+% By default we assume that noise is provided
+if ~isfield(probstruct,'InferNoise') || isempty(probstruct.InferNoise)
+    probstruct.InferNoise = false;
+end
+
+% By default there are no additional test statistics
+if ~isfield(probstruct,'ComputeTestStatistics') || isempty(probstruct.ComputeTestStatistics)
+    probstruct.ComputeTestStatistics = false;
+end
+
+
 %--------------------------------------------------------------------------
 function tf = evalbool(s)
 %EVALBOOL Evaluate argument to a bool

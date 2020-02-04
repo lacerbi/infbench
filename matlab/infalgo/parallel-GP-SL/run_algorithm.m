@@ -65,7 +65,7 @@ for iter = 1:nr_iter
     end
     
     %% estimate GP model hyperparameters
-    if iter == 1 || rem(iter,gp_opt.hyp_upd_freq) == 0
+    if iter == 1 || rem(iter-1,gp_opt.hyp_upd_freq) == 0
         [gp,gp_optim_opt] = fit_gp_model(gp, gp_optim_opt, gp_opt,th_grid, loglik_tr,th_tr,sigma_tr);
     end
     
