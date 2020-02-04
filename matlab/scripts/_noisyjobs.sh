@@ -88,24 +88,24 @@ case "${1}" in
                 IDS=${IDS_SINGLE}
 		NOISE="{'hi'}"
                 ;;
-        4d)     ALGOSET="{'acqimiqrnoisenegquadbox'}"
+        4d)     ALGOSET="{'acqimiqrnoisenegquadbox6'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4d2)    ALGOSET="{'acqimiqrnoisenegquadbox'}"
-                IDS=${IDS_SINGLE}
-                NOISE="{'hi'}"
-                ;;
-        4e)     ALGOSET="{'acqimiqrnoisenegquadbox2'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4e2)    ALGOSET="{'acqimiqrnoisenegquadbox2'}"
+        4d2)    ALGOSET="{'acqimiqrnoisenegquadbox6'}"
                 IDS=${IDS_SINGLE}
                 NOISE="{'hi'}"
                 ;;
-        4f)     ALGOSET="{'acqimiqrnoisenegquadbox3'}"
+        4e)     ALGOSET="{'acqimiqrnoisenegquadbox4'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4f2)    ALGOSET="{'acqimiqrnoisenegquadbox3'}"
+        4e2)    ALGOSET="{'acqimiqrnoisenegquadbox4'}"
+                IDS=${IDS_SINGLE}
+                NOISE="{'hi'}"
+                ;;
+        4f)     ALGOSET="{'acqimiqrnoisenegquadbox7'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        4f2)    ALGOSET="{'acqimiqrnoisenegquadbox7'}"
                 IDS=${IDS_SINGLE}
                 NOISE="{'hi'}"
                 ;;
@@ -290,208 +290,6 @@ case "${1}" in
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
-        104e)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqf'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104f)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqfv2'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104g)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqf2reg'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104h)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@K1','vbmc@K2','vbmc@K5'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        104i)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@oldsettings'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104j)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@step1'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104k)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@step5'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104l)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqmistep5'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104m)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acq2step1'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104n)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@se'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104o)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@test'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104p)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@finalK'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104q)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@step1'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104r)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@newdef2'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104s)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@step1mi'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104t)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@newdef3'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104u)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@outnoise'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-	104v)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@band'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        104w)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@fixgpmean'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        105)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@control'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        106)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@noempgp'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        107)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@morelbomid'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        108)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@cheapgpmid'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        109)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqproponly'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        110)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqusonly'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        111)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqvusonly'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        112)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqpropnoprune'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        113)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqusnoprune'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        114)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqpropcontrol'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        115)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@cheapgpmidlessprune'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-	116)    PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@gpthreshmidlessprune'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        116b)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@lessprune'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        120)    PROBS="{'goris2015'}"
-                ALGOS="{'agp'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        121)    PROBS="{'goris2015'}"
-                ALGOS="{'agp@long'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        122)    PROBS="{'goris2015'}"
-                ALGOS="{'agp@reg2'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-	130)    PROBS="{'goris2015'}"
-                ALGOS="{'bape'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        131)    PROBS="{'goris2015'}"
-                ALGOS="{'bape@step1'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_CENTO
-                ;;
-        132)    PROBS="{'goris2015'}"
-                ALGOS="{'bape@nqreg2'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        133)    PROBS="{'goris2015'}"
-                ALGOS="{'bape@reg'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-        140)    PROBS="{'goris2015'}"
-                ALGOS="{'wsabi@search'}"
-                DIMS="{'S7','S8'}"
-                IDS=$IDS_FIFTY
-                ;;
-
-
 	201)    PROBS="{'yacht'}"
                 ALGOS="{'laplace'}"
                 DIMS="{'8D'}"
@@ -527,9 +325,6 @@ case "${1}" in
                 DIMS="{'8D'}"
                 IDS=$IDS_CENTO
                 ;;
-
-
-
         304b)   PROBS="{'funnel'}"
                 ALGOS="{'vbmc@oldsettings','vbmc@step1','vbmc@acqmistep1','vbmc@step5','vbmc@acqmistep5'}"
                 IDS=${IDS_SINGLE}
@@ -538,12 +333,37 @@ case "${1}" in
                 ALGOS="{'wsabi@search'}"
                 IDS=${IDS_SINGLE}
 		;;
-        306)    PROBS="{'funnel'}"
-                ALGOS="{'bape@step1'}"
-                #IDS=${IDS_SINGLE}
-                IDS="{'1','2'}"
-		;;
 
+        404)    PROBSET="{'vbmc20'}"
+		PROBS="{'wood2010'}"
+                ALGOS="{'vbmc@acqimiqrnoisenegquadbox4'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+		NOISE="'[]'"
+                ;;
+        430)    PROBSET="{'vbmc20'}"
+                PROBS="{'wood2010'}"
+                ALGOS="{'parallelgp'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+
+
+        504)    PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@acqimiqrnoisenegquadbox4'}"
+                DIMS="{'1','2'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        530)    PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'parallelgp'}"
+                DIMS="{'1','2'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
 
 
 esac

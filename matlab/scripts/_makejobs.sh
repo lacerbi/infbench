@@ -107,10 +107,10 @@ case "${1}" in
         4o)     ALGOSET="{'newdef4'}"
                 IDS=${IDS_SINGLE}
                 ;;
-       	4p)    	ALGOSET="{'new'}"
+       	4p)    	ALGOSET="{'new4'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4q)     ALGOSET="{'new2'}"
+        4q)     ALGOSET="{'new5'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4r)     ALGOSET="{'new3'}"
@@ -352,12 +352,12 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104p)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@new'}"
+                ALGOS="{'vbmc@new4'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
         104q)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@new2'}"
+                ALGOS="{'vbmc@new5'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
