@@ -221,7 +221,7 @@ if isempty(x)
         % Save data and coordinate transformation struct
         data.trinfo = trinfo;
         y.Data = data;
-        y.DeterministicFlag = true;
+        y.DeterministicFlag = false;
                 
     end
     
