@@ -235,12 +235,12 @@ if isempty(x)
         y.Post.Cov = Cov_mcmc;
         
         
-        data.IBSNreps = 10; % Reps used for IBS estimator
+        data.IBSNreps = 100; % Reps used for IBS estimator
         
         % Read marginals from file
-%        marginals = load('acerbidokka2018_marginals.mat');
-%        y.Post.MarginalBounds = marginals.MarginalBounds{n};
-%        y.Post.MarginalPdf = marginals.MarginalPdf{n};
+        marginals = load('acerbidokka2018_marginals.mat');
+        y.Post.MarginalBounds = marginals.MarginalBounds{n};
+        y.Post.MarginalPdf = marginals.MarginalPdf{n};
         
         % Save data and coordinate transformation struct
         data.trinfo = trinfo;
