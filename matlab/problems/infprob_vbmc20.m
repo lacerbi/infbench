@@ -1,7 +1,7 @@
 function probstruct = infprob_vbmc20(prob,subprob,noise,id,options)
 
 % Problem names (ordered)
-problist = {'wood2010','nnetcancer'};
+problist = {'wood2010','acerbidokka2018','nnetcancer'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
@@ -25,6 +25,9 @@ probstruct.NoiseEstimate = 0;       % Function is intrinsically not-noisy
 
 switch prob
     case 'wood2010'
+        probstruct.ScaleVariables = false;  % Do not rescale
+        probstruct.PriorType = 'uniform';   % Use uniform prior
+    case 'acerbidokka2018'
         probstruct.ScaleVariables = false;  % Do not rescale
         probstruct.PriorType = 'uniform';   % Use uniform prior
     case 'nnetcancer'

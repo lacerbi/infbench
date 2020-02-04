@@ -1,5 +1,5 @@
 function [y,y_std] = infbench_wood2010(x,infprob,mcmc_params)
-%INFBENCH_GORIS2015 Inference benchmark log pdf -- neuronal model from Goris et al. (2015).
+%INFBENCH_WOOD2010 Inference benchmark log pdf -- Ricker model from Wood (2010).
 
 if nargin < 3; mcmc_params = []; end
 
