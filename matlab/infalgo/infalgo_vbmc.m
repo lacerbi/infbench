@@ -455,13 +455,7 @@ if PosteriorMCMC == 0
     Ns_moments = 1e6;
     xx = vbmc_rnd(vp,Ns_moments,1,1);
 else
-    Ns_moments = PosteriorMCMC;
-    proppdf = @(x) vbmc_pdf(vp,x,0,0,1);
-    proprnd = @(x) vbmc_rnd(vp,1,0,0);
-    x0 = proprnd();
-    % xx = gplite_sample(gp,Ns_moments,x0,'slicesample',[],VarThresh,proppdf,proprnd);
-    xx = gplite_sample(gp,Ns_moments,x0,'parallel',[],[],VarThresh);
-    xx = warpvars_vbmc(xx,'inv',vp.trinfo);
+    xx = gpsample_vbmc(vp,gp,PosteriorMCMC,1);
 end
 Mean = mean(xx,1);
 Cov = cov(xx);

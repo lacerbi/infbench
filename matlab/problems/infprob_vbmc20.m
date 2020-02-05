@@ -7,6 +7,8 @@ problist = {'wood2010','acerbidokka2018','nnetcancer'};
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
 
 switch prob
+    case 'acerbidokka2018'
+        subprobString = ['S' num2str(D)];
     case 'wood2010'
         subprobString = ['D' num2str(D)];
     case 'nnetcancer'
