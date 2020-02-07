@@ -127,6 +127,15 @@ for iRun = 1:length(idlist)
     probstruct
     [history{iRun},post,algoptions] = algofun(algo,algoset,probstruct);
     
+    % Thin posterior samples if too bulky
+    if isfield(post,'samples') && ~isempty(post.samples)
+        MaxStoredSamples = options.MaxStoredSamples;
+        Nss = size(post.samples,1);
+        if Nss > MaxStoredSamples
+            post.samples = post.samples(round(linspace(1,Nss,MaxStoredSamples)),:);
+        end
+    end
+    
     history{iRun}.X0 = FirstPoint;
     history{iRun}.Algorithm = algo;
     history{iRun}.AlgoSetup = algoset;

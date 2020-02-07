@@ -443,7 +443,7 @@ for i = 1:numel(stats.gp)
     end
 end
 stats.gpHypFull = [];   % Too bulky
-
+    
 history.Output.stats = stats;
 
 end
