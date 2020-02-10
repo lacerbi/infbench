@@ -65,6 +65,8 @@ algoptions.GPLengthPriorMean = 0.05;
 algoptions.GPLengthPriorStd = log(10);
 algoptions.ActiveSearchBound = Inf;
 algoptions.BoxSearchFrac = 0;
+algoptions.ActiveImportanceSamplingMCMCSamples = 200;
+algoptions.MaxRepeatedObservations = 0;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
