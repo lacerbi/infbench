@@ -233,9 +233,8 @@ if isempty(x)
         y.Post.ModeFval = fval_post;        
         y.Post.lnZ = lnZ_mcmc;
         y.Post.Cov = Cov_mcmc;
-        
-        
-        data.IBSNreps = 100; % Reps used for IBS estimator
+                
+        data.IBSNreps = 200; % Reps used for IBS estimator
         
         % Read marginals from file
         marginals = load('acerbidokka2018_marginals.mat');
