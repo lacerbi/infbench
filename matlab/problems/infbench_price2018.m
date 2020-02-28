@@ -65,7 +65,7 @@ if isempty(x)
                 if numel(mcmc_params) > 2
                     mcmc_opt.nsimu = mcmc_params(3);
                 else
-                    mcmc_opt.nsimu = 5e4;
+                    mcmc_opt.nsimu = 4e4;
                 end
                 mcmc_opt.nfinal = min(mcmc_opt.nsimu,1e3);
                 mcmc_opt.display_type = 'on';
