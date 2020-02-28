@@ -81,17 +81,21 @@ case "${1}" in
         4b)     ALGOSET="{'acqimiqrnoise'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4c)     ALGOSET="{'acqimiqrnoisenegquad'}"
-                IDS=${IDS_SINGLE}
-                ;;
-        4c2)    ALGOSET="{'acqimiqrnoisenegquad'}"
+        4b2)    ALGOSET="{'acqimiqrnoise'}"
                 IDS=${IDS_SINGLE}
 		NOISE="{'hi'}"
                 ;;
-        4d)     ALGOSET="{'acqimiqrnoisenegquadbox6'}"
+        4c)     ALGOSET="{'acqimiqrnoisewarp'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4d2)    ALGOSET="{'acqimiqrnoisenegquadbox6'}"
+        4c2)    ALGOSET="{'acqimiqrnoisewarp'}"
+                IDS=${IDS_SINGLE}
+		NOISE="{'hi'}"
+                ;;
+        4d)     ALGOSET="{'acqimiqrnoiseroto'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        4d2)    ALGOSET="{'acqimiqrnoiseroto'}"
                 IDS=${IDS_SINGLE}
                 NOISE="{'hi'}"
                 ;;
@@ -336,10 +340,31 @@ case "${1}" in
 
         404)    PROBSET="{'vbmc20'}"
 		PROBS="{'wood2010'}"
-                ALGOS="{'vbmc@acqimiqrnoisenegquadbox4'}"
+                ALGOS="{'vbmc@acqimiqrnoise'}"
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
 		NOISE="'[]'"
+                ;;
+        405)    PROBSET="{'vbmc20'}"
+                PROBS="{'wood2010'}"
+                ALGOS="{'vbmc@acqimiqrnoisewarp'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        405b)    PROBSET="{'vbmc20'}"
+                PROBS="{'wood2010'}"
+                ALGOS="{'vbmc@acqimiqrnoisewarp'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        406)    PROBSET="{'vbmc20'}"
+                PROBS="{'wood2010'}"
+                ALGOS="{'vbmc@acqimiqrnoiseroto'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
                 ;;
         430)    PROBSET="{'vbmc20'}"
                 PROBS="{'wood2010'}"
@@ -348,11 +373,30 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
-
-
         504)    PROBSET="{'vbmc20'}"
                 PROBS="{'acerbidokka2018'}"
-                ALGOS="{'vbmc@acqimiqrnoisenegquadbox4'}"
+                ALGOS="{'vbmc@acqimiqrnoise'}"
+                DIMS="{'1','2'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        505)    PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@acqimiqrnoisewarp'}"
+                DIMS="{'1','2'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        505b)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@acqimiqrnoisewarp'}"
+                DIMS="{'1','2'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        506)    PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@acqimiqrnoiseroto'}"
                 DIMS="{'1','2'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"

@@ -101,7 +101,7 @@ case "${1}" in
         4m)     ALGOSET="{'fast'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4n)     ALGOSET="{'up'}"
+        4n)     ALGOSET="{'warp'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4o)     ALGOSET="{'newdef4'}"
@@ -342,7 +342,7 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104n)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@up'}"
+                ALGOS="{'vbmc@warp'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
