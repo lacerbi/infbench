@@ -234,9 +234,9 @@ if isempty(x)
         y.Post.Cov = Cov_mcmc;
         
         % Read marginals from file
-        %marginals = load('price2018_marginals.mat');
-        %y.Post.MarginalBounds = marginals.MarginalBounds{n};
-        %y.Post.MarginalPdf = marginals.MarginalPdf{n};
+        marginals = load('price2018_marginals.mat');
+        y.Post.MarginalBounds = marginals.MarginalBounds{n};
+        y.Post.MarginalPdf = marginals.MarginalPdf{n};
         
         % Save data and coordinate transformation struct
         sim_model.trinfo = trinfo;
