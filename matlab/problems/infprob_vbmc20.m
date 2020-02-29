@@ -1,7 +1,7 @@
 function probstruct = infprob_vbmc20(prob,subprob,noise,id,options)
 
 % Problem names (ordered)
-problist = {'wood2010','acerbidokka2018','nnetcancer'};
+problist = {'wood2010','acerbidokka2018','price2018','nnetcancer'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
@@ -10,6 +10,8 @@ switch prob
     case 'acerbidokka2018'
         subprobString = ['S' num2str(D)];
     case 'wood2010'
+        subprobString = ['D' num2str(D)];
+    case 'price2018'
         subprobString = ['D' num2str(D)];
     case 'nnetcancer'
         subprobString = ['D' num2str(D)];        
@@ -25,17 +27,14 @@ probstruct.func = ['@(x_,probstruct_) infbench_' probstruct.Prob '(x_(:)'',probs
 probstruct.Noise = noise;
 probstruct.NoiseEstimate = 0;       % Function is intrinsically not-noisy
 
+probstruct.ScaleVariables = false;  % Do not rescale
+probstruct.PriorType = 'uniform';   % Use uniform prior
+
 switch prob
     case 'wood2010'
-        probstruct.ScaleVariables = false;  % Do not rescale
-        probstruct.PriorType = 'uniform';   % Use uniform prior
     case 'acerbidokka2018'
-        probstruct.ScaleVariables = false;  % Do not rescale
-        probstruct.PriorType = 'uniform';   % Use uniform prior
     case 'nnetcancer'
         probstruct.IntrinsicNoisy = true;
-        probstruct.ScaleVariables = false;  % Do not rescale
-        probstruct.PriorType = 'uniform';   % Use uniform prior
         probstruct.InferNoise = true;       % Noise is unknown
         probstruct.NoiseEstimate = [];
         probstruct.ComputeTestStatistics = true;
