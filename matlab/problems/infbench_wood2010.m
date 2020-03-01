@@ -198,7 +198,7 @@ if isempty(x)
         Cov = eye(D);
         Mode = xmin;
         
-        y.Ns = 80;          % # samples for synthetic likelihood
+        y.Ns = 100;          % # samples for synthetic likelihood
                 
         y.D = D;
         y.LB = warpvars(lb,'d',trinfo);
