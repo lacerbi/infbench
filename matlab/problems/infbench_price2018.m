@@ -70,7 +70,7 @@ if isempty(x)
                 mcmc_opt.nfinal = min(mcmc_opt.nsimu,1e3);
                 mcmc_opt.display_type = 'on';
                 
-                infprob.Ns = 100;   % High precision
+                infprob.Ns = 100;   % Normal precision
                 
                 model.ssfun = @(x,data) -2*logpost(x,infprob);
                 model.N = 1;
