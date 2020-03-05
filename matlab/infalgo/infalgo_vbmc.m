@@ -208,6 +208,7 @@ switch algoset
     case {73,'warp'}; algoset = 'warp'; algoptions = newdefaults; algoptions.WarpRotoScaling = 1; algoptions.WarpNonlinear = 1;
     case {74,'roto'}; algoset = 'roto'; algoptions = newdefaults; algoptions.WarpRotoScaling = 1;
     case {75,'negquadse'}; algoset = 'negquadse'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadse';
+    case {76,'quadmix'}; algoset = 'quadmix'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadmix';
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
