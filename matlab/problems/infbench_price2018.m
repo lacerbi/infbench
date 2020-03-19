@@ -119,7 +119,7 @@ if isempty(x)
                                 
                 filename = ['price2018_mcmc_n' num2str(n) '_id' num2str(id) '.mat'];
                 save(filename,'Xs','lls','exitflag','output');                
-            end            
+            end
         end
         
     else
