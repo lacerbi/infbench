@@ -66,15 +66,15 @@ if isempty(x)
                 fprintf('\t\t\t\tname = ''%s'';\n\t\t\t\txmin = %s;\n\t\t\t\tfval = %s;\n',name,mat2str(xmin),mat2str(fval));
                 fprintf('\t\t\t\txmin_post = %s;\n\t\t\t\tfval_post = %s;\n',mat2str(xmin_post),mat2str(fval_post));
                 
-            elseif id > 0
+            elseif id > 0 && n == mcmc_params(2)
 
                 rng(id);
                 widths = 0.5*(PUB - PLB);
                 logpfun = @(x) logpost(x,infprob);
                 
                 % Number of samples
-                if numel(mcmc_params) > 1
-                    Ns = mcmc_params(2);
+                if numel(mcmc_params) > 2
+                    Ns = mcmc_params(3);
                 else
                     Ns = 1e3;
                 end
