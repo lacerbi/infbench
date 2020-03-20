@@ -132,7 +132,7 @@ if isempty(x)
         params = ibl2020_params_new(model_name);        
         
         % Define parameter upper/lower bounds
-        bounds = setup_params([],params);
+        bounds = ibl2020_setup_params([],params);
         lb = bounds.LB;
         ub = bounds.UB;
         plb = bounds.PLB;
