@@ -1,6 +1,9 @@
 function [X,lls,funccount] = mergesamples(filepattern,MaxIter,Nml,psrf_flag)
 %MERGESAMPLES Merge MCMC samples from different files.
 
+% Example usage: from the data/acerbidokka2018mcmc folder
+% [X,lls,funccount] = mergesamples('acerbidokka2018_mcmc_n1_*',[],2e4,1);
+
 if nargin < 2 || isempty(MaxIter); MaxIter = Inf; end
 if nargin < 3 || isempty(Nml); Nml = 2e4; end
 if nargin < 4 || isempty(psrf_flag); psrf_flag = true; end

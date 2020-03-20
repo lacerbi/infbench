@@ -1,7 +1,7 @@
 function probstruct = infprob_vbmc20(prob,subprob,noise,id,options)
 
 % Problem names (ordered)
-problist = {'wood2010','acerbidokka2018','price2018','nnetcancer'};
+problist = {'wood2010','acerbidokka2018','price2018','krajbich2010','nnetcancer'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
@@ -13,6 +13,8 @@ switch prob
         subprobString = ['D' num2str(D)];
     case 'price2018'
         subprobString = ['D' num2str(D)];
+    case 'krajbich2010'
+        subprobString = ['S' num2str(D)];
     case 'nnetcancer'
         subprobString = ['D' num2str(D)];        
     otherwise
