@@ -220,9 +220,9 @@ if isempty(x)
         data.IBSNreps = 20; % Reps used for IBS estimator
         
         % Read marginals from file
-%         marginals = load([problem_name '_marginals.mat']);
-%         y.Post.MarginalBounds = marginals.MarginalBounds{n};
-%         y.Post.MarginalPdf = marginals.MarginalPdf{n};
+        marginals = load([problem_name '_marginals.mat']);
+        y.Post.MarginalBounds = marginals.MarginalBounds{n};
+        y.Post.MarginalPdf = marginals.MarginalPdf{n};
         
         % Save data and coordinate transformation struct
         data.trinfo = trinfo;
