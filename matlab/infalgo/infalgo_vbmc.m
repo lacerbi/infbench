@@ -209,6 +209,7 @@ switch algoset
     case {74,'roto'}; algoset = 'roto'; algoptions = newdefaults; algoptions.WarpRotoScaling = 1;
     case {75,'negquadse'}; algoset = 'negquadse'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadse';
     case {76,'quadmix'}; algoset = 'quadmix'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadmix';
+    case {77,'trim100roto'}; algoset = 'trim100roto'; algoptions = newdefaults; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.WarpRotoScaling = 1;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
