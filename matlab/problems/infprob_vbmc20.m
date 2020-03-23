@@ -39,6 +39,8 @@ switch prob
     case 'acerbidokka2018'
     case 'goris2015'
         probstruct.OptimizeFirst = true;    % Run optimization
+        probstruct.ScaleVariables = true;
+        probstruct.PriorType = 'gaussian';
     case 'nnetcancer'
         probstruct.IntrinsicNoisy = true;
         probstruct.InferNoise = true;       % Noise is unknown
