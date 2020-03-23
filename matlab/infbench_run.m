@@ -38,7 +38,7 @@ if isempty(options.PathDirectory)
 end
 
 % Add sub-directories to path
-folders = {'gplite','infalgo','problems','utils','vbgmm'};
+folders = {'bads','gplite','infalgo','problems','utils','vbgmm'};
 for iFolder = 1:numel(folders)
     addpath([options.PathDirectory filesep() folders{iFolder}]);
 end
