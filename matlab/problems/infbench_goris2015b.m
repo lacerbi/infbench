@@ -1,14 +1,17 @@
-function [y,y_std] = infbench_goris2015(x,infprob,mcmc_params)
+function [y,y_std] = infbench_goris2015b(x,infprob,mcmc_params)
 %INFBENCH_GORIS2015 Inference benchmark log pdf -- neuronal model from Goris et al. (2015).
 
 if nargin < 3; mcmc_params = []; end
+
+problem_name = 'goris2015b';
+infbench_fun = str2func(['infbench_' problem_name]);
 
 if isempty(x)
     if isempty(infprob) % Generate this document        
         fprintf('\n');
 
 %        for n = 7:12
-        for n = 11
+        for n = 7:8
             switch n
                 case 7;             name = 'm620r12';
                     xmin = [138.8505216444501 2.38317564009549 0.682321320237262 1.1613095607596 1 0.231748337632257 -0.272638945416596 3.10117864852662 72.8822298534178 0.00789002312857097 0.101380347749067 0.693895739234024];
@@ -30,32 +33,46 @@ if isempty(x)
                     fval = -5929.98517589428;                
             end                
             
-            infprob = infbench_goris2015([],n);
+            infprob = infbench_fun([],n);
             if isempty(mcmc_params); id = 0; else; id = mcmc_params(1); end
             
+            D = infprob.D;
             trinfo = infprob.Data.trinfo;
+            
+            % Prior used for sampling
+            infprob.PriorMean = infprob.Prior.Mean;
+            infprob.PriorVar = diag(infprob.Prior.Cov)';
+            infprob.PriorVolume = prod(infprob.UB - infprob.LB);
+            infprob.PriorType = 'uniform';            
+
+            LB = infprob.LB;
+            UB = infprob.UB;
+            PLB = infprob.PLB;
+            PUB = infprob.PUB;            
             
             if id == 0
             
-                % First, check optimum            
-                opts = optimoptions('fminunc','Display','off','MaxFunEvals',700);
+                % First, check optimum
+                opts = struct('Display','iter','MaxFunEvals',1e3);
 
                 x0 = xmin(infprob.idxParams);
-                x0 = warpvars(x0,'d',trinfo);   % Convert to unconstrained coordinates            
-                [xnew,fvalnew] = fminunc(@(x) -infbench_goris2015(x,infprob), x0, opts);
+                x0 = warpvars(x0,'d',trinfo);
+                fun = @(x) -infbench_fun(x,infprob);
+                [xnew,fvalnew] = bads(fun,x0,LB,UB,PLB,PUB,[],opts);
 
                 fvalnew = -fvalnew;
                 xmin(infprob.idxParams) = warpvars(xnew,'inv',trinfo);
-                fval = fvalnew + warpvars(xnew,'logp',trinfo);
+                fval = fvalnew - warpvars(xnew,'logp',trinfo);
 
                 x0 = xmin(infprob.idxParams);
-                x0 = warpvars(x0,'d',trinfo);   % Convert to unconstrained coordinates            
-                [xnew,fvalnew] = fminunc(@(x) nlogpost(x,infprob), x0, opts);
+                x0 = warpvars(x0,'d',trinfo); 
+                fun = @(x) -logpost(x,infprob);
+                [xnew,fvalnew] = bads(fun,x0,LB,UB,PLB,PUB,[],opts);
 
                 fvalnew = -fvalnew;
                 xmin_post = xmin;
                 xmin_post(infprob.idxParams) = warpvars(xnew,'inv',trinfo);
-                fval_post = fvalnew + warpvars(xnew,'logp',trinfo);
+                fval_post = fvalnew - warpvars(xnew,'logp',trinfo);
 
                 fprintf('\t\t\tcase %d\n',n);
                 fprintf('\t\t\t\tname = ''%s'';\n\t\t\t\txmin = %s;\n\t\t\t\tfval = %s;\n',name,mat2str(xmin),mat2str(fval));
@@ -64,8 +81,8 @@ if isempty(x)
             elseif id > 0 && n == mcmc_params(2)
                 
                 rng(id);
-                widths = 0.5*(infprob.PUB - infprob.PLB);
-                logpfun = @(x) -nlogpost(x,infprob);
+                widths = 0.5*(PUB - PLB);
+                logpfun = @(x) logpost(x,infprob);
                 
                 % Number of samples
                 if numel(mcmc_params) > 2
@@ -89,22 +106,22 @@ if isempty(x)
 
                 x0 = xmin(infprob.idxParams);
                 x0 = warpvars(x0,'d',trinfo);   % Convert to unconstrained coordinates
-                LB = infprob.PLB - 10*widths;
-                UB = infprob.PUB + 10*widths;
+                LB = PLB - 10*widths;
+                UB = PUB + 10*widths;
                 
                 [Xs,lls,exitflag,output] = eissample_lite(logpfun,x0,Ns,W,widths,LB,UB,sampleopts);
                 
-                filename = ['goris2015_mcmc_n' num2str(n) '_id' num2str(id) '.mat'];
+                filename = [problem_name '_mcmc_n' num2str(n) '_id' num2str(id) '.mat'];
                 save(filename,'Xs','lls','exitflag','output');                
-            end
-            
-        end
-           
-        
+            end            
+        end        
         
     else
         % Initialization call -- define problem and set up data
         n = infprob(1);
+        
+        % Are we transforming the entire problem to unconstrained space?
+        transform_to_unconstrained_coordinates = false;        
         
         % The parameters and their bounds
         % 01 = preferred direction of motion (degrees), unbounded (periodic [0,360]), logical to use most effective stimulus value for family 1, high contrast as starting point
@@ -134,11 +151,11 @@ if isempty(x)
         switch n
             case {1,2,3,4,5,6}; name = ['fake0', int2str(n)];
             case 7
-                    name = 'm620r12';
-                    xmin = [138.831269717139 2.36026404288357 0.646113173689136 1.191214614653 1 0.231291032974457 -0.272638945416596 3.09862498803914 72.8822298534178 0.00789002312857097 0.101380347749067 0.689049234550672];
-                    fval = -2594.1103827372;
-                    xmin_post = [138.843688065659 2.3665375005477 0.659599079735605 1.17814871632405 1 0.231000169669172 -0.272638945416596 3.09697483360828 72.8822298534178 0.00789002312857097 0.101380347749067 0.687089204130602];
-                    fval_post = -2604.77539968962;
+                name = 'm620r12';
+                xmin = [138.847253657877 2.38305768733247 0.682799619682061 1.1610646085556 1 0.231798049807549 -0.272638945416596 3.10144125856459 72.8822298534178 0.00789002312857097 0.101380347749067 0.69365902859132];
+                fval = -2594.08312619286;
+                xmin_post = [138.854185827076 2.383919716066 0.683555957652529 1.16017086317862 1 0.231799114868045 -0.272638945416596 3.10158656165004 72.8822298534178 0.00789002312857097 0.101380347749067 0.693926368767479];
+                fval_post = -2609.82188588312;                                
                     Mean_laplace = [-0.465520991260055 -1.69627543340411 -1.62447989201296 -0.767119415827957 0.470491515145298 -0.484169040138803 -2.60814931957517];
                     Cov_laplace = [0.000229133759218794 1.82326721309945e-05 0.000410425618637872 -0.000282902243846033 1.37333646747451e-05 2.55742161512486e-05 -7.49219827856342e-06;1.82326721309945e-05 0.00860578855990285 0.0113987299239016 -0.0046236785662946 -0.000242809250998626 -0.000356073871350522 -0.000143256002177701;0.000410425618637872 0.0113987299239016 0.162017238465403 -0.103918933733934 0.000992228291153627 0.00350094756853489 0.000154939078874722;-0.000282902243846033 -0.0046236785662946 -0.103918933733934 0.089505239660401 0.000464757180894073 -0.00336613410893957 -0.000435454797885497;1.37333646747451e-05 -0.000242809250998626 0.000992228291153627 0.000464757180894073 0.000982265536813824 0.00228454532591384 -3.74450494783302e-05;2.55742161512486e-05 -0.000356073871350522 0.00350094756853489 -0.00336613410893957 0.00228454532591384 0.00701913099415825 -8.12472287376342e-05;-7.49219827856342e-06 -0.000143256002177701 0.000154939078874722 -0.000435454797885497 -3.74450494783301e-05 -8.12472287376342e-05 0.00888756642652754];
                     lnZ_laplace = -2620.215196872;
@@ -146,12 +163,12 @@ if isempty(x)
                     Mean_mcmc = [-0.465802680530785 -1.70566976804436 -5.19522208334754 -0.384915835875687 0.467083855425486 -0.496086661684798 -2.58834415856342];
                     Cov_mcmc = [0.000224749978866004 5.60815708807962e-06 0.00017447753573741 3.34220973948264e-05 9.77989454620153e-06 1.19603450094093e-05 -3.31163521355875e-06;5.60815708807962e-06 0.00941413340619495 0.0427992417936741 6.60756302336674e-05 -0.000214807115205535 -0.000450661540007981 -1.85983014361911e-05;0.00017447753573741 0.0427992417936741 8.88269095379091 -0.49970931844157 0.00488012844427025 0.0134563621915982 -0.0103060212088849;3.34220973948264e-05 6.60756302336674e-05 -0.49970931844157 0.0977994680732417 0.000643845852213431 -0.00338833139986662 0.000243456644557692;9.77989454620153e-06 -0.000214807115205535 0.00488012844427025 0.000643845852213431 0.000954197299194386 0.00219688034751615 -9.24820491816269e-07;1.19603450094093e-05 -0.000450661540007981 0.0134563621915982 -0.00338833139986662 0.00219688034751615 0.00675804037157995 1.9303310108393e-05;-3.31163521355875e-06 -1.85983014361911e-05 -0.0103060212088849 0.000243456644557692 -9.24820491816269e-07 1.9303310108393e-05 0.00869582976950535];
                     lnZ_mcmc = -2619.18872742075;
-            case 8
-                    name = 'm620r35';
-                    xmin = [227.535999643729 3.01725050874219 2.4518747278566 0.86520211156348 0.886173951591468 -0.0401803925967166 -0.463062374186733 1.03064820242696 642.425443794774 0.001 8.65532672683422 0.0847961527858778];
-                    fval = -6349.19310242853;
-                    xmin_post = [227.525038766274 2.98441527013782 2.44110025601237 0.864158990877667 0.886173951591468 -0.0388962169756627 -0.463062374186733 1.04549627725566 642.425443794774 0.001 8.65532672683422 0.0849427245581592];
-                    fval_post = -6365.94966510981;
+			case 8
+                name = 'm620r35';
+                xmin = [227.529653459492 3.00549354866858 2.44263708293926 0.867454206009722 0.886173951591468 -0.0396211358007847 -0.463062374186733 1.03691408842176 642.425443794774 0.001 8.65532672683422 0.085140255600458];
+                fval = -6349.08645023851;
+                xmin_post = [227.527988101867 3.00613478791754 2.44277087582304 0.867397258023728 0.886173951591468 -0.0395996648621448 -0.463062374186733 1.03699629821814 642.425443794774 0.001 8.65532672683422 0.0851209077401497];
+                fval_post = -6364.82528308428;                    
                     Mean_laplace = [0.540866637097969 -1.40969632775648 0.793390622057475 -1.23818170784033 -0.0778317007333179 -4.78656641349373 -4.77167510180345];
                     Cov_laplace = [2.16199382189283e-05 3.71915052853202e-05 4.13464601119852e-05 -4.29489924469928e-05 1.23379305282585e-06 2.83101653572452e-05 9.05186857154558e-07;3.71915052853202e-05 0.00664443465640919 0.00814039870304761 -0.00645477482468913 9.92996916739682e-05 -0.00954931906625238 -0.000132432399140008;4.13464601119852e-05 0.00814039870304761 0.0174155029784697 -0.0117832976945504 0.000216560805889953 -0.0166422056812428 -0.00014732997280385;-4.29489924469928e-05 -0.00645477482468913 -0.0117832976945504 0.0090630259787226 -0.000111054727543906 0.00886348616975374 0.000108301749797391;1.23379305282585e-06 9.92996916739682e-05 0.000216560805889953 -0.000111054727543906 1.59733485495094e-05 0.000153481096658657 1.54209118156668e-06;2.83101653572452e-05 -0.00954931906625238 -0.0166422056812428 0.00886348616975374 0.000153481096658657 0.0769032675285656 0.000710450551803561;9.05186857154558e-07 -0.000132432399140008 -0.00014732997280385 0.000108301749797391 1.54209118156668e-06 0.000710450551803561 0.00373886627309871];
                     lnZ_laplace = -6381.87197047855;
@@ -191,7 +208,7 @@ if isempty(x)
         % nvec = 1:12;
         lb = [0,.05,.1,.1, 0,-1,-1,1,1e-3,1e-3,1e-3,1e-3];  % First variable is periodic
         ub = [360,15,3.5,3.5,1,1,1,6.5,1e9,1e1,1e1,1e1];
-        plb =   [90,.5,.3, .3,0,-0.3,  -1,2,10,    1e-3,1e-2,1e-2];
+        plb =   [90,.5,.3, .3,0,-0.3,  -1,2,10,    1e-3,1e-2,1.5e-2];
         pub =   [270,10,3.2,  3.2,1,0.3,  1,5,1e5,  1e-1,1,1];
         noise = [];
         
@@ -200,9 +217,14 @@ if isempty(x)
         
         idx_params = [1:4,6,8,12];  % Only consider a subset of params
         D = numel(idx_params);
-        trinfo = warpvars(D,lb(idx_params),ub(idx_params),plb(idx_params),pub(idx_params));     % Transform to unconstrained space
-        trinfo.mu = zeros(1,D);     % Necessary for retro-compatibility
-        trinfo.delta = ones(1,D);
+        
+        if transform_to_unconstrained_coordinates
+            trinfo = warpvars(D,lb(idx_params),ub(idx_params),plb(idx_params),pub(idx_params));     % Transform to unconstrained space
+            trinfo.mu = zeros(1,D);     % Necessary for retro-compatibility
+            trinfo.delta = ones(1,D);
+        else
+            trinfo = [];
+        end
         y.xBaseFull = xmin;
         xmin = warpvars(xmin(idx_params),'d',trinfo);
         fval = fval + warpvars(xmin,'logp',trinfo);
@@ -212,11 +234,11 @@ if isempty(x)
         Mode = xmin;
                 
         y.D = D;
-        y.LB = -Inf(1,D);   % Using unconstrained space
-        y.UB = Inf(1,D);
+        y.LB = warpvars(lb(idx_params),'d',trinfo);
+        y.UB = warpvars(ub(idx_params),'d',trinfo);
         y.PLB = warpvars(plb(idx_params),'d',trinfo);
         y.PUB = warpvars(pub(idx_params),'d',trinfo);
-        
+                
         y.lnZ = 0;              % Log normalization factor
         y.Mean = Mean;          % Distribution moments
         y.Cov = Cov;
@@ -242,14 +264,13 @@ if isempty(x)
         y.Post.Cov = Cov_mcmc;
         
         % Read marginals from file
-        marginals = load('goris2015_marginals.mat');
-        y.Post.MarginalBounds = marginals.MarginalBounds{n};
-        y.Post.MarginalPdf = marginals.MarginalPdf{n};
+%        marginals = load([problem_name '_marginals.mat']);
+%        y.Post.MarginalBounds = marginals.MarginalBounds{n};
+%        y.Post.MarginalPdf = marginals.MarginalPdf{n};
         
         % Save data and coordinate transformation struct
-        y.Data = data;
-        y.Data.trinfo = trinfo;
-        
+        data.trinfo = trinfo;
+        y.Data = data;        
     end
     
 else
@@ -269,7 +290,7 @@ else
     
     % Compute log likelihood of data (fcn returns nLL)
     LL = -TPGiveBof(xfull, infprob.Data.sTP, infprob.Data.sSF);    
-    y = LL - dy;    % Check sign here
+    y = LL + dy;
     y_std = 0;
     
 end
@@ -277,10 +298,8 @@ end
 end
 
 %--------------------------------------------------------------------------
-function y = nlogpost(x,infprob)
-    y = -infbench_goris2015(x,infprob);
-    infprob.PriorMean = infprob.Prior.Mean;
-    infprob.PriorVar = diag(infprob.Prior.Cov)';
+function y = logpost(x,infprob)
+    y = infbench_goris2015(x,infprob);  % Get log-likelihood
     lnp = infbench_lnprior(x,infprob);
-    y = y - lnp;
+    y = y + lnp;
 end

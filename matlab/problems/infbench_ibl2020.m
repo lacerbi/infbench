@@ -17,7 +17,7 @@ if isempty(x)
                 
         for n = 1:2            
             name = ['S' num2str(n)];
-                        
+            
             infprob = infbench_fun([],n);
             infprob.DeterministicFlag = true;
             if isempty(mcmc_params); id = 0; else; id = mcmc_params(1); end
@@ -248,7 +248,7 @@ else
             'ReturnPositive',true,'ReturnStd',true);
         [LL,y_std] = ibslike(@krajbich2010_gendata,x_orig,infprob.Data.R,[],ibs_opts,infprob.Data);
     end
-    y = LL - dy;
+    y = LL + dy;
     
 end
 

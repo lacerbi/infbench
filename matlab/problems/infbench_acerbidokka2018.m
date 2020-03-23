@@ -50,7 +50,7 @@ if isempty(x)
                 
                 fvalnew = -fvalnew;
                 xmin = warpvars(xnew,'inv',trinfo);
-                fval = fvalnew + warpvars(xnew,'logp',trinfo);
+                fval = fvalnew - warpvars(xnew,'logp',trinfo);
 
                 x0 = xmin;
                 x0 = warpvars(x0,'d',trinfo);   % Convert to unconstrained coordinates            
@@ -60,7 +60,7 @@ if isempty(x)
                 fvalnew = -fvalnew;
                 xmin_post = xmin;
                 xmin_post = warpvars(xnew,'inv',trinfo);
-                fval_post = fvalnew + warpvars(xnew,'logp',trinfo);
+                fval_post = fvalnew - warpvars(xnew,'logp',trinfo);
 
                 fprintf('\t\t\tcase %d\n',n);
                 fprintf('\t\t\t\tname = ''%s'';\n\t\t\t\txmin = %s;\n\t\t\t\tfval = %s;\n',name,mat2str(xmin),mat2str(fval));
@@ -263,7 +263,7 @@ else
     else
         [LL,y_std] = ll_stochastic(x_orig,infprob.Data);
     end
-    y = LL - dy;
+    y = LL + dy;
     
 end
 

@@ -15,8 +15,7 @@ if isempty(x)
         addpath([pathstr,filesep(),'..',filesep(),'infalgo',filesep(),'parallel-GP-SL',filesep(),'utils',filesep(),'mcmcstat-master']);
                 
         for n = 1:2            
-            name = ['S' num2str(n)];
-            
+            name = ['S' num2str(n)];            
             
             infprob = infbench_fun([],n);
             infprob.DeterministicFlag = true;
@@ -54,17 +53,16 @@ if isempty(x)
                 
                 fvalnew = -fvalnew;
                 xmin = warpvars(xnew,'inv',trinfo);
-                fval = fvalnew + warpvars(xnew,'logp',trinfo);
+                fval = fvalnew - warpvars(xnew,'logp',trinfo);
 
                 x0 = xmin;
-                x0 = warpvars(x0,'d',trinfo);   % Convert to unconstrained coordinates            
+                x0 = warpvars(x0,'d',trinfo);            
                 fun = @(x) -logpost(x,infprob);
                 [xnew,fvalnew] = bads(fun,x0,LB,UB,PLB,PUB,[],opts);
 
                 fvalnew = -fvalnew;
-                xmin_post = xmin;
                 xmin_post = warpvars(xnew,'inv',trinfo);
-                fval_post = fvalnew + warpvars(xnew,'logp',trinfo);
+                fval_post = fvalnew - warpvars(xnew,'logp',trinfo);
 
                 fprintf('\t\t\tcase %d\n',n);
                 fprintf('\t\t\t\tname = ''%s'';\n\t\t\t\txmin = %s;\n\t\t\t\tfval = %s;\n',name,mat2str(xmin),mat2str(fval));
@@ -243,7 +241,7 @@ else
             'ReturnPositive',true,'ReturnStd',true);
         [LL,y_std] = ibslike(@krajbich2010_gendata,x_orig,infprob.Data.R,[],ibs_opts,infprob.Data);
     end
-    y = LL - dy;
+    y = LL + dy;
     
 end
 

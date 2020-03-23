@@ -126,7 +126,7 @@ for iRun = 1:length(idlist)
         optfun = @(x) -infbench_func(x,probstruct,1);
         
         % Bayesian Adptive Direct Search (BADS) options
-        bads_options.MaxFunEvals = floor(probstruct.MaxFunEvals / 2);
+        bads_options.MaxFunEvals = floor(probstruct.MaxFunEvals);
         bads_options.UncertaintyHandling = ...
             probstruct.NoiseSigma > 0 || probstruct.IntrinsicNoisy;
         bads_options.NoiseFinalSamples = 0;

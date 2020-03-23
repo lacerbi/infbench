@@ -272,7 +272,7 @@ else
     else
         LL = infbench_synthetic_loglik_estim(infprob.SimModel,sl_opt,x_orig);
     end    
-    y = LL - dy;
+    y = LL + dy;
     
 end
 
