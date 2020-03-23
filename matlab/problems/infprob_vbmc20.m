@@ -15,6 +15,8 @@ switch prob
         subprobString = ['D' num2str(D)];
     case 'krajbich2010'
         subprobString = ['S' num2str(D)];
+    case 'goris2015'
+        subprobString = ['S' num2str(D)];        
     case 'nnetcancer'
         subprobString = ['D' num2str(D)];        
     otherwise
@@ -35,6 +37,8 @@ probstruct.PriorType = 'uniform';   % Use uniform prior
 switch prob
     case 'wood2010'
     case 'acerbidokka2018'
+    case 'goris2015'
+        probstruct.OptimizeFirst = true;    % Run optimization
     case 'nnetcancer'
         probstruct.IntrinsicNoisy = true;
         probstruct.InferNoise = true;       % Noise is unknown
