@@ -120,6 +120,23 @@ for iRun = 1:length(idlist)
         probstruct.InitPoint = rand(1,probstruct.D).*(probstruct.PUB-probstruct.PLB) + probstruct.PLB;
     end
     if isempty(FirstPoint); FirstPoint = probstruct.InitPoint; end
+    if options.OptimizeFirst || probstruct.OptimizeFirst
+        % Run quick optimization from starting point
+        probstruct.AddLogPrior = true;        
+        optfun = @(x) -infbench_func(x,probstruct,1);
+        
+        % Bayesian Adptive Direct Search (BADS) options
+        bads_options.MaxFunEvals = floor(probstruct.MaxFunEvals / 2);
+        bads_options.UncertaintyHandling = ...
+            probstruct.NoiseSigma > 0 || probstruct.IntrinsicNoisy;
+        bads_options.NoiseFinalSamples = 0;
+        
+        xopt = bads(optfun,probstruct.InitPoint,...
+            probstruct.LB,probstruct.UB,probstruct.PLB,probstruct.PUB,...
+            [],bads_options);
+        
+        probstruct.InitPoint = xopt;
+    end
 
     % Run inference
     algofun = str2func(['infalgo_' algo]);

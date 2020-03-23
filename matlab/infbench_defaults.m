@@ -17,6 +17,7 @@ switch lower(type)
         defaults.TolFun = 1e-6;          % Required tolerance on function
         defaults.TolX = 1e-6;            % Tolerance on X distance
         defaults.StartFromMode = 0;      % Start from (posterior) mode?
+        defaults.OptimizeFirst = 0;      % Run quick optimization first
         defaults.MaxFunEvalMultiplier = 1;      % Increase # func evals
         defaults.StopSuccessfulRuns = 1; % Stop runs when successful
         defaults.SpeedTests = 10;        % Iterations of speed tests

@@ -187,6 +187,12 @@ if ~isfield(probstruct,'InferNoise') || isempty(probstruct.InferNoise)
     probstruct.InferNoise = false;
 end
 
+% By default we do not perform a preliminary optimization
+if ~isfield(probstruct,'OptimizeFirst') || isempty(probstruct.OptimizeFirst)
+    probstruct.OptimizeFirst = false;
+end
+
+
 % By default there are no additional test statistics
 if ~isfield(probstruct,'ComputeTestStatistics') || isempty(probstruct.ComputeTestStatistics)
     probstruct.ComputeTestStatistics = false;
