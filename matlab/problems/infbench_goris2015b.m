@@ -106,8 +106,6 @@ if isempty(x)
 
                 x0 = xmin(infprob.idxParams);
                 x0 = warpvars(x0,'d',trinfo);   % Convert to unconstrained coordinates
-                LB = PLB - 10*widths;
-                UB = PUB + 10*widths;
                 
                 [Xs,lls,exitflag,output] = eissample_lite(logpfun,x0,Ns,W,widths,LB,UB,sampleopts);
                 
@@ -126,7 +124,7 @@ if isempty(x)
         % The parameters and their bounds
         % 01 = preferred direction of motion (degrees), unbounded (periodic [0,360]), logical to use most effective stimulus value for family 1, high contrast as starting point
         % 02 = preferred spatial frequency (cycles per degree), values between [.05 15], logical to use most effective stimulus frequency as starting point
-        % 03 = aspect ratio 2-D Gaussion, values between [.1 3.5], 1 is reasonable starting point
+        % 03 = aspect ratio 2-D Gaussian, values between [.1 3.5], 1 is reasonable starting point
         % 04 = derivative order in space, values between [.1 3.5], 1 is reasonable starting point
         % 05 = directional selectivity, values between [0 1], 0.5 is reasonable starting point
         % 06 = gain inhibitory channel, values between [-1 1], but majority of cells between [-.2 .2], -0.1 is reasonable starting point
