@@ -256,9 +256,9 @@ if isempty(x)
         y.Post.Cov = Cov_mcmc;
         
         % Read marginals from file
-%        marginals = load([problem_name '_marginals.mat']);
-%        y.Post.MarginalBounds = marginals.MarginalBounds{n};
-%        y.Post.MarginalPdf = marginals.MarginalPdf{n};
+        marginals = load([problem_name '_marginals.mat']);
+        y.Post.MarginalBounds = marginals.MarginalBounds{n};
+        y.Post.MarginalPdf = marginals.MarginalPdf{n};
         
         % Save data and coordinate transformation struct
         data.trinfo = trinfo;
