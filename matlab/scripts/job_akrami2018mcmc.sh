@@ -39,5 +39,5 @@ id=$IID;
 ii=mod(id-1,1000)+1;
 Ns=$SAMPLES;
 n=floor((id-1)/1000)+1;
-infbench_ibl2020([],[],[ii,n,Ns]);
+infbench_akrami2018([],[],[ii,n,Ns]);
 EOF

@@ -38,6 +38,6 @@ cd('${WORKDIR}');
 id=$IID;
 ii=mod(id-1,1000)+1;
 Ns=$SAMPLES;
-n=floor((id-1)/1000)+1;
-infbench_ibl2020([],[],[ii,n,Ns]);
+n=floor((id-1)/1000)+7;
+infbench_goris2015b([],[],[ii,n,Ns]);
 EOF
