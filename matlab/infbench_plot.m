@@ -280,7 +280,7 @@ for iFig = 1:nfigs
                     diffticks = [history{i}.SaveTicks(1),diff(history{i}.SaveTicks)];
                     % costpertrial_new = (history{i}.ElapsedTime(idx_valid) - FuncCumTime(idx_valid))*speedfactor./history{i}.SaveTicks(idx_valid);
                     costpertrial_new = (difftime(idx_valid) - history{i}.FuncTime(idx_valid))*speedfactor./diffticks(idx_valid);
-                    costs = [costs; costpertrial_new];
+                    costs = [costs; costpertrial_new];                    
                 end
                                 
                 % Save summary statistics
