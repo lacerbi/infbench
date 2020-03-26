@@ -211,6 +211,7 @@ switch algoset
     case {76,'quadmix'}; algoset = 'quadmix'; algoptions = newdefaults; algoptions.gpMeanFun = 'negquadmix';
     case {77,'trim100roto'}; algoset = 'trim100roto'; algoptions = newdefaults; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.WarpRotoScaling = 1;
     case {78,'trim100roto2'}; algoset = 'trim100rotonegquadmix'; algoptions = newdefaults; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.WarpRotoScaling = 1; algoptions.gpOutwarpFun = 'outwarp_negpowc1';
+    case {79,'trim100rotocorr'}; algoset = 'trim100rotocorr'; algoptions = newdefaults; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.WarpRotoScaling = 1; algoptions.WarpRotoCorrThresh = 0.05;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -250,6 +251,7 @@ switch algoset
     case {229,'acqimiqrnoiserotoup6'}; algoset = 'acqimiqrnoiserotoup5'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2_vbmc;
     case {230,'acqimiqrnoiserotoupthin100'}; algoset = 'acqimiqrnoiserotoupthin100'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
     case {231,'acqimiqrnoiserotoupthin100outwarp'}; algoset = 'acqimiqrnoiserotoupthin100outwarp'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.gpOutwarpFun = 'outwarp_negpowc1';
+    case {232,'acqimiqrnoiserotocorrupthin100'}; algoset = 'acqimiqrnoiserotocorrupthin100'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.WarpRotoCorrThresh = 0.05;
         
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
