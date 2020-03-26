@@ -87,7 +87,7 @@ if isempty(x)
                 
                 sampleopts.Thin = 17;
                 sampleopts.Burnin = Ns*sampleopts.Thin;
-                sampleopts.Display = 'off';
+                sampleopts.Display = 'notify';
                 sampleopts.Diagnostics = false;
                 sampleopts.VarTransform = false;
                 sampleopts.InversionSample = false;
