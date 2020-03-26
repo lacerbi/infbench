@@ -111,6 +111,7 @@ end
 options.MaxSamples      = 250;          % Maximum number of samples per function call
 options.AccelerationThreshold = 0.1;    % Keep accelerating until threshold is passed (in s)
 options.VectorizedThreshold  = 0.1;     % Max threshold for using vectorized algorithm (in s)
+options.MaxMem          = 1e6;          % Maximum number of samples for vectorized implementation
 
 % NSAMPLESPERCALL should be a scalar integer
 if ~isnumeric(options.NsamplesPerCall) || ~isscalar(options.NsamplesPerCall)
@@ -231,9 +232,11 @@ for iter = 1:MaxIter
     % Pick trials that need more hits, sample multiple times
     T = Trials(Nhits < targetHits);
     if isempty(T); break; end
-    
+        
     % With accelerated sampling, might request multiple samples at once
     Nsamples = min(options.MaxSamples,max(1,round(samples_level)));
+    MaxSamples = ceil(options.MaxMem / numel(T));
+    Nsamples = min(Nsamples, MaxSamples);
     Tmat = repmat(T,[1,Nsamples]);
     
     % Simulate trials

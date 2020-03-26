@@ -99,7 +99,7 @@ end
 % New VBMC defaults (need to be set manually here)
 newdefaults = algoptions;
 newdefaults.MinFinalComponents = 50;
-newdefaults.WarmupKeepThreshold = '20*nvars';
+newdefaults.WarmupKeepThreshold = '100*(D+2)';
 newdefaults.PruningThresholdMultiplier = @(K) 1/sqrt(K);
 newdefaults.gpQuadraticMeanBound = 1;
 newdefaults.EmpiricalGPPrior = 0;
@@ -118,7 +118,7 @@ newdefaults.GPSampleThin = 1;
 newdefaults.GPTolOpt = 1e-5;
 newdefaults.GPTolOptMCMC = 1e-2;
 newdefaults.StopWarmupReliability = 100;
-newdefaults.WarmupKeepThresholdFalseAlarm = '50*(D+2)';
+newdefaults.WarmupKeepThresholdFalseAlarm = '100*(D+2)';
 newdefaults.SearchMaxFunEvals = '500*(D+2)';
 newdefaults.NSentActive = '@(K) 20*K.^(2/3)';
 newdefaults.NSent = '@(K) 100*K.^(2/3)';
@@ -248,8 +248,8 @@ switch algoset
     case {227,'acqimiqrnoiserotoup4'}; algoset = 'acqimiqrnoiserotoup4'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '20*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '20*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.WarmupOptions.ActiveSampleFullUpdate = 0;
     case {228,'acqimiqrnoiserotoup5'}; algoset = 'acqimiqrnoiserotoup5'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.WarmupOptions.ActiveSampleFullUpdate = 0;
     case {229,'acqimiqrnoiserotoup6'}; algoset = 'acqimiqrnoiserotoup5'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2_vbmc;
-    case {230,'acqimiqrnoiserotoupthin100'}; algoset = 'acqimiqrnoiserotoupthin100'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
-    case {231,'acqimiqrnoiserotoupthin100outwarp'}; algoset = 'acqimiqrnoiserotoupthin100outwarp'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.gpOutwarpFun = 'outwarp_negpowc1';
+    case {230,'acqimiqrnoiserotoupthin100'}; algoset = 'acqimiqrnoiserotoupthin100'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
+    case {231,'acqimiqrnoiserotoupthin100outwarp'}; algoset = 'acqimiqrnoiserotoupthin100outwarp'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.gpOutwarpFun = 'outwarp_negpowc1';
         
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
