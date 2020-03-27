@@ -67,6 +67,7 @@ algoptions.ActiveSearchBound = Inf;
 algoptions.BoxSearchFrac = 0;
 algoptions.ActiveImportanceSamplingMCMCSamples = 200;
 algoptions.MaxRepeatedObservations = 0;
+algoptions.WarpRotoScaling = false;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -130,6 +131,7 @@ newdefaults.GPLengthPriorMean = 'sqrt(D/6)';
 newdefaults.GPLengthPriorStd = 0.5*log(1e3);
 newdefaults.ActiveSearchBound = 2; 
 newdefaults.BoxSearchFrac = 0.25;
+newdefaults.WarpRotoCorrThresh = 0.05;
 
 % Options from current problem
 switch algoset
@@ -252,7 +254,8 @@ switch algoset
     case {230,'acqimiqrnoiserotoupthin100'}; algoset = 'acqimiqrnoiserotoupthin100'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
     case {231,'acqimiqrnoiserotoupthin100outwarp'}; algoset = 'acqimiqrnoiserotoupthin100outwarp'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.gpOutwarpFun = 'outwarp_negpowc1';
     case {232,'acqimiqrnoiserotocorrupthin100'}; algoset = 'acqimiqrnoiserotocorrupthin100'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.WarpRotoCorrThresh = 0.05;
-        
+    case {233,'acqimiqrnoiserotonomcmc'}; algoset = 'acqimiqrnoiserotonomcmc'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
+    
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
