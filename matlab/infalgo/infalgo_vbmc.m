@@ -258,6 +258,7 @@ switch algoset
     case {233,'acqimiqrnoiserotonomcmc'}; algoset = 'acqimiqrnoiserotonomcmc'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
     case {234,'acqimiqrnoiserotonomcmc2'}; algoset = 'acqimiqrnoiserotonomcmc'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.WarpMinK = 5;
     case {235,'acqnoise'}; algoset = 'acqnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
+    case {236,'acqimiqrnoiserotocorrup2'}; algoset = 'acqimiqrnoiserotocorrupthin100'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
     
     % Information-theoretic
     case {301,'oldsettings'}; algoset = 'oldsettings';
