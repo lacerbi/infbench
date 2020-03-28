@@ -215,6 +215,7 @@ switch algoset
     case {77,'trim100roto'}; algoset = 'trim100roto'; algoptions = newdefaults; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.WarpRotoScaling = 1;
     case {78,'trim100roto2'}; algoset = 'trim100rotonegquadmix'; algoptions = newdefaults; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.WarpRotoScaling = 1; algoptions.gpOutwarpFun = 'outwarp_negpowc1';
     case {79,'trim100rotocorr'}; algoset = 'trim100rotocorr'; algoptions = newdefaults; algoptions.WarmupKeepThreshold = '100*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '100*(nvars+2)'; algoptions.WarpRotoScaling = 1; algoptions.WarpRotoCorrThresh = 0.05;
+    case {80,'rotoup'}; algoset = 'rotoup'; algoptions = newdefaults; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
     
     % New defaults
     case {100,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
