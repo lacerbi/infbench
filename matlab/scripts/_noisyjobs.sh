@@ -85,17 +85,17 @@ case "${1}" in
                 IDS=${IDS_SINGLE}
 		NOISE="{'hi'}"
                 ;;
-        4c)     ALGOSET="{'acqimiqrnoisewarp'}"
+        4c)     ALGOSET="{'acqimiqrnoiserotonomcmc2'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4c2)    ALGOSET="{'acqimiqrnoisewarp'}"
+        4c2)    ALGOSET="{'acqimiqrnoiserotonomcmc2'}"
                 IDS=${IDS_SINGLE}
 		NOISE="{'hi'}"
                 ;;
-        4d)     ALGOSET="{'acqimiqrnoiserotoup6'}"
+        4d)     ALGOSET="{'acqnoise'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4d2)    ALGOSET="{'acqimiqrnoiserotoup6'}"
+        4d2)    ALGOSET="{'acqnoise'}"
                 IDS=${IDS_SINGLE}
                 NOISE="{'hi'}"
                 ;;
@@ -340,14 +340,14 @@ case "${1}" in
 
         404)    PROBSET="{'vbmc20'}"
 		PROBS="{'wood2010'}"
-                ALGOS="{'vbmc@acqimiqrnoise'}"
+                ALGOS="{'vbmc@acqnoise'}"
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
 		NOISE="'[]'"
                 ;;
         405)    PROBSET="{'vbmc20'}"
                 PROBS="{'wood2010'}"
-                ALGOS="{'vbmc@acqimiqrnoisewarp'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotonomcmc2'}"
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
@@ -368,7 +368,7 @@ case "${1}" in
                 ;;
         407)    PROBSET="{'vbmc20'}"
                 PROBS="{'wood2010'}"
-                ALGOS="{'vbmc@acqimiqrnoiseup'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotocorrupthin100'}"
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
@@ -389,14 +389,14 @@ case "${1}" in
                 ;;
         504)    PROBSET="{'vbmc20'}"
                 PROBS="{'acerbidokka2018'}"
-                ALGOS="{'vbmc@acqimiqrnoise'}"
+                ALGOS="{'vbmc@acqnoise'}"
                 DIMS="{'1','2'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
         505)    PROBSET="{'vbmc20'}"
                 PROBS="{'acerbidokka2018'}"
-                ALGOS="{'vbmc@acqimiqrnoisewarp'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotonomcmc2'}"
                 DIMS="{'1','2'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
@@ -417,7 +417,7 @@ case "${1}" in
                 ;;
         507)    PROBSET="{'vbmc20'}"
                 PROBS="{'acerbidokka2018'}"
-                ALGOS="{'vbmc@acqimiqrnoiseup'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotocorrupthin100'}"
                 DIMS="{'1','2'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
@@ -439,14 +439,14 @@ case "${1}" in
         
         604)    PROBSET="{'vbmc20'}"
                 PROBS="{'price2018'}"
-                ALGOS="{'vbmc@acqimiqrnoise'}"
+                ALGOS="{'vbmc@acqnoise'}"
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
         605)    PROBSET="{'vbmc20'}"
                 PROBS="{'price2018'}"
-                ALGOS="{'vbmc@acqimiqrnoisewarp'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotonomcmc2'}"
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
@@ -460,7 +460,7 @@ case "${1}" in
                 ;;
         607)    PROBSET="{'vbmc20'}"
                 PROBS="{'price2018'}"
-                ALGOS="{'vbmc@acqimiqrnoiseup'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotocorrupthin100'}"
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
@@ -479,9 +479,24 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
+
+        704)    PROBSET="{'vbmc20'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc@acqnoise'}"
+                DIMS="{'1','2'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        705)    PROBSET="{'vbmc20'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotonomcmc2'}"
+                DIMS="{'1','2'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
         707)    PROBSET="{'vbmc20'}"
                 PROBS="{'krajbich2010'}"
-                ALGOS="{'vbmc@acqimiqrnoiseup'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotocorrupthin100'}"
                 DIMS="{'1','2'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
@@ -500,7 +515,6 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
-
         730)    PROBSET="{'vbmc20'}"
                 PROBS="{'krajbich2010'}"
                 ALGOS="{'parallelgp'}"
@@ -508,15 +522,30 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
-        807)    PROBSET="{'vbmc18'}"
-                PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqimiqrnoiseup'}"
+
+        804)    PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc@acqnoise'}"
                 DIMS="{'7','8'}"
                 IDS=$IDS_CENTO
                 NOISE="'me'"
                 ;;
-        807b)   PROBSET="{'vbmc18'}"
-                PROBS="{'goris2015'}"
+        805)    PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotonomcmc2'}"
+                DIMS="{'7','8'}"
+                IDS=$IDS_CENTO
+                NOISE="'me'"
+                ;;
+        807)    PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotocorrupthin100'}"
+                DIMS="{'7','8'}"
+                IDS=$IDS_CENTO
+                NOISE="'me'"
+                ;;
+        807b)   PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
                 ALGOS="{'vbmc@acqimiqrnoiseup2'}"
                 DIMS="{'7','8'}"
                 IDS=$IDS_CENTO
@@ -524,7 +553,7 @@ case "${1}" in
                 ;;
         808)    PROBSET="{'vbmc20'}"
                 PROBS="{'goris2015b'}"
-                ALGOS="{'vbmc@acqimiqrnoiserotoup'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotocorrup2'}"
                 DIMS="{'7','8'}"
                 IDS=$IDS_CENTO
                 NOISE="'me'"
@@ -565,9 +594,30 @@ case "${1}" in
                 NOISE="'me'"
                 ;;
 
+        904)    PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018'}"
+                ALGOS="{'vbmc@acqnoise'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        905)    PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotonomcmc2'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        907)    PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotocorrupthin100'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
         908d)   PROBSET="{'vbmc20'}"
                 PROBS="{'akrami2018'}"
-                ALGOS="{'vbmc@vbmc@acqimiqrnoiserotoupthin100'}"
+                ALGOS="{'vbmc@acqimiqrnoiserotoupthin100'}"
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
