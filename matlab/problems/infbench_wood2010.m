@@ -99,9 +99,15 @@ if isempty(x)
                 toc
                 exitflag = 0;
                 
+                % Save effective number of samples before burn-in removal
+                [~,output.Neff_preburn] = psrf(Xs);                
+                
                 % Remove burn-in
                 Ns = size(Xs,1);
                 Xs = Xs(ceil(Ns/2):Ns,:);
+
+                % Save effective number of samples after burn-in removal
+                [~,output.Neff_afterburn] = psrf(Xs);                
                 
                 % Thin remaining samples
                 idx = round(linspace(1,size(Xs,1),mcmc_opt.nfinal))';                
