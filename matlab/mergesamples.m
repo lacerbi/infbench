@@ -1,4 +1,4 @@
-function [X,lls,funccount] = mergesamples(filepattern,MaxIter,Nml,psrf_flag)
+function [X,lls,funccount,Neffs] = mergesamples(filepattern,MaxIter,Nml,psrf_flag)
 %MERGESAMPLES Merge MCMC samples from different files.
 
 % Example usage: from the data/acerbidokka2018mcmc folder
@@ -39,6 +39,11 @@ for iFile = 1:M
         else
             funccount(iter) = NaN;
         end
+        if isfield(temp.output,'Neff_preburn')
+            Neffs.preburn(iter,:) = temp.output.Neff_preburn;
+            Neffs.afterburn(iter,:) = temp.output.Neff_afterburn;
+        end
+        
         fprintf('%d..', iter);
         iter = iter + 1;
         if iter > MaxIter

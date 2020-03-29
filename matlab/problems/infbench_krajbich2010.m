@@ -147,7 +147,8 @@ if isempty(x)
         end
         
         switch n
-			case 1
+			case {1,101}
+                nid = 1;
 				name = 'S1';
                 subjid = 13;
 				xmin = [0.47659450173378 0.103994668275118 0.789939886331558 0.0100000001490116];
@@ -158,7 +159,8 @@ if isempty(x)
                 Mean_mcmc = [0.476566274201714 0.120251079262292 0.778912996540066 0.0809507440748478];
                 Cov_mcmc = [0.000718594409091987 -5.59208743356943e-05 -9.41064361782147e-05 -5.06057908934977e-05;-5.59208743356943e-05 0.000433943538372732 -0.000422462643621677 0.000420874211259792;-9.41064361782147e-05 -0.000422462643621677 0.0135182146782027 0.000200355157564871;-5.06057908934977e-05 0.000420874211259792 0.000200355157564871 0.00222846889918172];
                 lnZ_mcmc = -505.192475816479;                
-			case 2
+			case {2,102}
+                nid = 2;
 				name = 'S2';
                 subjid = 16;
 				xmin = [0.817608234286308 0.22548133940436 0.510444793105125 0.0155491371965036];
@@ -209,18 +211,22 @@ if isempty(x)
         y.Post.ModeFval = fval_post;        
         y.Post.lnZ = lnZ_mcmc;
         y.Post.Cov = Cov_mcmc;
-                
-        data.IBSNreps = 20; % Reps used for IBS estimator
+
+        if n > 100
+            data.IBSNreps = 0; % Deterministic problems            
+        else
+            data.IBSNreps = 20; % Reps used for IBS estimator
+        end
         
         % Read marginals from file
         marginals = load([problem_name '_marginals.mat']);
-        y.Post.MarginalBounds = marginals.MarginalBounds{n};
-        y.Post.MarginalPdf = marginals.MarginalPdf{n};
+        y.Post.MarginalBounds = marginals.MarginalBounds{nid};
+        y.Post.MarginalPdf = marginals.MarginalPdf{nid};
         
         % Save data and coordinate transformation struct
         data.trinfo = trinfo;
         y.Data = data;
-        y.DeterministicFlag = false;
+        y.DeterministicFlag = (data.IBSNreps == 0);
                 
     end
     

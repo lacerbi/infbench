@@ -149,7 +149,8 @@ if isempty(x)
         end
         
         switch n
-			case 1
+			case {1,101}
+                nid = 1;
 				name = 'S1';
 				xmin = [0.601488995312693 0.92918748567871 -0.90322157872528 -1.25478386895628 0.532511789213771 -0.215398837418348];
 				fval = -12641.3043560369;
@@ -205,17 +206,21 @@ if isempty(x)
         y.Post.lnZ = lnZ_mcmc;
         y.Post.Cov = Cov_mcmc;
                 
-        data.IBSNreps = 200; % Reps used for IBS estimator
+        if n > 100
+            data.IBSNreps = 0; % Deterministic problems            
+        else
+            data.IBSNreps = 200; % Reps used for IBS estimator
+        end
         
         % Read marginals from file
         marginals = load([problem_name '_marginals.mat']);
-        y.Post.MarginalBounds = marginals.MarginalBounds{n};
-        y.Post.MarginalPdf = marginals.MarginalPdf{n};
+        y.Post.MarginalBounds = marginals.MarginalBounds{nid};
+        y.Post.MarginalPdf = marginals.MarginalPdf{nid};
         
         % Save data and coordinate transformation struct
         data.trinfo = trinfo;
         y.Data = data;
-        y.DeterministicFlag = false;
+        y.DeterministicFlag = (data.IBSNreps == 0);
                 
     end
     
