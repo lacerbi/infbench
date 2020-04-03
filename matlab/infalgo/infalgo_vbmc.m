@@ -134,6 +134,45 @@ newdefaults.ActiveSearchBound = 2;
 newdefaults.BoxSearchFrac = 0.25;
 newdefaults.WarpRotoCorrThresh = 0.05;
 
+% Restart setting VBMC defaults (need to be set manually here)
+renewdefaults = algoptions;
+% renewdefaults.MinFinalComponents = 50;
+renewdefaults.WarmupKeepThreshold = '100*(D+2)';
+renewdefaults.PruningThresholdMultiplier = @(K) 1/sqrt(K);
+%renewdefaults.gpQuadraticMeanBound = 1;
+%renewdefaults.EmpiricalGPPrior = 0;
+renewdefaults.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
+renewdefaults.TolStableExcptFrac = 0.2;
+renewdefaults.TolStableCount = 50;
+renewdefaults.WarmupCheckMax = true;
+renewdefaults.SGDStepSize = 0.005;
+renewdefaults.NSentFine = '@(K) 2^12*K';
+renewdefaults.NSentFast = 0;
+renewdefaults.gpMeanFun = 'negquad';
+renewdefaults.GPTrainInitMethod = 'rand';
+renewdefaults.GPTrainNinitFinal = 64;
+renewdefaults.MaxIterStochastic = '100*(2+nvars)';
+%renewdefaults.GPSampleThin = 1;
+%renewdefaults.GPTolOpt = 1e-5;
+%renewdefaults.GPTolOptMCMC = 1e-2;
+renewdefaults.StopWarmupReliability = 100;
+renewdefaults.WarmupKeepThresholdFalseAlarm = '100*(D+2)';
+renewdefaults.SearchMaxFunEvals = '500*(D+2)';
+renewdefaults.NSentActive = '@(K) 20*K.^(2/3)';
+renewdefaults.NSent = '@(K) 100*K.^(2/3)';
+renewdefaults.NSentBoost = '@(K) 200*K.^(2/3)';
+renewdefaults.SkipActiveSamplingAfterWarmup = 0;
+%renewdefaults.StableGPvpK = 10;
+renewdefaults.TolGPNoise = sqrt(1e-5);
+%renewdefaults.GPLengthPriorMean = 'sqrt(D/6)';
+%renewdefaults.GPLengthPriorStd = 0.5*log(1e3);
+renewdefaults.ActiveSearchBound = 2; 
+renewdefaults.BoxSearchFrac = 0.25;
+renewdefaults.WarpRotoCorrThresh = 0.05;
+
+
+
+
 % Options from current problem
 switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = true; algoptions.Plot = 'on'; algoptions.FeatureTest = true;
@@ -220,6 +259,7 @@ switch algoset
     % Final testing
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+    case {103,'renewbase'}; algoset = 'newbase'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
         
         
     % New defaults
