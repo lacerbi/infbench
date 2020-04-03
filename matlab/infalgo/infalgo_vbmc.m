@@ -171,6 +171,41 @@ renewdefaults.BoxSearchFrac = 0.25;
 renewdefaults.WarpRotoCorrThresh = 0.05;
 
 
+% Restart setting VBMC defaults (need to be set manually here)
+renewdefaults2 = algoptions;
+% renewdefaults2.MinFinalComponents = 50;
+renewdefaults2.WarmupKeepThreshold = '100*(D+2)'; %%%
+renewdefaults2.PruningThresholdMultiplier = @(K) 1/sqrt(K);
+%renewdefaults2.gpQuadraticMeanBound = 1;
+%renewdefaults2.EmpiricalGPPrior = 0;
+renewdefaults2.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
+renewdefaults2.TolStableExcptFrac = 0.2;
+renewdefaults2.TolStableCount = 50;
+renewdefaults2.WarmupCheckMax = true;
+renewdefaults2.SGDStepSize = 0.005;
+renewdefaults2.NSentFine = '@(K) 2^12*K';
+renewdefaults2.NSentFast = 0;
+renewdefaults2.gpMeanFun = 'negquad';
+renewdefaults2.GPTrainInitMethod = 'rand';
+renewdefaults2.GPTrainNinitFinal = 64;
+renewdefaults2.MaxIterStochastic = '100*(2+nvars)';
+%renewdefaults2.GPSampleThin = 1;
+%renewdefaults2.GPTolOpt = 1e-5;
+%renewdefaults2.GPTolOptMCMC = 1e-2;
+renewdefaults2.StopWarmupReliability = 100;
+renewdefaults2.WarmupKeepThresholdFalseAlarm = '100*(D+2)';
+%renewdefaults2.SearchMaxFunEvals = '500*(D+2)';
+renewdefaults2.NSentActive = '@(K) 20*K.^(2/3)';
+renewdefaults2.NSent = '@(K) 100*K.^(2/3)';
+renewdefaults2.NSentBoost = '@(K) 200*K.^(2/3)';
+renewdefaults2.SkipActiveSamplingAfterWarmup = 0;
+%renewdefaults2.StableGPvpK = 10;
+renewdefaults2.TolGPNoise = sqrt(1e-5);
+%renewdefaults2.GPLengthPriorMean = 'sqrt(D/6)';
+%renewdefaults2.GPLengthPriorStd = 0.5*log(1e3);
+%renewdefaults2.ActiveSearchBound = 2; 
+%renewdefaults2.BoxSearchFrac = 0.25;
+renewdefaults2.WarpRotoCorrThresh = 0.05;
 
 
 % Options from current problem
@@ -259,8 +294,9 @@ switch algoset
     % Final testing
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
-    case {103,'renewbase'}; algoset = 'newbase'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+    case {103,'renewbase'}; algoset = 'renewbase'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {104,'renewbasenosearchbound'}; algoset = 'newbase'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.ActiveSearchBound = Inf;
+    case {105,'renewbase2'}; algoset = 'renewbase2'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
         
         
     % New defaults
