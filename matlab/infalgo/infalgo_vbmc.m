@@ -137,7 +137,7 @@ newdefaults.WarpRotoCorrThresh = 0.05;
 % Restart setting VBMC defaults (need to be set manually here)
 renewdefaults = algoptions;
 % renewdefaults.MinFinalComponents = 50;
-renewdefaults.WarmupKeepThreshold = '100*(D+2)';
+renewdefaults.WarmupKeepThreshold = '100*(D+2)'; %%%
 renewdefaults.PruningThresholdMultiplier = @(K) 1/sqrt(K);
 %renewdefaults.gpQuadraticMeanBound = 1;
 %renewdefaults.EmpiricalGPPrior = 0;
@@ -260,6 +260,7 @@ switch algoset
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {103,'renewbase'}; algoset = 'newbase'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+    case {104,'renewbasenosearchbound'}; algoset = 'newbase'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.ActiveSearchBound = Inf;
         
         
     % New defaults
