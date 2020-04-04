@@ -198,8 +198,8 @@ renewdefaults2.ActiveSearchBound = 2;
 renewdefaults2.BoxSearchFrac = 0.25;
 renewdefaults2.GPTolOpt = 1e-5;
 renewdefaults2.GPTolOptMCMC = 1e-2;
-%renewdefaults2.gpQuadraticMeanBound = 1;
-%renewdefaults2.NSent = '@(K) 100*K.^(2/3)';
+renewdefaults2.gpQuadraticMeanBound = 1;
+renewdefaults2.NSent = '@(K) 100*K.^(2/3)';
 %renewdefaults2.MaxIterStochastic = '100*(2+nvars)';
 %renewdefaults2.SearchMaxFunEvals = '500*(D+2)';
 %renewdefaults2.WarmupKeepThreshold = '100*(D+2)';
@@ -301,7 +301,8 @@ switch algoset
     case {107,'renewbase2c'}; algoset = 'renewbase2c'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25;
     case {108,'renewbase2d'}; algoset = 'renewbase2d'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2;
     case {109,'renewbase2e'}; algoset = 'renewbase2e'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)';
-
+    case {110,'renewbase2f'}; algoset = 'renewbase2f'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)';
+        
     % New defaults
     case {150,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
     case {151,'newdef2'}; algoset = 'newdef2'; algoptions = newdefaults;    % Current best

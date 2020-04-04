@@ -129,7 +129,7 @@ switch lower(type)
                     case {'newdef'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-new';
                     case {'oldsettings'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc (old settings)';
                     case {'acqimiqrnoiserotocorrupthin100','acqimiqrnoiserotonomcmc','acqimiqrnoiseroto','acqimiqrnoiserotoup'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
-                    case {'new2','acqimiqrnoiseup','acqimiqrnoiseup2','renewbase2c'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
+                    case {'new2','acqimiqrnoiseup','acqimiqrnoiseup2','renewbase2c','renewbase2d'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
                     case {'newdef3','renewbase'}; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'test'; defaults.color = [120 100 0]/255; defaults.marker = '>'; defaults.linewidth = 2; defaults.linestyle = ':';
