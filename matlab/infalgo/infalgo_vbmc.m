@@ -170,12 +170,13 @@ renewdefaults.SearchMaxFunEvals = '500*(D+2)';
 renewdefaults.GPSampleThin = 5;
 renewdefaults.StableGPvpK = Inf;
 renewdefaults.WarmupKeepThreshold = '10*D';
+%renewdefaults.MinFinalComponents = 50;
 
-
+% Changing these options reduces performance on noisy datasets (for
+% uncertainty sampling acquisition function)
 %renewdefaults.StableGPvpK = 10;
 %renewdefaults.GPSampleThin = 3;
 %renewdefaults.WarmupKeepThreshold = '100*(D+2)';
-%renewdefaults.MinFinalComponents = 50;
 
 
 % Options from current problem
@@ -265,12 +266,15 @@ switch algoset
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {103,'renewdef'}; algoset = 'renewdef'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+
+    % TODO: Delete all renewbase        
     case {104,'renewbasenosearchbound'}; algoset = 'newbase'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.ActiveSearchBound = Inf;
     case {105,'renewbase2'}; algoset = 'renewbase2'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {106,'renewbase2b'}; algoset = 'renewbase2b'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3);
     case {107,'renewbase2c'}; algoset = 'renewbase2c'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25;
     case {108,'renewbase2d'}; algoset = 'renewbase2d'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2;
     case {109,'renewbase2e'}; algoset = 'renewbase2e'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)';
+    % Good
     case {110,'renewbase2f'}; algoset = 'renewbase2f'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)';
     case {111,'renewbase2g'}; algoset = 'renewbase2g'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.WarmupKeepThreshold = '100*(D+2)';
     case {112,'renewbase2h'}; algoset = 'renewbase2h'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.StableGPvpK = 10; algoptions.GPSampleThin = 3;
@@ -302,6 +306,8 @@ switch algoset
     case {236,'acqimiqrnoiserotocorrup2'}; algoset = 'acqimiqrnoiserotocorrupthin100'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.PosteriorMCMC = 2e4; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
     case {237,'acqnoisemcmc'}; algoset = 'acqnoisemcmc'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.PosteriorMCMC = 2e4;
     
+    case {238,'renewdefnoise'}; algoset = 'renewdefnoise'; algoptions = ; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+        
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
     case {303,'acqmidebug'}; algoset = 'acqmidebug'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveVariationalSamples = 100; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1;
