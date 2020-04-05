@@ -307,6 +307,7 @@ switch algoset
     case {237,'acqnoisemcmc'}; algoset = 'acqnoisemcmc'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.PosteriorMCMC = 2e4;
     
     case {238,'renewdefnoise'}; algoset = 'renewdefnoise'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+    case {239,'renewdefnoiseplus'}; algoset = 'renewdefnoiseplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSampleFullUpdate = 2;
         
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
