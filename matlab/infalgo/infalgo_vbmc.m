@@ -116,7 +116,6 @@ newdefaults.gpMeanFun = 'negquad';
 newdefaults.GPTrainInitMethod = 'rand';
 newdefaults.GPTrainNinitFinal = 64;
 newdefaults.MaxIterStochastic = '100*(2+nvars)';
-newdefaults.GPSampleThin = 1;
 newdefaults.GPTolOpt = 1e-5;
 newdefaults.GPTolOptMCMC = 1e-2;
 newdefaults.StopWarmupReliability = 100;
@@ -126,50 +125,16 @@ newdefaults.NSentActive = '@(K) 20*K.^(2/3)';
 newdefaults.NSent = '@(K) 100*K.^(2/3)';
 newdefaults.NSentBoost = '@(K) 200*K.^(2/3)';
 newdefaults.SkipActiveSamplingAfterWarmup = 0;
-newdefaults.StableGPvpK = 10;
 newdefaults.TolGPNoise = sqrt(1e-5);
 newdefaults.GPLengthPriorMean = 'sqrt(D/6)';
 newdefaults.GPLengthPriorStd = 0.5*log(1e3);
 newdefaults.ActiveSearchBound = 2; 
 newdefaults.BoxSearchFrac = 0.25;
 newdefaults.WarpRotoCorrThresh = 0.05;
-
-% Restart setting VBMC defaults (need to be set manually here)
-renewdefaults = algoptions;
-% renewdefaults.MinFinalComponents = 50;
-renewdefaults.WarmupKeepThreshold = '100*(D+2)'; %%%
-renewdefaults.PruningThresholdMultiplier = @(K) 1/sqrt(K);
-%renewdefaults.gpQuadraticMeanBound = 1;
-%renewdefaults.EmpiricalGPPrior = 0;
-renewdefaults.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
-renewdefaults.TolStableExcptFrac = 0.2;
-renewdefaults.TolStableCount = 50;
-renewdefaults.WarmupCheckMax = true;
-renewdefaults.SGDStepSize = 0.005;
-renewdefaults.NSentFine = '@(K) 2^12*K';
-renewdefaults.NSentFast = 0;
-renewdefaults.gpMeanFun = 'negquad';
-renewdefaults.GPTrainInitMethod = 'rand';
-renewdefaults.GPTrainNinitFinal = 64;
-renewdefaults.MaxIterStochastic = '100*(2+nvars)';
-%renewdefaults.GPSampleThin = 1;
-%renewdefaults.GPTolOpt = 1e-5;
-%renewdefaults.GPTolOptMCMC = 1e-2;
-renewdefaults.StopWarmupReliability = 100;
-renewdefaults.WarmupKeepThresholdFalseAlarm = '100*(D+2)';
-renewdefaults.SearchMaxFunEvals = '500*(D+2)';
-renewdefaults.NSentActive = '@(K) 20*K.^(2/3)';
-renewdefaults.NSent = '@(K) 100*K.^(2/3)';
-renewdefaults.NSentBoost = '@(K) 200*K.^(2/3)';
-renewdefaults.SkipActiveSamplingAfterWarmup = 0;
-%renewdefaults.StableGPvpK = 10;
-renewdefaults.TolGPNoise = sqrt(1e-5);
-%renewdefaults.GPLengthPriorMean = 'sqrt(D/6)';
-%renewdefaults.GPLengthPriorStd = 0.5*log(1e3);
-renewdefaults.ActiveSearchBound = 2; 
-renewdefaults.BoxSearchFrac = 0.25;
-renewdefaults.WarpRotoCorrThresh = 0.05;
-
+%newdefaults.GPSampleThin = 1;
+%newdefaults.StableGPvpK = 10;
+newdefaults.GPSampleThin = 5;
+newdefaults.StableGPvpK = Inf;
 
 % Restart setting VBMC defaults (need to be set manually here)
 renewdefaults2 = algoptions;
@@ -304,6 +269,7 @@ switch algoset
     case {110,'renewbase2f'}; algoset = 'renewbase2f'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)';
     case {111,'renewbase2g'}; algoset = 'renewbase2g'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.WarmupKeepThreshold = '100*(D+2)';
     case {112,'renewbase2h'}; algoset = 'renewbase2h'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.StableGPvpK = 10; algoptions.GPSampleThin = 3;
+    case {113,'renewbase2i'}; algoset = 'renewbase2i'; algoptions = renewdefaults2; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.WarmupKeepThreshold = '20*(D+2)';
         
     % New defaults
     case {150,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
