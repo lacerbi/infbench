@@ -266,19 +266,6 @@ switch algoset
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {103,'renewdef'}; algoset = 'renewdef'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
-
-    % TODO: Delete all renewbase        
-    case {104,'renewbasenosearchbound'}; algoset = 'newbase'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.ActiveSearchBound = Inf;
-    case {105,'renewbase2'}; algoset = 'renewbase2'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
-    case {106,'renewbase2b'}; algoset = 'renewbase2b'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3);
-    case {107,'renewbase2c'}; algoset = 'renewbase2c'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25;
-    case {108,'renewbase2d'}; algoset = 'renewbase2d'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2;
-    case {109,'renewbase2e'}; algoset = 'renewbase2e'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)';
-    % Good
-    case {110,'renewbase2f'}; algoset = 'renewbase2f'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)';
-    case {111,'renewbase2g'}; algoset = 'renewbase2g'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.WarmupKeepThreshold = '100*(D+2)';
-    case {112,'renewbase2h'}; algoset = 'renewbase2h'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.StableGPvpK = 10; algoptions.GPSampleThin = 3;
-    case {113,'renewbase2i'}; algoset = 'renewbase2i'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.EmpiricalGPPrior = 0; algoptions.GPLengthPriorMean = 'sqrt(D/6)'; algoptions.GPLengthPriorStd = 0.5*log(1e3); algoptions.ActiveSearchBound = 2; algoptions.BoxSearchFrac = 0.25; algoptions.GPTolOpt = 1e-5; algoptions.GPTolOptMCMC = 1e-2; algoptions.gpQuadraticMeanBound = 1; algoptions.NSent = '@(K) 100*K.^(2/3)'; algoptions.MaxIterStochastic = '100*(2+nvars)'; algoptions.SearchMaxFunEvals = '500*(D+2)'; algoptions.WarmupKeepThreshold = '20*(D+2)';
         
     % New defaults
     case {150,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -309,6 +296,7 @@ switch algoset
     case {238,'renewdefnoise'}; algoset = 'renewdefnoise'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {239,'renewdefnoiseplus'}; algoset = 'renewdefnoiseplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSampleFullUpdate = 2;
     case {240,'renewdefimiqrplus'}; algoset = 'renewdefimiqrplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {241,'renewdefimiqrpluswup'}; algoset = 'renewdefimiqrpluswup'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupOptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
         
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
@@ -337,7 +325,12 @@ switch algoset
     case {423,'intmeanconst2acqimi'}; algoset = 'intmeanconst2acqimi'; algoptions = newdefaults; algoptions.FunEvalStart = 10; algoptions.gpIntMeanFun = 1; algoptions.gpMeanFun = 'negquadlinonly';  algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.ActiveSampleFullUpdate = 0; algoptions.Plot = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1;
 
     case {522,'intmeanconstacqeiv'}; algoset = 'intmeanconstacqeiv'; algoptions = newdefaults; algoptions.FunEvalStart = 10; algoptions.gpIntMeanFun = 1; algoptions.gpMeanFun = 'negquadfixonly';  algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.SearchAcqFcn = @acqeivreg_vbmc; algoptions.ActiveSampleFullUpdate = 0; algoptions.Plot = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1;
-                
+
+    % Tests
+    case {501,'imiqrplusfit'}; algoset = 'imiqrplusfit'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.FitnessShaping = true; algoptions.OutwarpThreshBase = '20*(nvars+1)';
+    
+        
+        
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
         
