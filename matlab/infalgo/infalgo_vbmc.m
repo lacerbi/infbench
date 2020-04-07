@@ -297,6 +297,7 @@ switch algoset
     case {239,'renewdefnoiseplus'}; algoset = 'renewdefnoiseplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSampleFullUpdate = 2;
     case {240,'renewdefimiqrplus'}; algoset = 'renewdefimiqrplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {241,'renewdefimiqrpluswup'}; algoset = 'renewdefimiqrpluswup'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupOptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {242,'renewdefimiqrpluswup3'}; algoset = 'renewdefimiqrpluswup3'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 3; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
         
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
