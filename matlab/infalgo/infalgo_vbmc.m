@@ -266,6 +266,8 @@ switch algoset
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {103,'renewdef'}; algoset = 'renewdef'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+    case {104,'renewdefup'}; algoset = 'renewdefup'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.ActiveSampleFullUpdate = 3; algoptions.ActiveSampleFullUpdatePastWarmup = 2; algoptions.ActiveSampleFullUpdateThreshold = 3;
+    case {105,'renewdefplus'}; algoset = 'renewdefplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSampleFullUpdate = 3; algoptions.ActiveSampleFullUpdatePastWarmup = 2; algoptions.ActiveSampleFullUpdateThreshold = 3;
         
     % New defaults
     case {150,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -300,7 +302,7 @@ switch algoset
     case {242,'renewdefimiqrpluswup3'}; algoset = 'renewdefimiqrpluswup3'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 3; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {243,'renewdefimiqrpluswup3noroto'}; algoset = 'renewdefimiqrpluswup3noroto'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 3; algoptions.MinFinalComponents = 50;
     case {244,'renewdefimiqrpluswup4'}; algoset = 'renewdefimiqrpluswup4'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 3; algoptions.ActiveSampleFullUpdatePastWarmup = 2; algoptions.ActiveSampleFullUpdateThreshold = 3; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {244,'renewdefimiqrpluswup4noroto'}; algoset = 'renewdefimiqrpluswup4noroto'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 3; algoptions.ActiveSampleFullUpdatePastWarmup = 2; algoptions.ActiveSampleFullUpdateThreshold = 3; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {245,'renewdefimiqrpluswup4noroto'}; algoset = 'renewdefimiqrpluswup4noroto'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 3; algoptions.ActiveSampleFullUpdatePastWarmup = 2; algoptions.ActiveSampleFullUpdateThreshold = 3; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 50;
         
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
