@@ -308,6 +308,7 @@ switch algoset
     case {248,'renewdefmipluswup4'}; algoset = 'renewdefmipluswup4'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {249,'renewdefmipluswup4gps'}; algoset = 'renewdefmipluswup4gps'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {250,'renewdefmipluswup4vp'}; algoset = 'renewdefmipluswup4'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {251,'renewdefmipluswup4gpsvp'}; algoset = 'renewdefmipluswup4gpsvp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
         
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
