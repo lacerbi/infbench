@@ -116,7 +116,7 @@ switch lower(type)
                     case 'se'; defaults.color = [60 60 60]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case 'const'; defaults.color = [60 60 60]/255; defaults.marker = 'd'; defaults.linewidth = 2; defaults.linestyle = '--';
                     case 'acqfregvlnn'; defaults.color = [180 0 80]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-.';
-                    case {'acqfregvsqrtn','acqmistep1'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
+                    case {'acqfregvsqrtn','renewdefmipluswup4'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
 %                     % VBMC workshop paper                        
 %                     case {'base','acqproreg'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'def';
 %                     case {'acqus','acqusreg'}; defaults.color = [180 0 80]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'a-us';
