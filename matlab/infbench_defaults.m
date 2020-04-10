@@ -128,7 +128,7 @@ switch lower(type)
                     case 'control'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
                     case {'newdef'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-new';
                     case {'oldsettings'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc (old settings)';
-                    case {'acqimiqrnoiserotocorrupthin100','acqimiqrnoiserotonomcmc','acqimiqrnoiseroto','acqimiqrnoiserotoup'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
+                    case {'acqimiqrnoiserotocorrupthin100','renewdefimiqrpluswup4'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case {'new2','acqimiqrnoiseup','renewdefimiqrpluswup'}; defaults.color = [180 0 100]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
                     case {'newdef3','renewbase'}; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
@@ -139,7 +139,7 @@ switch lower(type)
                     case {'acqmidtstep1_100','ent2','renewdefnoise'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'ent3','ent2midtmcmc50','ent2midtmcmc50step1','renewdefnoiseplus'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case {'acqimiqrnoise','acqnoise'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '--';
-                    case {'acqimiqrnoisenegquad','new3','renewdefimiqrpluswup3','roto'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = ':';
+                    case {'acqimiqrnoisenegquad','new3','renewdefimiqrpluswup4noacq','roto'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = ':';
                         
                     otherwise
                         defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
