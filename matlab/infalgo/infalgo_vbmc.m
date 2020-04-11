@@ -72,6 +72,7 @@ algoptions.ActiveSampleVPUpdate = false;
 algoptions.ActiveSampleGPUpdate = false;
 algoptions.ActiveSampleFullUpdatePastWarmup = 2;
 algoptions.ActiveSampleFullUpdateThreshold = 3;
+algoptions.RecomputeLCBmax = false;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -310,6 +311,7 @@ switch algoset
     case {250,'renewdefmipluswup4vp'}; algoset = 'renewdefmipluswup4'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {251,'renewdefmipluswup4gpsvp'}; algoset = 'renewdefmipluswup4gpsvp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {252,'renewdefimiqrpluswup4gps'}; algoset = 'renewdefimiqrpluswup4gps'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {253,'renewdefimiqrpluswup4lcb'}; algoset = 'renewdefimiqrpluswup4lcb'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.RecomputeLCBmax = true;
     
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
