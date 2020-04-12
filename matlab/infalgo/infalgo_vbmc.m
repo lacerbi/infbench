@@ -139,6 +139,7 @@ newdefaults.WarpRotoCorrThresh = 0.05;
 %newdefaults.StableGPvpK = 10;
 newdefaults.GPSampleThin = 5;
 newdefaults.StableGPvpK = Inf;
+newdefaults.RecomputeLCBmax = true;
 
 % Restart setting VBMC defaults (need to be set manually here)
 renewdefaults = algoptions;
@@ -174,6 +175,7 @@ renewdefaults.SearchMaxFunEvals = '500*(D+2)';
 renewdefaults.GPSampleThin = 5;
 renewdefaults.StableGPvpK = Inf;
 renewdefaults.WarmupKeepThreshold = '10*D';
+renewdefaults.RecomputeLCBmax = true;
 %renewdefaults.MinFinalComponents = 50;
 
 % Changing these options reduces performance on noisy datasets (for
@@ -312,7 +314,12 @@ switch algoset
     case {251,'renewdefmipluswup4gpsvp'}; algoset = 'renewdefmipluswup4gpsvp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {252,'renewdefimiqrpluswup4gps'}; algoset = 'renewdefimiqrpluswup4gps'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {253,'renewdefimiqrpluswup4lcb'}; algoset = 'renewdefimiqrpluswup4lcb'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.RecomputeLCBmax = true;
-    
+    case {254,'renewdefmipluswup4gpsvplcbmix'}; algoset = 'renewdefmipluswup4gpsvp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.RecomputeLCBmax = true;
+    case {255,'renewdefimiqrpluswup4lcbmix'}; algoset = 'renewdefimiqrpluswup4lcb'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.RecomputeLCBmax = true;
+
+    case {256,'renewdefimiqrpluswup5'}; algoset = 'renewdefimiqrpluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {257,'renewdefimiqrvppluswup5'}; algoset = 'renewdefimiqrvppluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqrvp_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+        
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
     case {303,'acqmidebug'}; algoset = 'acqmidebug'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveVariationalSamples = 100; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1;
@@ -343,6 +350,7 @@ switch algoset
 
     % Tests
     case {501,'imiqrplusfit'}; algoset = 'imiqrplusfit'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.FitnessShaping = true; algoptions.OutwarpThreshBase = '20*(nvars+1)';
+    case {502,'renewdefimiqrpluswup4lcbfit'}; algoset = 'renewdefimiqrpluswup4lcb'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.RecomputeLCBmax = true; algoptions.FitnessShaping = true; algoptions.OutwarpThreshBase = '50*nvars';
     
         
         
