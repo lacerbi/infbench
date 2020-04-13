@@ -50,6 +50,7 @@ defopts.SampleFrequency = NaN;
 defopts.AdaptiveYlim = 0;
 defopts.AxesHandles = [];
 defopts.DisplayMarkers = false;
+defopts.FontSize = 14;
 
 % Plotting options
 defopts.YlimMax = 1e5;
@@ -400,7 +401,7 @@ for iFig = 1:nfigs
             hlines(iLayer) = h;
         end
         hl = legend(hlines,legendlist{:});
-        set(hl,'Box','off','Location','NorthWest','FontSize',14);
+        set(hl,'Box','off','Location','NorthWest','FontSize',options.FontSize);
         axis off;
     end
     

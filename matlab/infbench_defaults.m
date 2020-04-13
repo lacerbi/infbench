@@ -128,7 +128,7 @@ switch lower(type)
                     case 'control'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
                     case {'newdef'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-new';
                     case {'oldsettings'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc (old settings)';
-                    case {'renewdefimiqrpluswup4lcb','renewdefimiqrpluswup4'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
+                    case {'renewdefimiqrpluswup4'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case {'new2','acqimiqrnoiseup','renewdefimiqrpluswup'}; defaults.color = [180 0 100]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
                     case {'newdef3','renewbase'}; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
@@ -136,14 +136,14 @@ switch lower(type)
                         % VBMC with noisy functions
                     case {'renewdefimiqrvppluswup5'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-vimiqr';
                     case {'newbase'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = '-';
-                    case {'renewdefmipluswup4gpsvp'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-';
+                    case {'renewdefmipluswup4gpsvp'}; defaults.color = [180 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-mi';
                     case {'acqmidtstep1_100','ent2','renewdefnoise'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'ent3','ent2midtmcmc50','renewdefnoiseplus'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
-                    case {'acqimiqrnoise','acqnoise'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '--';
-                    case {'renewdefimiqrpluswup4noacq'}; defaults.color = [240 198 114]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-';
+                    case {'renewdefimiqrpluswup4lcb'}; defaults.color = [100 0 180]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-imiqr';
+                    case {'renewdefimiqrpluswup4noacq'}; defaults.color = [240 198 114]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-pron';
                         
                     otherwise
-                        defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
+                        defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 3; defaults.linestyle = '-.';
                 end
                         
             case 'smc'
