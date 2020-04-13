@@ -24,7 +24,7 @@ mypath = '.';
 YlimMax = [1e4,1e6];
 
 for iPlot = 1:numel(plots)
-    options.PlotType = plots{iPlot};
+    options.Metric = plots{iPlot};
     options.YlimMax = YlimMax(iPlot);
     options.DisplayLegend = iPlot == numel(plots);
     figure(iPlot);

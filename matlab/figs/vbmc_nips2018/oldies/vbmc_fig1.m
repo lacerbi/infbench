@@ -21,7 +21,7 @@ mypath = fileparts(mfilename('fullpath'));
 mypath = '.';
 
 for iPlot = 1:numel(plots)
-    options.PlotType = plots{iPlot};
+    options.Metric = plots{iPlot};
     options.DisplayLegend = iPlot == numel(plots);
     figure(iPlot);
     infbench_plot(probset,probs,dims,noise,algos,[],{'prob','subprob'},options);

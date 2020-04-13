@@ -39,22 +39,22 @@ defopts.Nsamp = 5e3;            % Samples for ERT computation
 defopts.TwoRows = 0;
 defopts.EnhanceLine = 0;        % Enhance one plotted line
 defopts.FunEvalsPerD = 500;
-defopts.PlotType = 'nlZ';
+defopts.Metric = 'nlZ';
 defopts.DisplayLegend = true;
 defopts.Quantiles = [0.25,0.75];    % Confidence intervals quantiles
-defopts.PlotAll = false;        % Plot all lines
+defopts.PlotType = 'errorbar';
 defopts.BootStrap = 1e3;        % # samples for bootstrap
 % defopts.BaseSpeedTest = 8.2496; % Laptop speed
 defopts.BaseSpeedTest = 13.7660; % Laptop speed
 defopts.SampleFrequency = NaN;
 defopts.AdaptiveYlim = 0;
+defopts.AxesHandles = [];
+defopts.DisplayMarkers = false;
 
 % Plotting options
 defopts.YlimMax = 1e5;
 defopts.AbsolutePlot = 0;
 defopts.DisplayFval = 0;
-
-StatMismatch = 0;
 
 defaults = infbench_defaults('options');
 linstyle = defaults.LineStyle;
@@ -117,6 +117,8 @@ if isempty(data)
     LoadedData_flag = false;
 end
 
+iAxis = 0;  % Current axis handle number
+
 % Loop over figures
 for iFig = 1:nfigs
     if nfigs > 1; benchlist{dimfig} = varargin{dimfig}{iFig}; end
@@ -131,13 +133,19 @@ for iFig = 1:nfigs
             benchlist{dimcols} = varargin{dimcols}{iCol};
             if isempty(benchlist{dimcols}); continue; end
             
-            if nrows == 1 && options.TwoRows
-                index = iCol + (iCol > ceil(ncols/2));
-                subplot(2,ceil(ncols/2)+1,index);
+            iAxis = iAxis + 1;            
+            
+            if isempty(options.AxesHandles)
+                if nrows == 1 && options.TwoRows
+                    index = iCol + (iCol > ceil(ncols/2));
+                    subplot(2,ceil(ncols/2)+1,index);
+                else
+                    subplot(nrows,ncols+1,(iRow-1)*(ncols+1) + iCol);
+                end
+                cla(gca,'reset');
             else
-                subplot(nrows,ncols+1,(iRow-1)*(ncols+1) + iCol);
+                axes(options.AxesHandles(iAxis));
             end
-            cla(gca,'reset');
             
             % Find data dimension to be plotted in each panel
             for i = 1:length(labels)
@@ -311,9 +319,7 @@ for iFig = 1:nfigs
                         lnZs = Errs;
                     end
                     
-                    
-                    
-                    switch lower(options.PlotType)
+                    switch lower(options.Metric)
                         case 'lnz'
                             [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,lnZs,iLayer,varargin{dimlayers},options);
                         case 'gskl'
@@ -345,21 +351,26 @@ for iFig = 1:nfigs
                 end
                 
             end
-            
-            
+                        
             [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,xx,lnZ_true,benchlist,IsMinKnown,yybnd,options);
+            drawnow
         end
     end
     
     %% Add legend
     if options.DisplayLegend
-        if nrows == 1 && options.TwoRows
-            subplot(nrows,ceil(ncols/2)+1,ceil(ncols/2)+1);
+        
+        if isempty(options.AxesHandles)
+            if nrows == 1 && options.TwoRows
+                subplot(nrows,ceil(ncols/2)+1,ceil(ncols/2)+1);
+            else
+                subplot(nrows,ncols+1,ncols+1);
+            end
+            cla(gca,'reset');
         else
-            subplot(nrows,ncols+1,ncols+1);
-        end
-    
-        cla(gca,'reset');
+            axes(options.AxesHandles(end));
+        end            
+        
         for iLayer = 1:length(varargin{dimlayers})
             temp = varargin{dimlayers}{iLayer};
             index = find(temp == '@',1);
@@ -396,10 +407,6 @@ for iFig = 1:nfigs
     set(gcf,'Color','w');
 end
 
-% if StatMismatch == 1 || isempty(benchdata)
-%     warning('Summary statistics are not up to date. Replot to have the correct graphs.');
-% end
-
 benchdata = benchdatanew;
 benchdata.options = options;
 
@@ -419,7 +426,11 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
     linstyle = style.linestyle;
     lincol = style.color;
     linewidth = style.linewidth;
-    linemarker = []; %style.marker;
+    if options.DisplayMarkers
+        linemarker = style.marker;        
+    else
+        linemarker = [];
+    end
         
     xx = median(x,1);
     switch lower(options.Method)
@@ -427,10 +438,9 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
             idx_bad = all(~isfinite(y),2);
             y(idx_bad,:) = [];
             
-            if options.PlotAll
+            if strcmpi(options.PlotType,'all')
                 qq = 0.05:0.05:0.95;
-                for i = 1:numel(qq); yy(i,:) = quantile(y,qq(i)); end
-                
+                for i = 1:numel(qq); yy(i,:) = quantile(y,qq(i)); end                
                 yy = y;
             else
                 yy = median(y,1);
@@ -451,28 +461,23 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
                 yyerr_down = yyerr_down(idx);
             end
     end
-
-    plotErrorBar = options.ErrorBar;
-    if isempty(plotErrorBar)
-        plotErrorBar = numel(arglayer) <= 3;
-    end
         
     enhance = enhanceline(numel(arglayer),options);    
 
-    if options.PlotAll
-        lw = 0.5;
-        for i = 1:size(yy,1)
-            h = plot(xx,yy(i,:),[linstyle,linemarker],'Color', [lincol,0.1], 'LineWidth',lw); hold on;
-        end
-        plot(xx,median(yy),[linstyle,linemarker],'Color',lincol,'LineWidth',4);
-        plot(xx,quantile(yy,options.Quantiles(1)),['--',linemarker],'Color',lincol,'LineWidth',2);
-        plot(xx,quantile(yy,options.Quantiles(2)),[':',linemarker],'Color',lincol,'LineWidth',2);
+    switch options.PlotType
         
+        case 'all' % Plot all individual runs and quantiles on top
+    
+            lw = 0.5;
+            for i = 1:size(yy,1)
+                h = plot(xx,yy(i,:),[linstyle,linemarker],'Color', [lincol,0.1], 'LineWidth',lw); hold on;
+            end
+            plot(xx,median(yy),[linstyle,linemarker],'Color',lincol,'LineWidth',4);
+            plot(xx,quantile(yy,options.Quantiles(1)),['--',linemarker],'Color',lincol,'LineWidth',2);
+            plot(xx,quantile(yy,options.Quantiles(2)),[':',linemarker],'Color',lincol,'LineWidth',2);
         
-    else
-        if any(iLayer == enhance); lw = linewidth*2; else; lw = linewidth; end    
-        if plotErrorBar
-            % h = shadedErrorBar(xx,yy,yyerr,{linstyle,'LineWidth',lw},1); hold on;
+        case 'errorbar'
+            if any(iLayer == enhance); lw = linewidth*2; else; lw = linewidth; end    
 
             xxerr = [xx, fliplr(xx)];
             yyerr = [yyerr_down, fliplr(yyerr_up)];
@@ -481,9 +486,23 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
             h = plot(xx,yy,[linstyle,linemarker],'Color', lincol, 'LineWidth',lw); hold on;
             %plot(xx,yyerr_up,linstyle,'Color', lincol, 'LineWidth',1); hold on;
             %plot(xx,yyerr_down,linstyle,'Color', lincol, 'LineWidth',1); hold on;
-        else
+                    
+        case 'line'
+            if any(iLayer == enhance); lw = linewidth*2; else; lw = linewidth; end    
             h = plot(xx,yy,[linstyle,linemarker],'Color', lincol, 'LineWidth',lw); hold on;
-        end
+            
+            linstyle = ':';
+            if all(isfinite(yyerr_up))
+                plot(xx,yyerr_up,[linstyle,linemarker],'Color',lincol,'LineWidth',lw);
+            end
+            if all(isfinite(yyerr_down))
+                plot(xx,yyerr_down,[linstyle,linemarker],'Color',lincol,'LineWidth',lw);
+            end
+            
+            
+        otherwise
+            error('Unknown PLOTTYPE option.');
+            
     end
 
 %--------------------------------------------------------------------------
@@ -494,7 +513,7 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
     thresh = 1;
     yticklabel = [];    
 
-    switch lower(options.PlotType)
+    switch lower(options.Metric)
         case 'lnz'
             ystring = 'Median LML error';
         case 'gskl'
@@ -513,14 +532,17 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
     if options.DisplayFval; string = [' (lnZ_{true} = ' num2str(lnZ_true,'%.2f') ')']; 
     else string = []; end
 
-    if iRow == 1; title([benchlist{dimcols} string]); end
-    % if iCol == 1; ylabel(benchlist{dimrows}); end
-    if iCol == 1; ylabel(ystring); end
-    if iCol == 1
-        textstr = benchlist{dimrows};
-        textstr(textstr == '_') = ' ';
-        text(-1/6*(dimcols+1),0.9,textstr,'Units','Normalized','Rotation',0,'FontWeight','bold','HorizontalAlignment','center');
+    if isempty(options.AxesHandles)
+        if iRow == 1; title([benchlist{dimcols} string]); end
+        % if iCol == 1; ylabel(benchlist{dimrows}); end
+        if iCol == 1; ylabel(ystring); end
+        if iCol == 1
+            textstr = benchlist{dimrows};
+            textstr(textstr == '_') = ' ';
+            text(-1/6*(dimcols+1),0.9,textstr,'Units','Normalized','Rotation',0,'FontWeight','bold','HorizontalAlignment','center');
+        end
     end
+    
     xlims = [min(xx,[],2) max(xx,[],2)];
     if xlims(2) >= 400
         xtick = [200:200:1000];
@@ -597,128 +619,6 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
     % plot(xlims,liney,'k--','Linewidth',0.5);
     plot(xlims,thresh*[1 1],'k--','Linewidth',0.5);
     
-%--------------------------------------------------------------------------
-function [xx,yy,yyerr,MeanMinFval] = plotNoisy(y,MinBag,iLayer,arglayer,options)
-%PLOTITERATIONS Plot time series of IR or FS
-
-    NumZero = options.NumZero;
-    BestOutOf = options.BestOutOf;
-    
-    defaults = benchmark_defaults('options');
-    linstyle = defaults.LineStyle;
-    lincol = defaults.LineColor;
-        
-    xx = iLayer;
-    
-    switch lower(options.Method)
-        case 'ir'                        
-            %yy = median(y,1);
-            %yyerr = abs(bsxfun(@minus,[quantile(y,0.75,1);quantile(y,0.25,1)],yy));
-        case 'fs'
-            n = size(y,1);
-            
-            if all(MinBag.fsd == 0) && all(y(:,2) == 0)
-                MeanMinFval = min(MinBag.fval);
-                d = y(:,1) - MeanMinFval;                
-            else            
-                nn = 1000;
-                Nsamples = numel(MinBag.fval);
-                y = repmat(y, [ceil(Nsamples/n) 1]);
-                y = y(randperm(Nsamples),:);
-                fval = repmat(MinBag.fval,[1 nn]);
-                fsd = repmat(MinBag.fsd,[1 nn]);
-                f1 = bsxfun(@plus,y(:,1),bsxfun(@times,y(:,2),randn(size(y,1),nn)));
-                fmin = min(fval + fsd.*randn(size(fsd)),[],1);
-                MeanMinFval = nanmean(fmin);
-                d = bsxfun(@minus, f1, fmin);
-            end
-            % target = nanmean(bsxfun(@lt, d(:), options.SolveThreshold(:)'),2);            
-            target = bsxfun(@lt, d(:), options.SolveThreshold(:)');     
-            yy = nanmean(target,1);
-            yyerr = stderr(target,[],1);
-    end
-
-    plotErrorBar = options.ErrorBar;
-    if isempty(plotErrorBar)
-        plotErrorBar = numel(arglayer) <= 3;
-    end
-    if iLayer == numel(arglayer); lw = 4; else lw = 2; end
-    
-    if size(yy,2) == 1
-        h = bar(xx,yy,'LineStyle','none','FaceColor',lincol(iLayer,:)); hold on;
-    else
-        xx = options.SolveThreshold;
-        h = plot(xx,yy,'LineStyle','-','Color',lincol(iLayer,:)); hold on;
-    end
-    
-    % h = errorbar(xx,yy,yyerr,linstyle{iLayer},'Color', lincol(iLayer,:),'LineWidth',lw); hold on;
-    
-    
-    %if plotErrorBar && 0
-    %    h = shadedErrorBar(xx,yy,yyerr,{linstyle{iLayer},'LineWidth',lw},1); hold on;
-    %else
-    %    h = plot(xx,yy,linstyle{iLayer},'Color', lincol(iLayer,:), 'LineWidth',lw); hold on;
-    %end
-    % MinFval = min(MinFval,min(y(:)));
-    
-%--------------------------------------------------------------------------
-function [xlims,ylims] = panelNoisy(iRow,iCol,nrows,dimrows,dimcols,xx,MeanMinFval,benchlist,options)
-%PANELITERATIONS Finalize panel for plotting iterations
-
-    NumZero = options.NumZero;
-
-    switch lower(options.Method)
-        case 'ir'
-            ystring = 'Median IR';
-        case 'fs'
-            ystring = 'Fraction solved';
-    end
-
-    if options.DisplayFval; string = [' (<f_{min}> = ' num2str(MeanMinFval,'%.2f') ')']; 
-    else string = []; end
-
-    if iRow == 1; title([benchlist{dimcols} string]); end
-    % if iCol == 1; ylabel(benchlist{dimrows}); end
-    if iCol == 1; ylabel(ystring); end
-    if iRow == nrows; xlabel('Algorithms'); end
-    if iCol == 1
-        textstr = benchlist{dimrows};
-        textstr(textstr == '_') = ' ';
-        text(-1/6*(dimcols+1),0.9,textstr,'Units','Normalized','Rotation',0,'FontWeight','bold','HorizontalAlignment','center');
-    end
-    xlims = [0 10];
-    xtick = [];
-    set(gca,'Xlim',xlims,'XTick',xtick)
-    switch lower(options.Method)
-        case 'ir'
-            YlimMax = options.YlimMax;
-            if options.AbsolutePlot
-                ylims = [MinFval,MinFval + YlimMax];
-                ytick = [];
-            else
-                ylims = [NumZero,YlimMax];
-                ytick = [0.001,0.01,0.1,1,10,100,1000];
-                yticklabel = {'0.001','0.01','0.1','1','10','100','1000'};
-            end
-            liney = MinFval*[1 1];                
-            if isempty(ytick)
-                set(gca,'Ylim',ylims);                        
-            else
-                set(gca,'Ylim',ylims,'YTick',ytick,'YTickLabel',yticklabel);
-            end
-            set(gca,'TickDir','out','TickLength',3*get(gca,'TickLength'));
-
-        case 'fs'
-            ylims = [0,1];
-            ytick = [0,0.5,1];
-            yticklabel = {'0','0.5','1'};
-            liney = [1 1];
-            set(gca,'Ylim',ylims,'YTick',ytick,'YTickLabel',yticklabel);
-            set(gca,'TickDir','out','TickLength',3*get(gca,'TickLength'));
-    end
-    set(gca,'FontSize',12);
-    box off;
-    % plot(xlims,liney,'k--','Linewidth',0.5);    
 
 %--------------------------------------------------------------------------
 function c = cellify(x)

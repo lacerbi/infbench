@@ -128,18 +128,19 @@ switch lower(type)
                     case 'control'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
                     case {'newdef'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-new';
                     case {'oldsettings'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc (old settings)';
-                    case {'acqimiqrnoiserotocorrupthin100','renewdefimiqrpluswup4'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
+                    case {'renewdefimiqrpluswup4lcb','renewdefimiqrpluswup4'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case {'new2','acqimiqrnoiseup','renewdefimiqrpluswup'}; defaults.color = [180 0 100]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'acqlcb_overhead','lcbnearest_overhead'}; defaults.color = 150*[1 1 1]/255; defaults.marker = ''; defaults.linewidth = 4; defaults.linestyle = '-.';
                     case {'newdef3','renewbase'}; defaults.color = [120 100 0]/255; defaults.marker = 's'; defaults.linewidth = 2; defaults.linestyle = '-.';
                     case 'test'; defaults.color = [120 100 0]/255; defaults.marker = '>'; defaults.linewidth = 2; defaults.linestyle = ':';
                         % VBMC with noisy functions
-                    case {'newbase'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';
-                    case {'acqimiqrnoiserotonomcmc2','renewdefimiqrpluswup4noroto','acqboth'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-';
+                    case {'renewdefimiqrvppluswup5'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-vimiqr';
+                    case {'newbase'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = '-';
+                    case {'renewdefmipluswup4gpsvp'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-';
                     case {'acqmidtstep1_100','ent2','renewdefnoise'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
-                    case {'ent3','ent2midtmcmc50','renewdefmipluswup4gpsvp','renewdefnoiseplus'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
+                    case {'ent3','ent2midtmcmc50','renewdefnoiseplus'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case {'acqimiqrnoise','acqnoise'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '--';
-                    case {'acqimiqrnoisenegquad','new3','renewdefimiqrpluswup4noacq','roto'}; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = ':';
+                    case {'renewdefimiqrpluswup4noacq'}; defaults.color = [240 198 114]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-';
                         
                     otherwise
                         defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-.';
@@ -200,12 +201,11 @@ switch lower(type)
                 
             case {'parallelgp'}
                 switch algoset
-                    case 'base'; defaults.color = [60 220 200]/255; defaults.marker = 'o'; defaults.name = 'gp';
+                    case 'base'; defaults.color = [60 220 200]/255; defaults.marker = 'o'; defaults.name = 'gp-imiqr';
                     case 'reg'; defaults.color = [255 88 169]/255; defaults.marker = '*';
-                    otherwise; defaults.color = [128 177 48]/255;
-                        
-                end                 
-                                
+                    otherwise; defaults.color = [128 177 48]/255;                        
+                end
+                defaults.linewidth = 3;
         end
         
 end

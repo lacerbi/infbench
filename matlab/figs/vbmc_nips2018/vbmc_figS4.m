@@ -4,7 +4,7 @@ options.BestOutOf = 1;
 options.NumZero = 1e-2;
 options.Method = 'IR';
 options.ErrorBar = 1;
-options.PlotAll = 1;
+options.PlotType = 'all';
 options.Quantiles = [0.75,0.9];
 options.BootStrap = 0;
 options.SampleFrequency = NaN;
@@ -28,7 +28,7 @@ mypath = '.';
 YlimMax = [1e4,1e6];
 
 for iPlot = 1:numel(plots)
-    options.PlotType = plots{iPlot};
+    options.Metric = plots{iPlot};
     options.YlimMax = YlimMax(iPlot);
     options.DisplayLegend = iPlot == numel(plots);
     figure(iPlot);
