@@ -208,7 +208,7 @@ for t = 1:numSamples - 1
         lcb_tmp = sqrt(max(0,exp(loglHatD_0_tmp(numSamples-currNumSamples+1:end) - sigma_tmp - logscaling(t)) - aa)*2);
         s2hat = (0.5*(ucb_tmp - lcb_tmp)).^2;
     else
-        s2hat = 1e-5;       
+        s2hat = 1e-6;       
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,9 +1,9 @@
-function [y,y_std] = infbench_akrami2018(x,infprob,mcmc_params)
-%INFBENCH_AKRAMI2018 Inference benchmark log pdf -- psychometric model for mice data.
+function [y,y_std] = infbench_akrami2018b(x,infprob,mcmc_params)
+%INFBENCH_AKRAMI2018B Inference benchmark log pdf -- history-dependent model for mice data.
 
 if nargin < 3; mcmc_params = []; end
 
-problem_name = 'akrami2018';
+problem_name = 'akrami2018b';
 infbench_fun = str2func(['infbench_' problem_name]);
 
 
@@ -39,14 +39,15 @@ if isempty(x)
             if id == 0
             
                 % Compute optimum
-                Nopts = 2;
+                Nopts = 5;
                 
                 opts = struct('Display','iter','MaxFunEvals',2e3);
 
                 for iOpt = 1:Nopts                
                     x0 = rand(1,D).*(PUB - PLB) + PLB;
-                    fun = @(x) -infbench_fun(x,infprob);                    
-                    [xnew(iOpt,:),fvalnew(iOpt)] = bads(fun,x0,LB,UB,PLB,PUB,[],opts);
+                    fun = @(x) -infbench_fun(x,infprob);
+%                    [xnew(iOpt,:),fvalnew(iOpt)] = bads(fun,x0,LB,UB,PLB,PUB,[],opts);
+                    [xnew(iOpt,:),fvalnew(iOpt)] = fmincon(fun,x0,[],[],[],[],LB,UB,[],opts);
                 end
                 
                 [fvalnew,idx_best] = min(fvalnew);
@@ -59,7 +60,8 @@ if isempty(x)
                 x0 = xmin;
                 x0 = warpvars(x0,'d',trinfo);   % Convert to unconstrained coordinates            
                 fun = @(x) -logpost(x,infprob);
-                [xnew,fvalnew] = bads(fun,x0,LB,UB,PLB,PUB,[],opts);
+%                [xnew,fvalnew] = bads(fun,x0,LB,UB,PLB,PUB,[],opts);
+                [xnew,fvalnew] = fmincon(fun,x0,[],[],[],[],LB,UB,[],opts);
 
                 fvalnew = -fvalnew;
                 xmin_post = xmin;
@@ -129,10 +131,11 @@ if isempty(x)
 %        addpath([pathstr,filesep(),problem_name]);
         
         % Define parameter upper/lower bounds
-        lb = [-3*ones(1,4),-3*ones(1,2)];
-        ub = [3*ones(1,4),3*ones(1,2)];
-        plb = [-1*ones(1,4),-1*ones(1,2)];
-        pub = [1*ones(1,4),1*ones(1,2)];
+        Nr = 9;
+        lb = [-3*ones(1,Nr)];
+        ub = [3*ones(1,Nr)];
+        plb = [-1*ones(1,Nr)];
+        pub = [1*ones(1,Nr)];
         noise = [];
         
         D = numel(lb);
@@ -151,11 +154,10 @@ if isempty(x)
         switch n
 			case {1,101}
                 nid = 1;
-				name = 'S1';
-				xmin = [0.601488995312693 0.92918748567871 -0.90322157872528 -1.25478386895628 0.532511789213771 -0.215398837418348];
-				fval = -12641.3043560369;
-				xmin_post = [0.601793829351664 0.929253306239843 -0.903550788760185 -1.25475757941604 0.532740216702223 -0.215424839407206];
-				fval_post = -12652.054974019;                
+				xmin = [0.825598323512873 -1.18015471271915 -0.0201916543320723 -2.7582078856892 2.99912100423627 0.197392890134053 -0.141297986743053 2.1721911172423 -0.816990721695071];
+				fval = -6199.18585061038;
+				xmin_post = [0.825594488578359 -1.18015106882503 -0.0201876987245857 -2.75460461939717 2.99551781922876 0.197387460895249 -0.141294051089077 2.169488644509 -0.816971359470748];
+				fval_post = -6215.31250581914;
                 % R_max = 1.000. Ntot = 100000. Neff_min = 93935.5. Total funccount = 10992360.
                 Mean_mcmc = [0.601893215681988 0.929478095523648 -0.903846947948588 -1.25510425422428 0.532878582500004 -0.215684629220838];
                 Cov_mcmc = [0.00177938856793166 -0.000907866511738251 -0.00147981117322351 0.000727299297923634 0.000423994956108903 -8.0698112932624e-05;-0.000907866511738251 0.00182625143109427 0.000720435936430774 -0.00141199493801528 -7.99342138443656e-05 -8.5564801234589e-05;-0.00147981117322351 0.000720435936430774 0.00238230151468306 -0.00118870882858125 -0.000324204738509761 7.21378524355696e-05;0.000727299297923634 -0.00141199493801528 -0.00118870882858125 0.0023687101586604 7.5678494290554e-05 6.38438035732974e-05;0.000423994956108903 -7.99342138443656e-05 -0.000324204738509761 7.5678494290554e-05 0.0010319947305803 -0.00049979629889294;-8.0698112932624e-05 -8.5564801234589e-05 7.21378524355696e-05 6.38438035732974e-05 -0.00049979629889294 0.000962327214581166];
@@ -164,11 +166,22 @@ if isempty(x)
 
         % Read and preprocess data
         temp = csvread('akrami2018_data.csv',1);
-        x = temp(:,1:2);
-        %x = x - min(x(:));
-        %x = x / max(x(:));
-        data.X = x;
-        data.y = temp(:,3);
+        idx = size(temp,1)/2+1:size(temp,1);    % Take 2nd half of the data
+        x = temp(idx,1:2);
+        
+        % Build matrix of regressors;
+        x1 = circshift(x,1);
+        x1(1,:) = 0;
+        x2 = circshift(x,2);
+        x2(1:2,:) = 0;
+        r = double(x1(:,1) > x1(:,2));
+        r(r == 0) = -1;
+        xbar = mean(x1,2);
+        tau = 20;
+        ww = exp(-(1:200)/tau);
+        ff = filter(ww/sum(ww),1,xbar);        
+        data.X = [x, ones(size(x,1),1), x1, x2, r, ff];
+        data.y = temp(idx,3);
         data.Ntrials = size(x,1);
                 
         xmin = warpvars(xmin,'d',trinfo);
@@ -209,13 +222,13 @@ if isempty(x)
         if n > 100
             data.IBSNreps = 0; % Deterministic problems            
         else
-            data.IBSNreps = 200; % Reps used for IBS estimator
+            data.IBSNreps = 100; % Reps used for IBS estimator
         end
         
         % Read marginals from file
-        marginals = load([problem_name '_marginals.mat']);
-        y.Post.MarginalBounds = marginals.MarginalBounds{nid};
-        y.Post.MarginalPdf = marginals.MarginalPdf{nid};
+        %marginals = load([problem_name '_marginals.mat']);
+        %y.Post.MarginalBounds = marginals.MarginalBounds{nid};
+        %y.Post.MarginalPdf = marginals.MarginalPdf{nid};
         
         % Save data and coordinate transformation struct
         data.trinfo = trinfo;
@@ -249,29 +262,18 @@ end
 
 %--------------------------------------------------------------------------
 function y = logpost(x,infprob)    
-    y = infbench_akrami2018(x,infprob);
+    y = infbench_akrami2018b(x,infprob);
     lnp = infbench_lnprior(x,infprob);
     y = y + lnp;
 end
 
 function ll = akrami2018_llfun(theta,data)
 
-% Unpack parameters
-w1_start = theta(1);
-w1_end = theta(2);
-w2_start = theta(3);
-w2_end = theta(4);
-bias_start = theta(5);
-bias_end = theta(6);
+% Model parameters
+w = theta(1:end);
 lambda = 0.01;
 
-Ntrials = data.Ntrials;
-
-w1_vec = linspace(w1_start,w1_end,Ntrials)';
-w2_vec = linspace(w2_start,w2_end,Ntrials)';
-bias_vec = linspace(bias_start,bias_end,Ntrials)';
-
-p_left = 1./(1+exp(w1_vec.*data.X(:,1) + w2_vec.*data.X(:,2) + bias_vec));
+p_left = 1./(1+exp(sum(bsxfun(@times,w,data.X),2)));
 p_lresp = (data.y == 1).*p_left + (data.y == 2).*(1-p_left);
 p_lresp = (1-lambda)*p_lresp + lambda/2;
 
@@ -283,22 +285,11 @@ end
 
 function R = akrami2018_gendata(theta,idx,data)
 
-% Unpack parameters
-w1_start = theta(1);
-w1_end = theta(2);
-w2_start = theta(3);
-w2_end = theta(4);
-bias_start = theta(5);
-bias_end = theta(6);
+% Model parameters
+w = theta(1:end);
 lambda = 0.01;
 
-Ntrials = data.Ntrials;
-
-w1_vec = linspace(w1_start,w1_end,Ntrials)';
-w2_vec = linspace(w2_start,w2_end,Ntrials)';
-bias_vec = linspace(bias_start,bias_end,Ntrials)';
-
-p_left = 1./(1+exp(w1_vec.*data.X(:,1) + w2_vec.*data.X(:,2) + bias_vec));
+p_left = 1./(1+exp(sum(bsxfun(@times,w,data.X),2)));
 p_lresp = (1-lambda)*p_left + lambda/2;
 
 pl_vec = p_lresp(idx);
@@ -311,7 +302,7 @@ end
 
 function akrami2018_test(infprob)
 
-theta = randn(1,6);
+theta = randn(1,9);
 LL = akrami2018_llfun(theta,infprob.Data);
 ibs_opts = struct('Nreps',infprob.Data.IBSNreps,...
     'ReturnPositive',true,'ReturnStd',true);
