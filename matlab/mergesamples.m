@@ -16,6 +16,7 @@ Xs = [];
 lls = [];
 funccount = NaN(M,1);
 iter = 1;
+Neffs = [];
 
 for iFile = 1:M
     if files(iFile).isdir; continue; end
