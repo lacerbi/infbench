@@ -222,7 +222,7 @@ if isempty(x)
         if n > 100
             data.IBSNreps = 0; % Deterministic problems            
         else
-            data.IBSNreps = 200; % Reps used for IBS estimator
+            data.IBSNreps = 500; % Reps used for IBS estimator
         end
         
         % Read marginals from file
@@ -249,10 +249,16 @@ else
     if infprob.DeterministicFlag
         LL = akrami2018_llfun(x_orig,infprob.Data);
         y_std = 0;
-    else
-        ibs_opts = struct('Nreps',infprob.Data.IBSNreps,...
-            'ReturnPositive',true,'ReturnStd',true);
-        [LL,y_std] = ibslike(@akrami2018_gendata,x_orig,infprob.Data.y,[],ibs_opts,infprob.Data);
+    else        
+        Nibs = infprob.Data.IBSNreps/50;
+        IBSNreps = 50; % Split to avoid memory errors (should fix ibslike)
+        ibs_opts = struct('Nreps',IBSNreps,...
+            'ReturnPositive',true,'ReturnStd',false);        
+        for iter = 1:Nibs
+            [LL(iter),y_var(iter)] = ibslike(@akrami2018_gendata,x_orig,infprob.Data.y,[],ibs_opts,infprob.Data);
+        end
+        LL = mean(LL);
+        y_std = sqrt(mean(y_var)/Nibs);
     end
     y = LL + dy;
     
