@@ -323,7 +323,10 @@ switch algoset
     case {259,'renewdefvarimiqrpluswup5vp100'}; algoset = 'renewdefvarimiqrpluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
     case {260,'renewdefimiqrpluswup5noacq'}; algoset = 'renewdefimiqrpluswup5noacq'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
 %    case {260,'renewdefimiqrpluswup5'}; algoset = 'renewdefimiqrpluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-        
+
+    case {261,'renewdefvarimiqrpluswup5vpfmincon'}; algoset = 'renewdefvarimiqrpluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSsearch = 2^11;
+
+
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
     case {303,'acqmidebug'}; algoset = 'acqmidebug'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveVariationalSamples = 100; algoptions.ActiveSampleFullUpdate = 1; algoptions.Plot = 1;
