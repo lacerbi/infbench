@@ -64,7 +64,7 @@ algoptions.GPLengthPriorMean = 0.05;
 algoptions.GPLengthPriorStd = log(10);
 algoptions.ActiveSearchBound = Inf;
 algoptions.BoxSearchFrac = 0;
-algoptions.ActiveImportanceSamplingMCMCSamples = 200;
+algoptions.ActiveImportanceSamplingMCMCSamples = 100;
 algoptions.MaxRepeatedObservations = 0;
 algoptions.WarpRotoScaling = false;
 algoptions.WarpMinK = 5;
@@ -322,8 +322,9 @@ switch algoset
     case {253,'renewdefimiqrpluswup4lcb'}; algoset = 'renewdefimiqrpluswup4lcb'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.RecomputeLCBmax = true;
     case {260,'renewdefimiqrpluswup5noacq'}; algoset = 'renewdefimiqrpluswup5noacq'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
 
-    case {259,'renewdefvarimiqrpluswup5fast'}; algoset = 'renewdefvarimiqrpluswup5fast'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; % algoptions.NSsearch = 2^12;
+    case {259,'renewdefvarimiqrpluswup5fast'}; algoset = 'renewdefvarimiqrpluswup5fast'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
     case {261,'renewdefvarimiqrpluswup5vpfmincon'}; algoset = 'renewdefvarimiqrpluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSsearch = 2^11;
+    case {262,'renewdefimiqrplus5long'}; algoset = 'renewdefimiqrplus5long'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500; algoptions.ActiveImportanceSamplingThin = 11;
 
 
     % Information-theoretic

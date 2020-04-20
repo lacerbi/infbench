@@ -51,6 +51,8 @@ defopts.AdaptiveYlim = 0;
 defopts.AxesHandles = [];
 defopts.DisplayMarkers = false;
 defopts.FontSize = 14;
+defopts.AxesFontSize = 12;
+defopts.PlotText = [];
 
 % Plotting options
 defopts.YlimMax = 1e5;
@@ -617,11 +619,17 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
         plotXlabel = (iRow == nrows);
     end
     if plotXlabel; xlabel(xstring); end
-    set(gca,'FontSize',12);
+    set(gca,'FontSize',options.AxesFontSize);
     box off;
     
     if ~isempty(thresh)
         plot(xlims,thresh*[1 1],'k--','Linewidth',0.5);
+    end
+    
+    if ~isempty(options.PlotText)
+        textpos = options.PlotText{1};
+        textstr = options.PlotText{2};
+        text(textpos(1),textpos(2),textstr,'Units','normalized','FontSize',options.AxesFontSize);        
     end
     
 
