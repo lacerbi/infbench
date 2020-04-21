@@ -12,7 +12,7 @@ while ~passed
             jitter*eye(size(covmat)));
             passed = true;
         catch ME
-            jitter = jitter*1.1;
+            jitter = jitter*1.5;
             passed = false;
         end
 end

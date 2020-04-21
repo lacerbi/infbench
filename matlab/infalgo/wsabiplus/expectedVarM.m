@@ -1,8 +1,7 @@
-function [NEV] = expectedVarM(xs, lambda, VV, lHatD, xxx, invKxx, noise, bb, BB, aa)
+function [NEV] = expectedVarM(xs, s2hat, lambda, VV, lHatD, xxxScaled, invKxx, noise, bb, BB, aa)
 % Uncertainty sampling loss function for moment matched sqrtBBQ
 
 xs = xs';
-xxxScaled   = xxx .* repmat(sqrt(1./VV),length(xxx(:,1)),1);
 
 distxsxx    = ...
 pdist2_squared_fast(xs.*repmat(sqrt(1./VV),length(xs(:,1)),1),xxxScaled);
@@ -21,6 +20,13 @@ end
 
 priorWeighting = mvnpdf(xs,bb,BB);
 
-NEV(1,:) = -(l_0.^2 .* varPred + 0.5*varPred.^2) .* priorWeighting.^2; %Negative expected variance.
-
+if isscalar(s2hat)
+    NEV(1,:) = -(l_0.^2 .* varPred + 0.5*varPred.^2) .* priorWeighting.^2; %Negative expected variance.
+else
+    % Estimate observation noise at test points from nearest neighbor
+    [~,pos] = min(pdist2_squared_fast(bsxfun(@rdivide,xs,sqrt(VV)),xxxScaled),[],2);
+    sn2 = s2hat(pos);    
+    NEV(1,:) = -(l_0.^2 .* varPred + 0.5*varPred.^2) .* (1 - sn2./(sn2 + varPred)) .* priorWeighting.^2; %Negative expected variance.
+end
+    
 end

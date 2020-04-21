@@ -1,10 +1,10 @@
-function [ log_mu, log_Var, clktime, xxIter, loglIter, hyp ] = wsabiplus( ...
+function [log_mu,log_Var,clktime,xxIter,loglIter,hyp,lsdIter] = wsabiplus( ...
             loglikfun,      ... 1) Handle to log-likelihood function
-            priorMu,        ... 2) Gaussian prior mean, 1 x D
-            priorVar,       ... 3) Gaussian prior covariance, D x D
-            LB,             ... 4) Lower bound for search / uniform prior
-            UB,             ... 5) Upper bound for search / uniform prior
-            x0,             ... 6) Use as starting point
+            PLB,            ... 2) Plausible lower bound
+            PUB,            ... 3) Plausible upper bound
+            LB,             ... 4) Hard lower bound
+            UB,             ... 5) Hard upper bound
+            x0,             ... 6) Starting point (optional)
             options         ...
             )
         
@@ -23,7 +23,7 @@ if nargin < 5; UB = []; end
 if nargin < 6; x0 = []; end
 if nargin < 7; options = []; end
 
-D = numel(priorMu);
+D = numel(PLB);
 
 % Default options
 defopts.Method          = 'L';              % Method ('L' or 'M')
@@ -37,12 +37,17 @@ defopts.Nsearch         = 2^13;             % Starting search points for acquisi
 defopts.AcqFun          = [];               % Acquisition function
 defopts.Plot            = 0;                % Make diagnostic plots at each iteration
 defopts.SpecifyTargetNoise = false;         % Loglik function returns noise estimate (SD) as second output
+defopts.TolBoundX       = 1e-5;             % Tolerance on closeness to bound constraints (fraction of total range)
+defopts.PriorMean       = [];               % Gaussian prior mean
+defopts.PriorCov        = [];               % Gaussian prior covariance
 
 for f = fields(defopts)'
     if ~isfield(options,f{:}) || isempty(options.(f{:}))
         options.(f{:}) = defopts.(f{:});
     end
 end
+
+add2path(); % Add folders to path
 
 method = upper(options.Method);
 if method(1) ~= 'L' && method(1) ~= 'M'
@@ -54,51 +59,48 @@ numSamples = options.MaxFunEvals+1;
 alpha = options.AlphaFactor;
 if ischar(options.Display)
     switch lower(options.Display)
-        case {'yes','on','iter','notify','all'}; printing = 1;
-        case {'no','off','none'}; printing = 0;
+        case {'yes','on','iter','notify','all'}; prnt = 1;
+        case {'no','off','none'}; prnt = 0;
     end
 else
-    printing = options.Display;
+    prnt = options.Display;
 end
 Nsearch = options.Nsearch;
 
-ss = sqrt(diag(priorVar))';
-if isempty(LB); LB = priorMu - 6*ss; end
-if isempty(UB); UB = priorMu + 6*ss; end
-range = [LB; UB];
+% Initialize optimization structure
+optimState = setupvars_wsabi(x0,LB,UB,PLB,PUB,[],options,prnt);
+
+range = [optimState.LB_search; optimState.UB_search];
 
 if isempty(options.GPInputLengths)
-    options.GPInputLengths = (0.5*(range(2,:)-range(1,:))/sqrt(3));
+    options.GPInputLengths = 0.5*(PUB-PLB)/sqrt(3);
 end
 lambda = options.GPOutputLength;
 hypVar = options.GPHypVar;
 
+% Relabel prior mean and covariance for brevity of code
+bb          = optimState.priorMu;
+BB          = optimState.priorVar;
 
-% Relabel prior mean and covariance for brevity of code.
-bb          = priorMu;
-BB          = diag(priorVar)';
-
-% Relabel input hyperparameters squared for brevity of code.
+% Relabel input hyperparameters squared for brevity of code
 VV          = (options.GPInputLengths(:)').^2;
 
-jitterNoise = 1e-6;     % Jitter on the GP model over the log likelihood.
-numEigs     = inf;      % If trying to use Nystrom ** NOT RECOMMENDED **
-hypOptEvery = 1;        % 1 => optimise hyperparameters every iteration.
+jitterNoise = 1e-6;     % Jitter on the GP model over the log likelihood
+hypOptEvery = 1;        % 1 => optimise hyperparameters every iteration
 
-dim         = length(bb);   % Dimensionality of integral.
-
-% Limit absolute range of likelihood model hyperparameters for stability.
-hypLims     = 30*ones(1,dim+1); 
+% Limit absolute range of likelihood model hyperparameters for stability
+hypLims     = 30*ones(1,D+1); 
 
 % Allocate Storage
 mu              = zeros(numSamples-1,1);
 logscaling      = zeros(numSamples-1,1);
 Var             = zeros(numSamples-1,1);
 clktime         = zeros(numSamples-1,1);
-lHatD_0_tmp     = zeros(numSamples,1);
-loglHatD_0_tmp  = zeros(size(lHatD_0_tmp));
-loglsdhat_tmp   = zeros(size(lHatD_0_tmp));
-hyp             = zeros(1,1+dim);
+loglHatD_0_tmp  = zeros(numSamples,1);
+if options.SpecifyTargetNoise
+    loglsdhat_tmp   = zeros(numSamples,1);
+end
+hyp             = zeros(1,1+D);
 
 % Variance of prior over GP hyperparameters
 if isscalar(hypVar); hypVar = hypVar*ones(size(hyp)); end
@@ -111,23 +113,11 @@ options1.Algorithm              = 'active-set';
 options1.TolX                   = 1e-5;
 options1.TolFun                 = 1e-5;
 options1.MaxTime                = 5;
-options1.MaxFunEvals            = 100*dim;
+options1.MaxFunEvals            = 100*D;
 %options1.UseParallel           = 'always';
 options1.AlwaysHonorConstraints = 'true';
 
-% Minimiser options (fmincon if desired for active sampling)
-options2                        = optimset('fmincon');
-options2.Display                = 'none';
-options2.GradObj                = 'on';
-%options2.DerivativeCheck       = 'on';
-options2.TolX                   = 1e-5;
-options2.TolFun                 = 1e-5;
-%options2.MaxTime               = 0.5;
-%options2.MaxFunEvals           = 75;
-options2.UseParallel            = 'always';
-options2.AlwaysHonorConstraints = 'true';
-
-% Minimiser options (CMAES - advised for active sampling)
+% Minimiser options (CMAES for active sampling)
 opts                            = cmaes_modded('defaults');
 opts.LBounds                    = range(1,:)';
 opts.UBounds                    = range(2,:)';
@@ -140,24 +130,19 @@ opts.EvalParallel               = 'on';
 %opts.PopSize                   = 100;
 %opts.Restarts                  = 1;
 
-% Initial Sample:
-xx = zeros(numSamples,dim);
-if isempty(x0)
-    xx(end,:) = bb+1e-6;    % Prior mean
-else
-    xx(end,:) = x0+1e-6;
-end
-currNumSamples = 1;
+% Initial Sample
+optimState.X = zeros(numSamples,D);
+optimState.X(1,:) = optimState.x0;
 
-for t = 1:numSamples - 1
-    if printing
+for t = 1:numSamples
+    if prnt
         if ~mod(t,10)
             fprintf('Iter %d. Log Current Mean Integral: %g +/- %g.\n', ...
                             t, log(mu(t-1)) + logscaling(t-1), ...
                             sqrt(Var(t-1))/mu(t-1));
         end
         
-        if printing == 2 && ~mod(t,10)
+        if prnt == 2 && ~mod(t,10)
             gp.method = method(1);
             gp.lambda = lambda;
             gp.VV = VV;
@@ -176,39 +161,47 @@ for t = 1:numSamples - 1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Pre-process new samples -- i.e. convert to log space etc.
     
-    % Get batch of samples & variables from stack.
+    % Get batch of samples & variables from stack
     tmpT            = cputime; 
-    xxIter          = xx(numSamples-currNumSamples+1:end,:); % Curr samples
+    xxIter          = optimState.X(1:t,:);
+        
+    % Convert back to original space
+    xx = xxIter(end,:);
+    xx_orig = warpvars_wsabi(xx,'i',optimState.trinfo);    
     
-    % Call loglik handle for latest sample.
+    % Call loglik handle for latest sample
     if options.SpecifyTargetNoise
-        [loglHatD_0_tmp(numSamples-currNumSamples+1), ...
-            loglsdhat_tmp(numSamples-currNumSamples+1)] ...
-            = loglikfun( xxIter(1,:) );        
+        [fval_orig,loglsdhat_tmp(t)] = loglikfun(xx_orig);
     else
-        loglHatD_0_tmp(numSamples-currNumSamples+1) = loglikfun( xxIter(1,:) );
+        fval_orig = loglikfun(xx_orig);
     end
-                                           
-    % Find the max in log space.                                       
-    logscaling(t)   = max(loglHatD_0_tmp(numSamples-currNumSamples+1:end));
     
-    % Scale batch by max, and exponentiate.
-    lHatD_0_tmp(numSamples-currNumSamples+1:end) = ... 
-      exp(loglHatD_0_tmp(numSamples-currNumSamples+1:end) - logscaling(t));    
-  
-    % Evaluate the offset, alpha fraction of minimum value seen.
-    aa      = alpha * min( lHatD_0_tmp(numSamples-currNumSamples+1:end) );
+    fval = fval_orig + warpvars_wsabi(xx,'logp',optimState.trinfo);
+    if optimState.removePrior
+        fval = fval + 0.5*sum(((xx - bb).^2)./BB,2) + optimState.priorLogNorm;
+    end
+    loglHatD_0_tmp(t) = fval;
     
-    % Transform into sqrt space.
-    lHatD = sqrt(abs(lHatD_0_tmp(numSamples-currNumSamples+1:end)- aa)*2);
-         
+    % Find the max in log space                             
+    logscaling(t)   = max(loglHatD_0_tmp(1:t));
+    
+    % Scale batch by max, and exponentiate
+    lHatD_0_tmp = exp(loglHatD_0_tmp(1:t) - logscaling(t));    
+    
+    % Evaluate the offset, alpha fraction of minimum value seen
+    aa      = alpha * min(lHatD_0_tmp);
+    
+    % Transform into sqrt space
+    lHatD = sqrt(2*abs(lHatD_0_tmp - aa));
+    
     if options.SpecifyTargetNoise
-        sigma_tmp = loglsdhat_tmp(numSamples-currNumSamples+1:end);
-        ucb_tmp = sqrt(abs(exp(loglHatD_0_tmp(numSamples-currNumSamples+1:end) + sigma_tmp - logscaling(t)) - aa)*2);
-        lcb_tmp = sqrt(max(0,exp(loglHatD_0_tmp(numSamples-currNumSamples+1:end) - sigma_tmp - logscaling(t)) - aa)*2);
+        sigma_tmp = loglsdhat_tmp(1:t);
+        ucb_tmp = sqrt(abs(exp(loglHatD_0_tmp(1:t) + sigma_tmp - logscaling(t)) - aa)*2);
+        lcb_tmp = sqrt(max(0,exp(loglHatD_0_tmp(1:t) - sigma_tmp - logscaling(t)) - aa)*2);
         s2hat = (0.5*(ucb_tmp - lcb_tmp)).^2;
+        s2hat = max(s2hat, max(s2hat)*jitterNoise);
     else
-        s2hat = 1e-6;       
+        s2hat = jitterNoise;
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -217,13 +210,13 @@ for t = 1:numSamples - 1
     hyp(1)          = log(lambda);
     hyp(2:end)      = log(VV);
     
-    if currNumSamples > 3 &&  ~mod(currNumSamples,hypOptEvery)
+    if t > 3 && mod(t,hypOptEvery) == 0
         hypLogLik = @(x) logLikGPDim(xxIter, lHatD, s2hat, x, hypVar);
         [hyp,nll] = fmincon(hypLogLik, ...
                          hyp,[],[],[],[],-hypLims,hypLims,[],options1);
 
         % Attempt restart of hyperparameters
-        if ~mod(currNumSamples,hypOptEvery*10)
+        if mod(t,hypOptEvery*10) == 0
             hyp0 = randn(100,numel(hyp));
             nll0 = zeros(size(hyp0,1),1);
             for iHyp = 1:size(hyp0,1); nll0(iHyp) = hypLogLik(hyp0(iHyp,:)); end
@@ -238,15 +231,13 @@ for t = 1:numSamples - 1
     VV              = exp(hyp(2:end));
     
     % Scale samples by input length scales.
-    xxIterScaled    = xxIter .* repmat(sqrt(1./VV),currNumSamples,1);
+    xxIterScaled    = xxIter .* repmat(sqrt(1./VV),t,1);
     
     % Squared distance matrix
     dist2           = pdist2_squared_fast(xxIterScaled, xxIterScaled);
     
     % Evaluate Gram matrix
     Kxx = lambda.^2 * (1/(prod(2*pi*VV).^0.5)) * exp(-0.5*dist2);
-%     Kxx = Kxx + ...
-%               lambda.^2*(1/(prod(2*pi*VV).^0.5))*jitterNoise*eye(size(Kxx));
     if isscalar(s2hat)
         Kxx = Kxx + s2hat*eye(size(Kxx));
     else
@@ -265,11 +256,11 @@ for t = 1:numSamples - 1
     Yvar            = (VV.*VV + 2*VV.*BB)./VV; 
     postProd        = ww*ww';
     
-    xx2sq           = xxIter .* repmat(sqrt(1./Yvar),currNumSamples,1);
+    xx2sq           = xxIter .* repmat(sqrt(1./Yvar),t,1);
     bbch            = bb .* sqrt(1./Yvar);
     
     xx2sqFin        = pdist2_squared_fast(xx2sq,bbch);
-    xxIterScaled2   = xxIter .* repmat(sqrt(BB./(VV.*Yvar)),currNumSamples,1);
+    xxIterScaled2   = xxIter .* repmat(sqrt(BB./(VV.*Yvar)),t,1);
     
     dist4           = pdist2_squared_fast(xxIterScaled2,xxIterScaled2);
     
@@ -317,28 +308,28 @@ for t = 1:numSamples - 1
     tmpVar   = ((VV.*VV + 2*VV.*BB).*(Yvar + Yvar.*(VV./BB + VV + BB)));
     
     xx3sq    = xxIter .* ...
-               repmat(sqrt((Yvar.*VV)./tmpVar),currNumSamples,1);
+               repmat(sqrt((Yvar.*VV)./tmpVar),t,1);
     bb3ch    = bb .* sqrt((Yvar.*VV)./tmpVar);
     
     xx2sqGGlh = xx2sqFin + pdist2_squared_fast(xx3sq,bb3ch);
     
     xx4sq    = xxIter .* ...
-             repmat(sqrt((VV.*Yvar)./tmpVar),currNumSamples,1);
+             repmat(sqrt((VV.*Yvar)./tmpVar),t,1);
     bb4ch    = bb .* sqrt((VV.*Yvar)./tmpVar);
     
     xx5sq    = xxIter .* ...
-             repmat(sqrt((VV.*Yvar.^2)./(tmpVar.*BB)),currNumSamples,1);
+             repmat(sqrt((VV.*Yvar.^2)./(tmpVar.*BB)),t,1);
     bb5ch    = bb .* sqrt((VV.*Yvar.^2)./(tmpVar.*BB));
     
     xx2sqGGrh       = pdist2_squared_fast(xx4sq,bb4ch) + ...
                       pdist2_squared_fast(xx5sq,bb5ch);
                   
     xxIterScaled3   = xxIter .* ...
-                      repmat(sqrt(Yvar.*BB./tmpVar),currNumSamples,1);
+                      repmat(sqrt(Yvar.*BB./tmpVar),t,1);
                   
     dist4           = pdist2_squared_fast(xxIterScaled3,xxIterScaled3);
     xxIterScaled4   = xxIter .* ...
-                      repmat(sqrt(BB./(Yvar.*VV)),currNumSamples,1);
+                      repmat(sqrt(BB./(Yvar.*VV)),t,1);
                   
     dist5           = pdist2_squared_fast(xxIterScaled4,xxIterScaled4);
     
@@ -363,27 +354,27 @@ for t = 1:numSamples - 1
                         1/prod(tmp_2_mainvar)^0.5;
 
         ScaledVar2_0       = ((VV)./(VV.*VV+2*VV.*BB));
-        xxIterScaledVar2_0 = xxIter .* repmat(sqrt(ScaledVar2_0),currNumSamples,1);
+        xxIterScaledVar2_0 = xxIter .* repmat(sqrt(ScaledVar2_0),t,1);
         bbScaledVar2_0     = bb .* sqrt(ScaledVar2_0);
         distVar2_0         = pdist2_squared_fast(xxIterScaledVar2_0, bbScaledVar2_0);     
 
         ScaledVar2_1       = ((VV.*VV + 2*VV.*BB)./(tmp_2_mainvar));
-        xxIterScaledVar2_1 = xxIter .* repmat(sqrt(ScaledVar2_1),currNumSamples,1);
+        xxIterScaledVar2_1 = xxIter .* repmat(sqrt(ScaledVar2_1),t,1);
         bbScaledVar2_1     = bb .* sqrt(ScaledVar2_1);
         distVar2_1         = pdist2_squared_fast(xxIterScaledVar2_1, bbScaledVar2_1);
 
         ScaledVar2_2       = ((VV.*VV + 2*VV.*BB).*(VV.*VV + 2*VV.*BB))./(tmp_2_mainvar.*(VV.*BB));
-        xxIterScaledVar2_2 = xxIter .* repmat(sqrt(ScaledVar2_2),currNumSamples,1);
+        xxIterScaledVar2_2 = xxIter .* repmat(sqrt(ScaledVar2_2),t,1);
         bbScaledVar2_2     = bb .* sqrt(ScaledVar2_2);
         distVar2_2         = pdist2_squared_fast(xxIterScaledVar2_2, bbScaledVar2_2);
 
         ScaledVar2_3       = ScaledVar2_1;
-        xxIterScaledVar2_3 = xxIter .* repmat(sqrt(ScaledVar2_3),currNumSamples,1);
+        xxIterScaledVar2_3 = xxIter .* repmat(sqrt(ScaledVar2_3),t,1);
         bbScaledVar2_3     = bb .* sqrt(ScaledVar2_3);
         distVar2_3         = pdist2_squared_fast(xxIterScaledVar2_3, bbScaledVar2_3);
 
         ScaledVar2_4       = ((VV.*BB)./(tmp_2_mainvar));
-        xxIterScaledVar2_4 = xxIter .* repmat(sqrt(ScaledVar2_4),currNumSamples,1);
+        xxIterScaledVar2_4 = xxIter .* repmat(sqrt(ScaledVar2_4),t,1);
         bbScaledVar2_4     = bb .* sqrt(ScaledVar2_4);
         distVar2_4         = pdist2_squared_fast(xxIterScaledVar2_4, bbScaledVar2_4);
 
@@ -397,30 +388,30 @@ for t = 1:numSamples - 1
         tmp_3_coeff        = lambda^12 * 1/prod(4*pi^2*tmp_3_mainvar);
 
         ScaledVar3_0       = (VV./((VV.*VV+2*VV.*BB)));
-        xxIterScaledVar3_0 = xxIter .* repmat(sqrt(ScaledVar3_0),currNumSamples,1);
+        xxIterScaledVar3_0 = xxIter .* repmat(sqrt(ScaledVar3_0),t,1);
         bbScaledVar3_0     = bb .* sqrt(ScaledVar3_0);
         distVar3_0         = pdist2_squared_fast(xxIterScaledVar3_0, bbScaledVar3_0);    
 
         ScaledVar3_1       = (VV./(VV.*VV+2*VV.*BB));
-        xxIterScaledVar3_1 = xxIter .* repmat(sqrt(ScaledVar3_1),currNumSamples,1);
+        xxIterScaledVar3_1 = xxIter .* repmat(sqrt(ScaledVar3_1),t,1);
         bbScaledVar3_1     = bb .* sqrt(ScaledVar3_1);
         distVar3_1         = pdist2_squared_fast(xxIterScaledVar3_1, bbScaledVar3_1);
 
         ScaledVar3_2       = (BB./(VV.*VV+2*VV.*BB));
-        xxIterScaledVar3_2 = xxIter .* repmat(sqrt(ScaledVar3_2),currNumSamples,1);
+        xxIterScaledVar3_2 = xxIter .* repmat(sqrt(ScaledVar3_2),t,1);
         distVar3_2         = pdist2_squared_fast(xxIterScaledVar3_2, xxIterScaledVar3_2);
 
         ScaledVar3_3       = (BB./(VV.*VV+2*VV.*BB));
-        xxIterScaledVar3_3 = xxIter .* repmat(sqrt(ScaledVar3_3),currNumSamples,1);
+        xxIterScaledVar3_3 = xxIter .* repmat(sqrt(ScaledVar3_3),t,1);
         distVar3_3         = pdist2_squared_fast(xxIterScaledVar3_3, xxIterScaledVar3_3);
 
         ScaledVar3_4       = (VV./(VV.*VV+2*VV.*BB));
-        xxIterScaledVar3_4 = xxIter .* repmat(sqrt(ScaledVar3_4),currNumSamples,1);
+        xxIterScaledVar3_4 = xxIter .* repmat(sqrt(ScaledVar3_4),t,1);
         bbScaledVar3_4     = bb .* sqrt(ScaledVar3_4);
         distVar3_4         = pdist2_squared_fast(xxIterScaledVar3_4, bbScaledVar3_4);
 
         ScaledVar3_5       = (VV./(VV.*VV+2*VV.*BB));
-        xxIterScaledVar3_5 = xxIter .* repmat(sqrt(ScaledVar3_5),currNumSamples,1);
+        xxIterScaledVar3_5 = xxIter .* repmat(sqrt(ScaledVar3_5),t,1);
         bbScaledVar3_5     = bb .* sqrt(ScaledVar3_5);
         distVar3_5         = pdist2_squared_fast(xxIterScaledVar3_5, bbScaledVar3_5);
 
@@ -438,98 +429,131 @@ for t = 1:numSamples - 1
         Var(t) = Var(t) + 0.5*(tmp_1 - 2*sum(tmp_2(:)) + sum(tmp_3(:)));  
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Actively select next sample point:
-     
-    % Define acquisition function
-    acqfun_name = str2func(['expectedVar' method]);
-    acqfun = @(x) acqfun_name( transp(x), lambda, VV, ...
-        lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa );
-        
-    if Nsearch > 0
-        % Perform shotgun search
+    if t < numSamples
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Actively select next sample point:
 
-        ll = loglHatD_0_tmp(numSamples-currNumSamples+1:end) ...
-            - 0.5*sum(bsxfun(@rdivide,bsxfun(@minus,xxIter,bb).^2,BB),2) ...
-            - 0.5*sum(log(BB));
+        xxIterScaled = bsxfun(@rdivide,xxIter,sqrt(VV));
         
-        if size(xxIter,1) > max(4,dim)
-            [cma_Sigma,cma_mu] = covcma(xxIter,ll,[],'descend');
-        else
-            cma_Sigma = []; cma_mu = [];            
-        end        
-        
-        % 1) Draw a small number of points from prior
-        Nrnd = ceil(Nsearch/10);
-        murnd = bb;
-        sigmarnd = sqrt(BB);
-        Xsearch = bsxfun(@plus,bsxfun(@times,randn(Nrnd,dim),sigmarnd),murnd);
-                
-        % 2) Draw points around current points
-        Nrnd = ceil((Nsearch - size(Xsearch,1))/2);
-        if Nrnd > 0 && t > 3
-            cma_SS = 0.01*covcma(xxIter,ll,xxIter(1,:),'descend');
-            sqlik = exp(0.5*ll-0.5*max(ll));            
-            weights = sqlik./sum(sqlik);
-            iirnd = randsample((1:size(xxIter,1))', Nrnd, true, weights);
-            murnd = xxIter(iirnd,:);
-            
-            Xsearch = [Xsearch; ...
-                mvnrnd(murnd,cma_SS,Nrnd)];
-        end
-        
-        % 3) Draw remaining points
-        Nrnd = Nsearch - size(Xsearch,1);
-        if Nrnd > 0
-            if ~isempty(cma_Sigma)  % Draw from multivariate normal ~ hpd region            
+        % Define acquisition function
+        acqfun_name = str2func(['expectedVar' method]);
+        acqfun = @(x) acqfun_name( transp(x), s2hat, lambda, VV, ...
+            lHatD, xxIterScaled, invKxx, jitterNoise, bb, BB, aa );
+
+        if Nsearch > 0
+            % Perform shotgun search
+
+            ll = loglHatD_0_tmp(1:t) ...
+                - 0.5*sum(bsxfun(@rdivide,bsxfun(@minus,xxIter,bb).^2,BB),2) ...
+                - 0.5*sum(log(BB));
+
+            if size(xxIter,1) > max(4,D)
+                [cma_Sigma,cma_mu] = covcma(xxIter,ll,[],'descend');
+            else
+                cma_Sigma = []; cma_mu = [];            
+            end        
+
+            % 1) Draw a small number of points from prior
+            Nrnd = ceil(Nsearch/10);
+            murnd = bb;
+            sigmarnd = sqrt(BB);
+            Xsearch = bsxfun(@plus,bsxfun(@times,randn(Nrnd,D),sigmarnd),murnd);
+
+            % 2) Draw points around current points
+            Nrnd = ceil((Nsearch - size(Xsearch,1))/2);
+            if Nrnd > 0 && t > 3
+                cma_SS = 0.01*covcma(xxIter,ll,xxIter(1,:),'descend');
+                sqlik = exp(0.5*ll-0.5*max(ll));            
+                weights = sqlik./sum(sqlik);
+                iirnd = randsample((1:size(xxIter,1))', Nrnd, true, weights);
+                murnd = xxIter(iirnd,:);
+
                 Xsearch = [Xsearch; ...
-                    mvnrnd(cma_mu,cma_Sigma,Nrnd)];
-            else            % Uniform draw inside search box
-                Xsearch = [Xsearch; ...
-                    bsxfun(@plus, range(1,:), ...
-                    bsxfun(@times,range(2,:)-range(1,:),rand(Nrnd,dim)))];                    
+                    mvnrnd(murnd,cma_SS,Nrnd)];
             end
-        end
-        
-        % Evaluate acquisition function on all candidate search points
-        aval = acqfun(Xsearch);
-        
-        % Take best point
-        [strtFval,idx] = min(aval);
-        strtSamp = Xsearch(idx,:);
-    
-        insigma = 0.1*sqrt(diag(cma_Sigma));
-    else
-        if rand < 1.1 % Sample starting location for search from prior.
-            strtSamp = mvnrnd(bb,diag(BB),1);
+
+            % 3) Draw remaining points
+            Nrnd = Nsearch - size(Xsearch,1);
+            if Nrnd > 0
+                if ~isempty(cma_Sigma)  % Draw from multivariate normal ~ hpd region            
+                    Xsearch = [Xsearch; ...
+                        mvnrnd(cma_mu,cma_Sigma,Nrnd)];
+                else            % Uniform draw inside search box
+                    Xsearch = [Xsearch; ...
+                        bsxfun(@plus, range(1,:), ...
+                        bsxfun(@times,range(2,:)-range(1,:),rand(Nrnd,D)))];                    
+                end
+            end
+
+            % Evaluate acquisition function on all candidate search points
+            aval = acqfun(Xsearch);
+
+            % Take best point
+            [strtFval,idx] = min(aval);
+            strtSamp = Xsearch(idx,:);
+
+            insigma = 0.1*sqrt(diag(cma_Sigma));
         else
-            strtSamp = 2*range(2,:).*rand(1,dim) - 50;
+            if rand < 1.1 % Sample starting location for search from prior.
+                strtSamp = mvnrnd(bb,diag(BB),1);
+            else
+                strtSamp = 2*range(2,:).*rand(1,D) - 50;
+            end
+            strtFval = acqfun(strtSamp);
+            insigma = [];
         end
-        strtFval = acqfun(strtSamp);
-        insigma = [];
+
+        % Using global optimiser (cmaes):
+        % insigma = exp((log(VV) + log(BB))/4);
+        % if size(xxIter,1) > dim; insigma = std(xxIter); end
+        
+        [newX,cmaesFval] = cmaes_modded( ['expectedVar' method(1)], strtSamp', insigma(:), opts, s2hat, lambda, VV, ...
+                      lHatD, xxIterScaled, invKxx, jitterNoise, bb, BB, aa);
+        newX = newX';
+
+        % If CMA-ES somehow does not improve from starting point, just use that
+        if strtFval < cmaesFval; newX = strtSamp; end
+
+        optimState.X(t+1,:) = newX;
     end
     
-    % Using global optimiser (cmaes):
-    % insigma = exp((log(VV) + log(BB))/4);
-    % if size(xxIter,1) > dim; insigma = std(xxIter); end
-    [newX,cmaesFval] = cmaes_modded( ['expectedVar' method(1)], strtSamp', insigma(:), opts, lambda, VV, ...
-                  lHatD, xxIter, invKxx, jitterNoise, bb, BB, aa);
-    newX = newX';
-    
-    % If CMA-ES somehow does not improve from starting point, just use that
-    if strtFval < cmaesFval; newX = strtSamp; end
-    
-    xx(numSamples-currNumSamples,:) = newX;
-    
     clktime(t) = cputime - tmpT;
-    
-    currNumSamples = currNumSamples + 1;
 
 end
 
 fprintf('\n done. \n');
 log_mu  = log(mu) + logscaling;
 log_Var = log(Var) + 2*logscaling;
-loglIter = loglHatD_0_tmp(numSamples-currNumSamples+2:end,:);
+loglIter = loglHatD_0_tmp(1:t);
+if options.SpecifyTargetNoise
+    lsdIter = loglsdhat_tmp(1:t);
+else
+    lsdIter = [];
+end
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function add2path()
+%ADD2PATH Adds WSABI+ subfolders to MATLAB path.
+
+subfolders = {'utils'};
+pathCell = regexp(path, pathsep, 'split');
+baseFolder = fileparts(mfilename('fullpath'));
+
+onPath = true;
+for iFolder = 1:numel(subfolders)
+    folder = [baseFolder,filesep,subfolders{iFolder}];    
+    if ispc  % Windows is not case-sensitive
+      onPath = onPath & any(strcmpi(folder, pathCell));
+    else
+      onPath = onPath & any(strcmp(folder, pathCell));
+    end
+end
+
+% ADDPATH is slow, call it only if folders are not on path
+if ~onPath
+    addpath(genpath(fileparts(mfilename('fullpath'))));
+end
 
 end

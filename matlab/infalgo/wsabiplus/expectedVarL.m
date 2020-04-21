@@ -1,8 +1,7 @@
-function [NEV] = expectedVarL(xs, lambda, VV, lHatD, xxx, invKxx, noise, bb, BB, aa)
+function [NEV] = expectedVarL(xs, s2hat, lambda, VV, lHatD, xxxScaled, invKxx, noise, bb, BB, aa)
 % Active sampling loss function for wsabi_L
 
 xs = xs';
-xxxScaled   = xxx .* repmat(sqrt(1./VV),length(xxx(:,1)),1);
 
 distxsxx    = ...
 pdist2_squared_fast(xs.*repmat(sqrt(1./VV),length(xs(:,1)),1),xxxScaled);
@@ -21,7 +20,14 @@ end
 
 priorWeighting = mvnpdf(xs,bb,BB);
 
-NEV(1,:) = -(l_0.^2 .* varPred) .* priorWeighting.^2; %Negative expected variance.
-% NEV(1,:) = -2*varPred.*(2*l_0.^2 + varPred) .* priorWeighting.^2; %Negative expected variance.
+%Negative expected variance
+if isscalar(s2hat)
+    NEV(1,:) = -(l_0.^2 .* varPred) .* (1 - s2hat./(s2hat + varPred)) .* priorWeighting.^2;    
+else
+    % Estimate observation noise at test points from nearest neighbor
+    [~,pos] = min(pdist2_squared_fast(bsxfun(@rdivide,xs,sqrt(VV)),xxxScaled),[],2);
+    sn2 = s2hat(pos);
+    NEV(1,:) = -(l_0.^2 .* varPred) .* (1 - sn2./(sn2 + varPred)) .* priorWeighting.^2;
+end
 
 end

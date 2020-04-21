@@ -9,24 +9,26 @@ HypVar = [100^2,4^2*ones(1,probstruct.D)];
 
 algoptions.Method = 'L';    % Default is WSABI-L
 algoptions.Alpha = 0.8;     % Fractional offset, as in paper.
-algoptions.Nsearch = 0;     % Extra search points
+algoptions.Nsearch = 2^13;  % Extra search points
 algoptions.HypVar  = 1;     % Variance of GP hyperparamters (WSABI default)
 algoptions.Debug = false;
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.HypVar = HypVar;
+algoptions.IgnoreNoise = false;
 
 % Options from current problem
 switch algoset
     case {0,'debug'}; algoset = 'debug'; algoptions.Debug = 1;
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'mm'}; algoset = 'mm'; algoptions.Method = 'M';
+    case {3,'ldet'}; algoset = 'ldet'; algoptions.Method = 'L'; algoptions.IgnoreNoise = true;        
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
 end
 
 % Increase base noise with noisy functions
-if ~isempty(probstruct.Noise) || probstruct.IntrinsicNoisy
+if (~isempty(probstruct.Noise) || probstruct.IntrinsicNoisy) && ~algoptions.IgnoreNoise
     algoptions.SpecifyTargetNoise = true;
 end
 %     algoptions.UncertaintyHandling = 'on';
@@ -49,18 +51,25 @@ diam = probstruct.PUB - probstruct.PLB;
 algoptions.GPInputLengths = diam/sqrt(10);   % Input length scales for GP likelihood model
 algoptions.GPOutputLength = 1;                     % Ouput length scale for GP likelihood model
 
-range = [PLB - 3*diam; PUB + 3*diam];
-
-% Do not add log prior to function evaluation, already passed to WSABI 
-probstruct.AddLogPrior = false;
+switch lower(probstruct.PriorType)
+    case 'gaussian'
+        algoptions.PriorMean = probstruct.PriorMean;
+        algoptions.PriorCov = probstruct.PriorVar;
+        % Do not add log prior to function evaluation, already passed to WSABI 
+        probstruct.AddLogPrior = false;
+    
+    case 'uniform'
+        algoptions.PriorMean = [];
+        algoptions.PriorCov = [];
+        probstruct.AddLogPrior = true;    
+end
 
 if algoptions.Debug; algoptions.Display = 2; else; algoptions.Display = 1; end
 
 algo_timer = tic;
-[mu, ln_var, tt, X, y, hyp] = ...
+[mu,ln_var,tt,X,y,hyp,s2] = ...
     wsabiplus(@(x) infbench_func(x,probstruct),...
-    probstruct.PriorMean,diag(probstruct.PriorVar),...
-    range(1,:),range(2,:),x0,...
+    PLB,PUB,LB,UB,x0,...
     algoptions);
 TotalTime = toc(algo_timer);
 
@@ -73,7 +82,7 @@ mu = mu(idx);
 vvar = vvar(idx);
 
 [history,post] = StoreAlgoResults(...
-    probstruct,[],Niter,X(end:-1:1,:),y(end:-1:1),mu,vvar,[],[],TotalTime);
+    probstruct,[],Niter,X,y,mu,vvar,[],[],TotalTime,[],s2);
 
 history.Output.stats.tt = tt;
 history.Output.stats.hyp = hyp;
