@@ -26,16 +26,16 @@ optimState.UBeps_orig = UB - (UB - LB)*options.TolBoundX;
 
 
 %% Transform variables
-trinfo = warpvars_vbmc(nvars,LB,UB,PLB,PUB);
+trinfo = warpvars_wsabi(nvars,LB,UB,PLB,PUB);
 trinfo.x0_orig = x0;
 if ~isfield(trinfo,'R_mat'); trinfo.R_mat = []; end
 if ~isfield(trinfo,'scale'); trinfo.scale = []; end
 
-optimState.LB = warpvars_vbmc(LB,'dir',trinfo);
-optimState.UB = warpvars_vbmc(UB,'dir',trinfo);
-optimState.PLB = warpvars_vbmc(PLB,'dir',trinfo);
-optimState.PUB = warpvars_vbmc(PUB,'dir',trinfo);
-optimState.x0 = warpvars_vbmc(x0,'dir',trinfo);
+optimState.LB = warpvars_wsabi(LB,'dir',trinfo);
+optimState.UB = warpvars_wsabi(UB,'dir',trinfo);
+optimState.PLB = warpvars_wsabi(PLB,'dir',trinfo);
+optimState.PUB = warpvars_wsabi(PUB,'dir',trinfo);
+optimState.x0 = warpvars_wsabi(x0,'dir',trinfo);
 
 optimState.trinfo = trinfo;
 
