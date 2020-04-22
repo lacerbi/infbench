@@ -1,10 +1,5 @@
 function [history,post,algoptions] = infalgo_parallelgp(algo,algoset,probstruct)
 
-% Add algorithm to MATLAB path
-BaseFolder = fileparts(mfilename('fullpath'));
-AlgoFolder = 'parallel-GP-SL';
-addpath(genpath([BaseFolder filesep() AlgoFolder]));
-
 %% Base settings
 algoptions.Algorithm = 'parallelgp';
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
@@ -23,6 +18,7 @@ algoptions.MCMCnsamples = 1e4;  % how many MCMC samples for each chain
 algoptions.NsamplesIS = 500;    % how many samples from the importance distribution
 algoptions.GridSizeD2 = 2500;   % # grid points for 2D integral
 algoptions.GPUpdateFreq = 1;    % How often GP hyperparameters are updated via MAP estimation
+algoptions.Version = 'v2';      % Original version tested
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -36,10 +32,24 @@ switch algoset
     case {2,'maxiqr'}; algoset = 'maxiqr'; algoptions.AcqMethod = 'MAXIQR';
     case {3,'fast'}; algoset = 'fast'; algoptions.AcqOptInit = 500; algoptions.AcqOptNstarts = 3; algoptions.AcqOptMCMCnchains = 3; algoptions.AcqOptMCMCnsamples = 1e3; algoptions.NsamplesIS = 200; algoptions.GridSizeD2 = 500;
     case {4,'fast2'}; algoset = 'fast2'; algoptions.AcqOptInit = 500; algoptions.AcqOptNstarts = 3; algoptions.AcqOptMCMCnchains = 3; algoptions.AcqOptMCMCnsamples = 1e3; algoptions.NsamplesIS = 200; algoptions.GridSizeD2 = 500; algoptions.GPUpdateFreq = 5;
+    case {101,'v3'}; algoset = 'v3'; algoptions.Version = 'v3';
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
 end
+
+%% Load the desired version
+
+% Repo: https://github.com/mjarvenpaa/parallel-GP-SL
+
+BaseFolder = fileparts(mfilename('fullpath'));
+switch algoptions.Version
+    case 'v3' % Latest version as of Apr 2020
+        AlgoFolder = 'parallel-GP-SL-v3';
+    otherwise % v2
+        AlgoFolder = 'parallel-GP-SL';
+end
+addpath(genpath([BaseFolder filesep() AlgoFolder]));
 
 
 %% GP settings
