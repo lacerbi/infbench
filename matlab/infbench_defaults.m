@@ -137,11 +137,14 @@ switch lower(type)
                     %case {'renewdefvarimiqrpluswup5vp'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-viqr';
                     case {'renewdefvarimiqrpluswup5fast'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-viqr';
                     case {'newbase'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = '-';
-                    case {'renewdefmipluswup4gpsvp'}; defaults.color = [180 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-eig';
+%                    case {'renewdefmipluswup4gpsvp'}; defaults.color = [180 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-.'; defaults.name = 'vbmc-eig';
                     case {'acqmidtstep1_100','ent2','renewdefnoise'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'ent3','ent2midtmcmc50','renewdefnoiseplus'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
-                    case {'renewdefimiqrplus5longvpgps'}; defaults.color = [100 0 180]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-imiqr';
-                    case {'renewdefimiqrpluswup5noacq'}; defaults.color = [240 198 114]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-pron';
+%                    case {'renewdefimiqrplus5longvpgps'}; defaults.color = [100 0 180]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = ':'; defaults.name = 'vbmc-imiqr';
+%                    case {'renewdefimiqrpluswup5noacq'}; defaults.color = [240 198 114]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '--'; defaults.name = 'vbmc-pron';
+                    case {'renewdefmipluswup4gpsvp'}; defaults.color = [166,206,227]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-.'; defaults.name = 'vbmc-eig';
+                    case {'renewdefimiqrpluswup5noacq'}; defaults.color = [178,223,138]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '--'; defaults.name = 'vbmc-pron';
+                    case {'renewdefimiqrplus5longvpgps'}; defaults.color = [31,120,180]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = ':'; defaults.name = 'vbmc-imiqr';
                         
                     otherwise
                         defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 3; defaults.linestyle = '-.';
@@ -202,10 +205,12 @@ switch lower(type)
                 
             case {'parallelgp'}
                 switch algoset
-                    case 'base'; defaults.color = [60 220 200]/255; defaults.marker = 'o'; defaults.name = 'gp-imiqr';
+%                    case 'base'; defaults.color = [60 220 200]/255; defaults.marker = 'o'; defaults.name = 'gp-imiqr';
+                    case 'base'; defaults.color = [51,160,44]/255; defaults.marker = 'o'; defaults.name = 'gp-imiqr';
                     case 'reg'; defaults.color = [255 88 169]/255; defaults.marker = '*';
-                    otherwise; defaults.color = [128 177 48]/255;                        
-                end
+                    otherwise; defaults.color = [255 88 169]/255;                        
+                end 
+                defaults.linestyle = '-';
                 defaults.linewidth = 3;
         end
         
