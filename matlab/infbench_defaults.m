@@ -206,8 +206,9 @@ switch lower(type)
             case {'parallelgp'}
                 switch algoset
 %                    case 'base'; defaults.color = [60 220 200]/255; defaults.marker = 'o'; defaults.name = 'gp-imiqr';
-                    case 'base'; defaults.color = [51,160,44]/255; defaults.marker = 'o'; defaults.name = 'gp-imiqr';
+                    case 'base'; defaults.color = [255 88 169]/255; defaults.marker = 'o'; defaults.name = 'gp-imiqr (v2)';
                     case 'reg'; defaults.color = [255 88 169]/255; defaults.marker = '*';
+                    case 'v3'; defaults.color = [51,160,44]/255; defaults.marker = 'o'; defaults.name = 'gp-imiqr';
                     otherwise; defaults.color = [255 88 169]/255;                        
                 end 
                 defaults.linestyle = '-';
