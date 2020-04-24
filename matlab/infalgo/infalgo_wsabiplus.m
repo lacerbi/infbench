@@ -5,15 +5,13 @@ BaseFolder = fileparts(mfilename('fullpath'));
 AlgoFolder = 'wsabiplus';
 addpath(genpath([BaseFolder filesep() AlgoFolder]));
 
-HypVar = [100^2,4^2*ones(1,probstruct.D)];
-
 algoptions.Method = 'L';    % Default is WSABI-L
-algoptions.Alpha = 0.8;     % Fractional offset, as in paper.
+algoptions.AlphaFactor = 0.8;     % Fractional offset, as in paper.
 algoptions.Nsearch = 2^13;  % Extra search points
-algoptions.HypVar  = 1;     % Variance of GP hyperparamters (WSABI default)
+algoptions.GPInputHypVar  = log(20)^2;   % Variance of GP hyperparamters (default)
+algoptions.GPOutputHypVar  = log(10)^2;   % Variance of GP hyperparamters (default)
 algoptions.Debug = false;
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
-algoptions.HypVar = HypVar;
 algoptions.IgnoreNoise = false;
 
 % Options from current problem

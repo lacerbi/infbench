@@ -30,9 +30,10 @@ defopts.Method          = 'L';              % Method ('L' or 'M')
 defopts.MaxFunEvals     = (D+2)*50;         % Maximum number of fcn evals
 defopts.AlphaFactor     = 0.8;              % Alpha offset fraction, as in paper
 defopts.Display         = 'iter';           % Print output
-defopts.GPInputLengths  = [];               % Vector of GP input lengths
 defopts.GPOutputLength  = 1;                % GP ouput scale
-defopts.GPHypVar        = 100^2;            % Variance of prior over GP hyperparams
+defopts.GPInputLengths  = [];               % Vector of GP input lengths
+defopts.GPOutputHypVar  = log(10)^2;        % Variance of prior over GP output length
+defopts.GPInputHypVar   = log(20)^2;        % Variance of prior over GP input lengths (normalized)
 defopts.Nsearch         = 2^13;             % Starting search points for acquisition fcn
 defopts.AcqFun          = [];               % Acquisition function
 defopts.Plot            = 0;                % Make diagnostic plots at each iteration
@@ -69,14 +70,18 @@ Nsearch = options.Nsearch;
 
 % Initialize optimization structure
 optimState = setupvars_wsabi(x0,LB,UB,PLB,PUB,[],options,prnt);
-
 range = [optimState.LB_search; optimState.UB_search];
-
+prange = optimState.PUB-optimState.PLB;
 if isempty(options.GPInputLengths)
-    options.GPInputLengths = 0.5*(PUB-PLB)/sqrt(3);
+    options.GPInputLengths = 0.5*prange/sqrt(3);
 end
 lambda = options.GPOutputLength;
-hypVar = options.GPHypVar;
+
+% Prior over GP hyperparameters    
+
+hypMu = [0,log(0.1*prange)];
+hypVar = [options.GPOutputHypVar,options.GPInputHypVar*ones(1,D)];
+
 
 % Relabel prior mean and covariance for brevity of code
 bb          = optimState.priorMu;
@@ -101,9 +106,6 @@ if options.SpecifyTargetNoise
     loglsdhat_tmp   = zeros(numSamples,1);
 end
 hyp             = zeros(1,1+D);
-
-% Variance of prior over GP hyperparameters
-if isscalar(hypVar); hypVar = hypVar*ones(size(hyp)); end
 
 % Minimiser options (fmincon for hyperparameters)
 options1                        = optimset('fmincon');
@@ -195,6 +197,7 @@ for t = 1:numSamples
     lHatD = sqrt(2*abs(lHatD_0_tmp - aa));
     
     if options.SpecifyTargetNoise
+        % Noise warping via unscented transform
         sigma_tmp = loglsdhat_tmp(1:t);
         ucb_tmp = sqrt(abs(exp(loglHatD_0_tmp(1:t) + sigma_tmp - logscaling(t)) - aa)*2);
         lcb_tmp = sqrt(max(0,exp(loglHatD_0_tmp(1:t) - sigma_tmp - logscaling(t)) - aa)*2);
@@ -209,9 +212,9 @@ for t = 1:numSamples
     
     hyp(1)          = log(lambda);
     hyp(2:end)      = log(VV);
-    
+        
     if t > 3 && mod(t,hypOptEvery) == 0
-        hypLogLik = @(x) logLikGPDim(xxIter, lHatD, s2hat, x, hypVar);
+        hypLogLik = @(x) logLikGPDim(xxIter,lHatD,s2hat,x,hypMu,hypVar);
         [hyp,nll] = fmincon(hypLogLik, ...
                          hyp,[],[],[],[],-hypLims,hypLims,[],options1);
 
