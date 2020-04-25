@@ -324,6 +324,7 @@ switch algoset
     case {264,'renewdefimiqrplus5longvpgps'}; algoset = 'renewdefimiqrplus5longvpgps'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.ActiveImportanceSamplingMCMCThin = 5;
     case {265,'renewdeffimiqrpluswup5vp'}; algoset = 'renewdeffimiqrpluswup5vp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCThin = 5;
     case {266,'renewdeffimiqrpluswup5vpfess'}; algoset = 'renewdeffimiqrpluswup5vpfess'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCThin = 5; algoptions.ActiveSamplefESSThresh = 0.75;
+    case {267,'renewdefvarimiqrmixpluswup5vp'}; algoset = 'renewdefvarimiqrmixpluswup5vp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqrmix_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
 
         
         

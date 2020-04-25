@@ -168,16 +168,17 @@ switch lower(type)
                 defaults.linestyle = '-';
                 defaults.marker = 'o';
                  
-            case 'wsabi'
+            case {'wsabi','wsabiplus'}
                 defaults.linestyle = line_deterministic;
+                defaults.linewidth = 2;
                 switch algoset
                     case {'base','base2','ip'}; defaults.color = [251 128 114]/255; defaults.marker = 'o'; defaults.name = 'wsabi-L';
                     case {'mm','mm2'}; defaults.color = [114 128 251]/255; defaults.marker = 's'; defaults.name = 'wsabi-M';
                     case {'search'}; defaults.color = [251 128 114]/255; defaults.marker = 'o'; defaults.name = 'wsabi-L'; defaults.linestyle = ':';
                     case {'mmsearch'}; defaults.color = [114 128 251]/255; defaults.marker = 's'; defaults.name = 'wsabi-M'; defaults.linestyle = ':';
                     % case 'actset'; defaults.color = [128 251 114]/255; defaults.marker = 'd';
+                    case {'ldet'}; defaults.color = [251 128 114]/255; defaults.marker = 'o'; defaults.name = 'wsabi'; defaults.linestyle = ':'; defaults.linewidth = 3;
                 end
-                defaults.linewidth = 2;
 
             case 'bbq'
                 switch algoset

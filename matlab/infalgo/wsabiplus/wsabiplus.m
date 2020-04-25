@@ -1,4 +1,4 @@
-function [log_mu,log_Var,clktime,xxIter,loglIter,hyp,lsdIter] = wsabiplus( ...
+function [log_mu,log_Var,output] = wsabiplus( ...
             loglikfun,      ... 1) Handle to log-likelihood function
             PLB,            ... 2) Plausible lower bound
             PUB,            ... 3) Plausible upper bound
@@ -34,13 +34,15 @@ defopts.GPOutputLength  = 1;                % GP ouput scale
 defopts.GPInputLengths  = [];               % Vector of GP input lengths
 defopts.GPOutputHypVar  = log(10)^2;        % Variance of prior over GP output length
 defopts.GPInputHypVar   = log(20)^2;        % Variance of prior over GP input lengths (normalized)
-defopts.Nsearch         = 2^13;             % Starting search points for acquisition fcn
+defopts.Nsearch         = 2^10;             % Starting search points for acquisition fcn
 defopts.AcqFun          = [];               % Acquisition function
 defopts.Plot            = 0;                % Make diagnostic plots at each iteration
 defopts.SpecifyTargetNoise = false;         % Loglik function returns noise estimate (SD) as second output
 defopts.TolBoundX       = 1e-5;             % Tolerance on closeness to bound constraints (fraction of total range)
 defopts.PriorMean       = [];               % Gaussian prior mean
 defopts.PriorCov        = [];               % Gaussian prior covariance
+defopts.LCBFactor       = 0;                % Lower Confidence Bound parameter
+defopts.PreciseSearch   = true;             % Assume zero noise during active search?
 
 for f = fields(defopts)'
     if ~isfield(options,f{:}) || isempty(options.(f{:}))
@@ -184,8 +186,14 @@ for t = 1:numSamples
     end
     loglHatD_0_tmp(t) = fval;
     
-    % Find the max in log space                             
-    logscaling(t)   = max(loglHatD_0_tmp(1:t));
+    % Rescaling factor
+    if options.SpecifyTargetNoise
+        % Find max LCB
+        logscaling(t)   = max(loglHatD_0_tmp(1:t) - options.LCBFactor*loglsdhat_tmp(1:t));
+    else
+        % Simply find the max in log space                             
+        logscaling(t)   = max(loglHatD_0_tmp(1:t));        
+    end
     
     % Scale batch by max, and exponentiate
     lHatD_0_tmp = exp(loglHatD_0_tmp(1:t) - logscaling(t));    
@@ -198,10 +206,11 @@ for t = 1:numSamples
     
     if options.SpecifyTargetNoise
         % Noise warping via unscented transform
+        u = 0.6745; % norminv(0.75)
         sigma_tmp = loglsdhat_tmp(1:t);
-        ucb_tmp = sqrt(abs(exp(loglHatD_0_tmp(1:t) + sigma_tmp - logscaling(t)) - aa)*2);
-        lcb_tmp = sqrt(max(0,exp(loglHatD_0_tmp(1:t) - sigma_tmp - logscaling(t)) - aa)*2);
-        s2hat = (0.5*(ucb_tmp - lcb_tmp)).^2;
+        ucb_tmp = sqrt(abs(exp(loglHatD_0_tmp(1:t) + u*sigma_tmp - logscaling(t)) - aa)*2);
+        lcb_tmp = sqrt(max(0,exp(loglHatD_0_tmp(1:t) - u*sigma_tmp - logscaling(t)) - aa)*2);
+        s2hat = (0.5*(ucb_tmp - lcb_tmp)/u).^2;
         s2hat = max(s2hat, max(s2hat)*jitterNoise);
     else
         s2hat = jitterNoise;
@@ -440,7 +449,12 @@ for t = 1:numSamples
         
         % Define acquisition function
         acqfun_name = str2func(['expectedVar' method]);
-        acqfun = @(x) acqfun_name( transp(x), s2hat, lambda, VV, ...
+        if options.PreciseSearch
+            s2hat_search = 0;
+        else
+            s2hat_search = s2hat;
+        end
+        acqfun = @(x) acqfun_name( transp(x), s2hat_search, lambda, VV, ...
             lHatD, xxIterScaled, invKxx, jitterNoise, bb, BB, aa );
 
         if Nsearch > 0
@@ -527,11 +541,27 @@ end
 fprintf('\n done. \n');
 log_mu  = log(mu) + logscaling;
 log_Var = log(Var) + 2*logscaling;
-loglIter = loglHatD_0_tmp(1:t);
-if options.SpecifyTargetNoise
-    lsdIter = loglsdhat_tmp(1:t);
-else
-    lsdIter = [];
+
+% Output structure
+if nargout > 2
+    % Transform back to original space
+    loglIter = loglHatD_0_tmp(1:t);
+    loglIter = loglIter - warpvars_wsabi(xxIter,'logp',optimState.trinfo);
+    if optimState.removePrior
+        loglIter = loglIter - 0.5*sum(((xxIter - bb).^2)./BB,2) - optimState.priorLogNorm;
+    end
+    xxIter = warpvars_wsabi(xxIter,'inv',optimState.trinfo);
+    if options.SpecifyTargetNoise
+        lsdIter = loglsdhat_tmp(1:t);
+    else
+        lsdIter = [];
+    end
+    
+    output.X = xxIter;
+    output.fval = loglIter;
+    output.fval_sd = lsdIter;
+    output.clktime = clktime;    
+    output.gp_hyp = hyp;
 end
 
 end

@@ -7,12 +7,14 @@ addpath(genpath([BaseFolder filesep() AlgoFolder]));
 
 algoptions.Method = 'L';    % Default is WSABI-L
 algoptions.AlphaFactor = 0.8;     % Fractional offset, as in paper.
-algoptions.Nsearch = 2^13;  % Extra search points
-algoptions.GPInputHypVar  = log(20)^2;   % Variance of GP hyperparamters (default)
-algoptions.GPOutputHypVar  = log(10)^2;   % Variance of GP hyperparamters (default)
+algoptions.Nsearch = 2^10;  % Starting search points
+algoptions.GPInputHypVar  = log(20)^2;   % Variance of GP input hyperparameters (default)
+algoptions.GPOutputHypVar  = log(10)^2;   % Variance of GP output hyperparameter (default)
 algoptions.Debug = false;
 algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.IgnoreNoise = false;
+algoptions.LCBFactor = 2; % Lower Confidence Bound parameter
+algoptions.PreciseSearch = true; % Assume zero noise during active search
 
 % Options from current problem
 switch algoset
@@ -65,11 +67,16 @@ end
 if algoptions.Debug; algoptions.Display = 2; else; algoptions.Display = 1; end
 
 algo_timer = tic;
-[mu,ln_var,tt,X,y,hyp,s2] = ...
+[mu,ln_var,output] = ...
     wsabiplus(@(x) infbench_func(x,probstruct),...
-    PLB,PUB,LB,UB,x0,...
-    algoptions);
+    PLB,PUB,LB,UB,x0,algoptions);
 TotalTime = toc(algo_timer);
+
+tt = output.clktime;
+X = output.X;
+y = output.fval;
+s2 = output.fval_sd.^2;
+hyp = output.gp_hyp;
 
 vvar = max(real(exp(ln_var)),0);
 
