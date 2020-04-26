@@ -53,6 +53,10 @@ if isempty(probstruct.NoiseSigma)
             case 'hehi'     % High heteroskedastic noise
                 probstruct.NoiseSigma = 1;
                 probstruct.NoiseIncrement = 0.2;
+            otherwise
+                if probstruct.Noise(1) == 'n'
+                    probstruct.NoiseSigma = str2double(probstruct.Noise(2:end));
+                end
         end
         if isempty(probstruct.NoiseEstimate)
             probstruct.NoiseEstimate = [probstruct.NoiseSigma, 0.2];
