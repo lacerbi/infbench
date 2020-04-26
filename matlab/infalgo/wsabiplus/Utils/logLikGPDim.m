@@ -22,10 +22,6 @@ cholKxx = jitter_chol(Kxx);
 %logLik
 nll = (1/2)*2*sum(log(diag(cholKxx))) + 0.5*yy'*(cholKxx\(cholKxx' \ yy)) + (length(xx(:,1))/2)*log(2*pi)+ 0.5*sum((hyp - hypMu).^2./hypVar);
 
-if any(isnan(nll))
-    keyboard;
-end
-
 if nargout > 1
     dKxx{1} = 2*Kxx;
     for i = 2:length(hyp)
