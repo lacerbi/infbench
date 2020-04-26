@@ -143,7 +143,7 @@ switch lower(type)
 %                    case {'renewdefimiqrplus5longvpgps'}; defaults.color = [100 0 180]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = ':'; defaults.name = 'vbmc-imiqr';
 %                    case {'renewdefimiqrpluswup5noacq'}; defaults.color = [240 198 114]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '--'; defaults.name = 'vbmc-pron';
                     case {'renewdefmipluswup4gpsvp'}; defaults.color = [166,206,227]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-.'; defaults.name = 'vbmc-eig';
-                    case {'renewdefimiqrpluswup5noacq'}; defaults.color = [178,223,138]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '--'; defaults.name = 'vbmc-pron';
+                    case {'renewdefimiqrpluswup5noacq'}; defaults.color = [178,223,138]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-pron';
                     case {'renewdefimiqrplus5longvpgps'}; defaults.color = [31,120,180]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = ':'; defaults.name = 'vbmc-imiqr';
                         
                     otherwise
@@ -177,7 +177,7 @@ switch lower(type)
                     case {'search'}; defaults.color = [251 128 114]/255; defaults.marker = 'o'; defaults.name = 'wsabi-L'; defaults.linestyle = ':';
                     case {'mmsearch'}; defaults.color = [114 128 251]/255; defaults.marker = 's'; defaults.name = 'wsabi-M'; defaults.linestyle = ':';
                     % case 'actset'; defaults.color = [128 251 114]/255; defaults.marker = 'd';
-                    case {'ldet'}; defaults.color = [251 128 114]/255; defaults.marker = 'o'; defaults.name = 'wsabi-det'; defaults.linestyle = ':'; defaults.linewidth = 3;
+                    case {'ldet'}; defaults.color = [251 128 114]/255; defaults.marker = 'o'; defaults.name = 'wsabi-det'; defaults.linestyle = '--'; defaults.linewidth = 3;
                 end
 
             case 'bbq'
