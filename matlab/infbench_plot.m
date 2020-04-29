@@ -608,7 +608,7 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
             if options.AbsolutePlot
                 set(gca,'TickDir','out','TickLength',3*get(gca,'TickLength'));                
             else
-                set(gca,'TickDir','out','Yscale','log','TickLength',3*get(gca,'TickLength'));                
+                set(gca,'TickDir','out','Yscale','log','TickLength',3*get(gca,'TickLength'));
                 set(gca,'YMinorTick','off');
             end
             xstring = 'Function evaluations';            

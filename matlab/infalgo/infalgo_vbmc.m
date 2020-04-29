@@ -327,6 +327,7 @@ switch algoset
     case {267,'renewdefvarimiqrmixpluswup5vp'}; algoset = 'renewdefvarimiqrmixpluswup5vp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqrmix_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {268,'renewdefvarimiqrpluswup5fastfess'}; algoset = 'renewdefvarimiqrpluswup5fastfess'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSamplefESSThresh = 0.75;
 
+    case {270,'viqrnorminv'}; algoset = 'viqrnorminv';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.BoundedTransform = 'norminv';
         
         
 
