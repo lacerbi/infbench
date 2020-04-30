@@ -136,6 +136,7 @@ switch lower(type)
                         % VBMC with noisy functions
                     %case {'renewdefvarimiqrpluswup5vp'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-viqr';
                     case {'renewdefvarimiqrpluswup5fast'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-viqr';
+                    case {'viqrnorminv'}; defaults.color = [70 70 200]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-viqr (norminv)';
                     case {'newbase'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = '-';
 %                    case {'renewdefmipluswup4gpsvp'}; defaults.color = [180 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-.'; defaults.name = 'vbmc-eig';
                     case {'acqmidtstep1_100','ent2','renewdefnoise'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';

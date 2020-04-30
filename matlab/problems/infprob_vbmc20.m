@@ -43,7 +43,7 @@ switch prob
     case 'acerbidokka2018'
     case {'akrami2018','akrami2018b'}
     case 'goris2015b'
-        probstruct.OptimizeFirst = true;    % Run optimization
+        probstruct.OptimizeFirst = (D < 100);   % Run optimization
     case 'nnetcancer'
         probstruct.IntrinsicNoisy = true;
         probstruct.InferNoise = true;       % Noise is unknown

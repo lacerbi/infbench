@@ -328,6 +328,8 @@ switch algoset
     case {268,'renewdefvarimiqrpluswup5fastfess'}; algoset = 'renewdefvarimiqrpluswup5fastfess'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSamplefESSThresh = 0.75;
 
     case {270,'viqrnorminv'}; algoset = 'viqrnorminv';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.BoundedTransform = 'norminv';
+    case {271,'viqrstudent4'}; algoset = 'viqrstudent4';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.BoundedTransform = 'student4';
+    case {272,'viqr500'}; algoset = 'viqr500';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500;
         
         
 
