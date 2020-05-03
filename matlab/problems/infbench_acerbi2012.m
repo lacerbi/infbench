@@ -144,7 +144,8 @@ if isempty(x)
         
         switch n
 			case {1,101}
-                nid = 2;
+                nid = 1;
+                subjid = 2;
 				xmin = [0.090303792944178 0.0308760772459209 0.701460752877756 0.137368635088205 0.0100000000023283];
 				fval = -3839.17327095556;
 				xmin_post = [0.0903025324456394 0.0308781381463632 0.701464488980127 0.137366351298988 0.0100000000023283];
@@ -157,7 +158,7 @@ if isempty(x)
 
         % Read and preprocess data
         temp = load('acerbi2012internal.mat');
-        data = timer_loaddata(temp.acerbi2012time.exp3{nid});
+        data = timer_loaddata(temp.acerbi2012time.exp3{subjid});
         
         % Bin response data in 20 ms bins
         data.binsize = 0.02;
