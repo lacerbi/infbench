@@ -3,7 +3,7 @@ function probstruct = infprob_vbmc20(prob,subprob,noise,id,options)
 % Problem names (ordered)
 problist = {'wood2010','acerbidokka2018','price2018',...
     'krajbich2010','akrami2018','goris2015b','akrami2018b',...
-    'nnetcancer'};
+    'acerbi2012','nnetcancer'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
@@ -21,6 +21,8 @@ switch prob
         subprobString = ['S' num2str(D)];
     case 'goris2015b'
         subprobString = ['S' num2str(D)];        
+    case 'acerbi2012'
+        subprobString = ['S' num2str(D)];
     case 'nnetcancer'
         subprobString = ['D' num2str(D)];        
     otherwise
@@ -41,6 +43,7 @@ probstruct.PriorType = 'uniform';   % Use uniform prior
 switch prob
     case 'wood2010'
     case 'acerbidokka2018'
+    case 'acerbi2012'
     case {'akrami2018','akrami2018b'}
     case 'goris2015b'
         probstruct.OptimizeFirst = (D < 100);   % Run optimization
