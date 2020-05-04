@@ -447,3 +447,33 @@ end
 
 end
 
+function y = bsxfun_normpdf(x,mu,sigma)
+%BSXFUN_NORMPDF Vectorized normal probability density function (pdf).
+
+if isscalar(mu)
+    y = bsxfun(@rdivide, exp(-0.5*bsxfun(@rdivide, x - mu, sigma).^2), sigma)/sqrt(2*pi);
+elseif isscalar(sigma)
+    y = exp(-0.5*(bsxfun(@minus, x, mu)/sigma).^2)/(sigma*sqrt(2*pi));
+else
+    y = bsxfun(@rdivide, exp(-0.5*bsxfun(@rdivide, bsxfun(@minus, x, mu), sigma).^2), sigma)/sqrt(2*pi);
+end
+
+end
+
+
+function p = bsxfun_normcdf(x,mu,sigma)
+%BSXFUN_NORMCDF Vectorized normal cumulative distribution function (cdf).
+
+if isscalar(mu)
+    z = bsxfun(@rdivide, x-mu, sigma);
+elseif isscalar(sigma)
+    z = bsxfun(@minus, x, mu)./sigma;
+else
+    z = bsxfun(@rdivide, bsxfun(@minus, x, mu), sigma);
+end
+
+% Use the complementary error function, rather than .5*(1+erf(z/sqrt(2))), 
+% to produce accurate near-zero results for large negative x.
+p = 0.5 * erfc(-z ./ sqrt(2));
+
+end

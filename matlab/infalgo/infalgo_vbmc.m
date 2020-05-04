@@ -331,6 +331,7 @@ switch algoset
     case {271,'viqrstudent4'}; algoset = 'viqrstudent4';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.BoundedTransform = 'student4';
     case {272,'viqr500'}; algoset = 'viqr500';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500;
     case {273,'viqrnoroto'}; algoset = 'viqrnoroto';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
+    case {274,'viqrlaplace'}; algoset = 'viqrlaplace'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.GPHypSampler = 'laplace';
         
         
 

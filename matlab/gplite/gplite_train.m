@@ -65,6 +65,11 @@ TolOptMCMC = options.TolOptMCMC;
 
 %% Initialize inference of GP hyperparameters (bounds, priors, etc.)
 
+% If using Laplace method, perform at least one optimization
+if strcmpi(options.Sampler,'laplace')
+    Nopts = max(Nopts,1);
+end
+
 % Get covariance/noise/mean functions info
 [Ncov,covinfo] = gplite_covfun('info',X,covfun,[],y);
 [Nnoise,noiseinfo] = gplite_noisefun('info',X,noisefun,y,s2);
@@ -146,7 +151,7 @@ PUB = max(min(PUB,UB),LB);
 %% Hyperparameter optimization
 gptrain_options = optimoptions('fmincon','GradObj','on','Display','off');
 
-if Ns > 0
+if Ns > 0 && ~strcmpi(options.Sampler,'laplace')
     gptrain_options.TolFun = TolOptMCMC;  % Limited optimization
 else
     gptrain_options.TolFun = TolOpt;
@@ -404,6 +409,12 @@ if Ns > 0
             [samples,fvals,diagn] = ...
                 hmc2(gpsample_fun,hyp_start',sampleopts,@(hyp) gpgrad_fun(hyp,gpsample_fun));            
             hyp_prethin = samples';
+            
+        case 'laplace'
+            gpsample_fun = @(hyp_) gp_objfun(hyp_(:),gp,hprior,0,0);            
+            H = hessian(gpsample_fun,hyp_start');
+            hyp_prethin = mvnrnd(hyp_start',inv(H),Thin*Ns)';
+            logp_prethin = NaN(Thin*Ns,1);
             
         otherwise
             error('gplite_train:UnknownSampler', ...
