@@ -146,10 +146,10 @@ if isempty(x)
 			case {1,101}
                 nid = 1;
                 subjid = 2;
-				xmin = [0.090303792944178 0.0308760772459209 0.701460752877756 0.137368635088205 0.0100000000023283];
-				fval = -3839.17327095556;
-				xmin_post = [0.0903025324456394 0.0308781381463632 0.701464488980127 0.137366351298988 0.0100000000023283];
-				fval_post = -3836.24763989639;
+				xmin = [0.0903024950646795 0.0308776679681614 0.70145987368378 0.13736980468675 0.0100000000005821];
+				fval = -3839.17327065442;
+				xmin_post = [0.0903022675098327 0.0308786661764316 0.701457336964017 0.137370632316879 0.0100000000000091];
+				fval_post = -3836.24763972821;                
                 % R_max = 1.008. Ntot = 100000. Neff_min = 99708.6. Total funccount = 3680026.
                 Mean_mcmc = [0.0890758074614305 0.0309185988187783 0.700811450804311 0.136436862069944 0.0112507138405974];
                 Cov_mcmc = [5.39330986549628e-05 -6.90944778807207e-05 -5.35400856871312e-05 8.20759646123687e-05 -2.04318322512433e-07;-6.90944778807207e-05 0.000111128476396875 8.64379798221758e-05 -0.000116609982131014 1.45479712707741e-07;-5.35400856871312e-05 8.64379798221758e-05 0.000183262235207732 -0.000126424698905293 3.25061376990695e-07;8.20759646123687e-05 -0.000116609982131014 -0.000126424698905293 0.000157649353938041 -3.55342756685013e-07;-2.04318322512433e-07 1.45479712707741e-07 3.25061376990695e-07 -3.55342756685013e-07 1.4415741906128e-06];
@@ -297,8 +297,8 @@ end
 function ll = timer_loglike(theta,data)
 
 MAXSD = 5;
-Ns = 501;
-Nx = 501;
+Ns = 101;
+Nx = 401;
 
 ws = theta(1);
 wm = theta(2);
@@ -366,8 +366,8 @@ end
 function R = timer_gendata(theta,idx,data)
 
 MAXSD = 5;
-Nx = 1001;
-Ns = 501;
+Nx = 401;
+Ns = 101;
 
 ws = theta(1);
 wm = theta(2);
@@ -419,7 +419,7 @@ for iStim = 1:Nstim
 %     post = bsxfun(@times,like,prior);
 %     post = bsxfun(@rdivide,post,qtrapz(post,1)*ds);    
 %     post_mean = qtrapz(bsxfun(@times,post,srange),1)'*ds;
-    s_hat_x = interp1(xrange,s_hat,xx);    
+    s_hat_x = lininterp1(xrange,s_hat,xx);    
     
     sigma_m = wm*s_hat_x;
     
@@ -475,5 +475,38 @@ end
 % Use the complementary error function, rather than .5*(1+erf(z/sqrt(2))), 
 % to produce accurate near-zero results for large negative x.
 p = 0.5 * erfc(-z ./ sqrt(2));
+
+end
+
+function Vout = lininterp1(X,V,Xq)
+
+if isvector(X); X = X(:); end
+if isvector(V); V = V(:); end
+
+% Gets the x spacing
+dx = 1./(X(2,:)-X(1,:));  % one over to perform divide only once
+Xq = bsxfun(@minus,Xq,X(1,:));      % subtract minimum of x
+
+Xqi = bsxfun(@times,Xq,dx)+1;          % indices of nearest-lower-neighbors
+flag = Xqi<1 | Xqi>size(X,1) | isnan(Xqi);
+                                % finds indices out of bounds
+Xqi = floor(Xqi);
+                                
+V = [V; NaN(1, size(V,2))];
+Xqi(flag) = size(V,1)-1;
+
+delta = Xqi - bsxfun(@times,Xq,dx);
+
+linind1 = bsxfun(@plus, Xqi, size(V,1)*(0:size(V,2)-1));
+linind2 = bsxfun(@plus, Xqi + 1, size(V,1)*(0:size(V,2)-1));
+
+out1 = reshape(V(linind1),size(Xq));
+out2 = reshape(V(linind2),size(Xq));
+
+out1(isnan(out1)) = 0;
+out2(isnan(out2)) = 0;
+
+Vout = bsxfun(@times,delta,out1) + bsxfun(@times,1-delta,out2);
+Vout(flag) = NaN;
 
 end
