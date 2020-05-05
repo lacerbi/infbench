@@ -86,6 +86,15 @@ else
 end
 
 % Hyperparameters
+if isstruct(hyp0) && isfield(hyp0,'trinfo') && isfield(hyp0,'w')
+    % Initialize with variational posterior over hyperparameters
+    vp = hyp0;
+    Ninit = 0;
+    Nopts = 0;
+    hyp0 = [];
+else
+    vp = [];
+end
 if isempty(hyp0); hyp0 = zeros(Ncov+Nnoise+Nmean+Noutwarp,1); end
 Nhyp = size(hyp0,1);
 
@@ -279,7 +288,7 @@ for iTrain = 1:Nopts
 %                 fmincon(gpoptimize_fun,hyp_temp,[],[],[],[],LB,UB,[],gptrain_options);
 %             toc
 %         end        
-        [hyp(:,iTrain),nll(iTrain)] = ...
+        [hyp(:,iTrain),nll(iTrain),~,opt_output(iTrain)] = ...
             fmincon(gpoptimize_fun,hyp(:,iTrain),[],[],[],[],LB,UB,[],gptrain_options);
     catch
         % Could not optimize, keep starting point
@@ -321,6 +330,32 @@ if Ns > 0
                 slicesamplebnd(gpsample_fun,hyp_start',Ns_eff,Widths,LB,UB,sampleopts);
             hyp_prethin = samples';
             logp_prethin = fvals;
+            % output
+            
+        case 'npv'
+            gpsample_fun = @(hyp_) gp_objfun(hyp_(:),gp,hprior,0,1);
+            
+            npvopts.SpecifyHessianDiag = false;
+            npvopts.TolFun = 1e-2;
+%            npvopts.Optimizer = 'adam';
+            npvopts.Optimizer = 'fmincon';
+            npvopts.VariationalBoosting = true;
+            npvopts.MaxIter = 2;
+            
+            tic
+            if isempty(vp)
+                [vp,elbo] = npvlite(gpsample_fun,hyp_start',LB,UB,npvopts);
+            else
+%                npvopts.CoordinateAscent = true;
+%                npvopts.VariationalBoosting = false;
+%                npvopts.MaxIter = 3;                
+                [vp,elbo] = npvlite(gpsample_fun,vp,LB,UB,npvopts);                
+            end
+            toc
+
+            samples = bsxfun(@max,bsxfun(@min,vbmc_rnd(vp,Ns_eff),UB),LB);
+            hyp_prethin = samples';
+            logp_prethin = NaN(Ns_eff,1);
                         
         case 'slicelite'
             gpsample_fun = @(hyp_) gp_objfun(hyp_(:),gp,hprior,0,1);
@@ -411,10 +446,10 @@ if Ns > 0
             hyp_prethin = samples';
             
         case 'laplace'
-            gpsample_fun = @(hyp_) gp_objfun(hyp_(:),gp,hprior,0,0);            
-            H = hessian(gpsample_fun,hyp_start');
-            hyp_prethin = mvnrnd(hyp_start',inv(H),Thin*Ns)';
-            logp_prethin = NaN(Thin*Ns,1);
+            %gpsample_fun = @(hyp_) gp_objfun(hyp_(:),gp,hprior,0,0);            
+            %H = hessian(gpsample_fun,hyp_start');
+            %hyp_prethin = mvnrnd(hyp_start',inv(H),Thin*Ns)';
+            %logp_prethin = NaN(Thin*Ns,1);
             
         otherwise
             error('gplite_train:UnknownSampler', ...
@@ -447,6 +482,7 @@ if nargout > 2
     output.hyp_prethin = hyp_prethin;
     output.logp = logp;
     output.logp_prethin = logp_prethin;
+    if strcmpi(options.Sampler,'npv'); output.hyp_vp = vp; end
 end
 
 
