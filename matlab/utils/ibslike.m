@@ -67,8 +67,8 @@ function [nlogL,nlogLvar,output] = ibslike(fun,params,respMat,designMat,options,
 %   Authors (copyright): Luigi Acerbi and Bas van Opheusden, 2020
 %   e-mail: luigi.acerbi@{gmail.com,nyu.edu}, basvanopheusden@nyu.edu
 %   URL: http://luigiacerbi.com
-%   Version: 0.901
-%   Release date: Jan 22, 2020
+%   Version: 0.91
+%   Release date: May 06, 2020
 %   Code repository: https://github.com/lacerbi/ibs
 %--------------------------------------------------------------------------
 
@@ -107,58 +107,49 @@ for f = fields(defopts)'
     end
 end
 
+Ntrials = size(respMat,1);
+
 % Add hard-coded options
-options.MaxSamples      = 250;          % Maximum number of samples per function call
-options.AccelerationThreshold = 0.1;    % Keep accelerating until threshold is passed (in s)
-options.VectorizedThreshold  = 0.1;     % Max threshold for using vectorized algorithm (in s)
-options.MaxMem          = 1e6;          % Maximum number of samples for vectorized implementation
+options.MaxSamples = 1e4;                       % Maximum # of samples per function call
+options.AccelerationThreshold = 0.1;            % Keep accelerating until threshold is passed (in s)
+options.VectorizedThreshold  = 0.1;             % Max threshold for using vectorized algorithm (in s)
+options.MaxMem = 1e6;                           % Maximum number of samples for vectorized implementation
+options.MaxMem = max(min(Ntrials,1e4),10)*100;  % Maximum number of samples for vectorized implementation
 
 % NSAMPLESPERCALL should be a scalar integer
 if ~isnumeric(options.NsamplesPerCall) || ~isscalar(options.NsamplesPerCall)
     error('ibslike:NsamplesPerCall','OPTIONS.NsamplesPerCall should be a scalar integer.');
 end
 
-% NEGLOGLIKETHRESHOLD should be a scalar greater than 0 (or Inf)
+% ACCELERATION should be a scalar equal or greater than 1
 if ~isnumeric(options.Acceleration) || ~isscalar(options.Acceleration) || ...
         options.Acceleration < 1
     error('ibslike:Acceleration','OPTIONS.Acceleration should be a scalar equal or greater than one.');
 end
 
-% ACCELERATION should be a scalar equal or greater than 1
+% NEGLOGLIKETHRESHOLD should be a scalar greater than 0 (or Inf)
 if ~isnumeric(options.NegLogLikeThreshold) || ~isscalar(options.NegLogLikeThreshold) || ...
         options.NegLogLikeThreshold <= 0
     error('ibslike:NegLogLikeThreshold','OPTIONS.NegLogLikeThreshold should be a positive scalar (including Inf).');
 end
 
-Ntrials = size(respMat,1);
 Trials = (1:Ntrials)';
 funcCount = 0;
 
 simdata = []; elapsed_time = [];
 if ischar(options.Vectorized) && options.Vectorized(1) == 'a'
-    if isfinite(options.NegLogLikeThreshold)
-        vectorized_flag = false;
-    else
-        % First full simulation to determine computation time
-        fun_clock = tic;
-        if isempty(designMat)    % Pass only trial indices
-            simdata = fun(params,Trials(:),varargin{:});
-        else                    % Pass full design matrix per trial
-            simdata = fun(params,designMat(Trials(:),:),varargin{:});   
-        end
-        elapsed_time = toc(fun_clock);
-        vectorized_flag = elapsed_time < options.VectorizedThreshold;
-        funcCount = 1;
+    % First full simulation to determine computation time
+    fun_clock = tic;
+    if isempty(designMat)    % Pass only trial indices
+        simdata = fun(params,Trials(:),varargin{:});
+    else                    % Pass full design matrix per trial
+        simdata = fun(params,designMat(Trials(:),:),varargin{:});   
     end
+    elapsed_time = toc(fun_clock);
+    vectorized_flag = elapsed_time < options.VectorizedThreshold;
+    funcCount = 1;
 else
-    if options.Vectorized
-        if isfinite(options.NegLogLikeThreshold)
-            error('ibslike:UnsupportedVectorized','Vectorized sampling does not support negative log likelihood thresholding.');
-        end
-        vectorized_flag = true;
-    else
-        vectorized_flag = false;
-    end
+    vectorized_flag = logical(options.Vectorized);
 end
 
 if vectorized_flag
@@ -206,19 +197,21 @@ Trials = (1:Ntrials)';
 Ns = 0;
 fc = 0;
 
-BufferSize = 500;   % Initial size of hit matrix
+Psi_tab = [];   % Empty PSI table
 
-% A "hit" is a sample draw from the model that matches the data
-hits = NaN([BufferSize,Ntrials]);
+% Empty matrix of K values (samples-to-hit) for each repeat for each trial
+K_mat = zeros([max(options.Nreps),Ntrials]);
 
-% Set the first row to one -- these are not real hits, will be ignored 
-% later, but it's necessary for how the run lengths K are computed 
-hits(1,:) = 1;
+% Matrix of rep counts
+K_place0 = repmat((1:size(K_mat,1))',[1,Ntrials]);
 
-offset = 1;
-Nhits = zeros(Ntrials,1);
-targetHits = options.Nreps(:).*ones(Ntrials,1);
-lastsample = zeros(Ntrials,1);
+% Current rep being sampled for each trial
+Ridx = ones(1,Ntrials);
+
+% Current vector of "open" K values per trial (not reached a "hit" yet)
+K_open = zeros(1,Ntrials);
+
+targetHits = options.Nreps(:)'.*ones(1,Ntrials);
 MaxIter = options.MaxIter*max(options.Nreps);
 
 % Starting samples
@@ -230,12 +223,14 @@ end
 
 for iter = 1:MaxIter
     % Pick trials that need more hits, sample multiple times
-    T = Trials(Nhits < targetHits);
+    T = Trials(Ridx <= targetHits);
     if isempty(T); break; end
+    
+    Ttrials = numel(T);    % Number of trials under consideration
         
     % With accelerated sampling, might request multiple samples at once
     Nsamples = min(options.MaxSamples,max(1,round(samples_level)));
-    MaxSamples = ceil(options.MaxMem / numel(T));
+    MaxSamples = ceil(options.MaxMem / Ttrials);
     Nsamples = min(Nsamples, MaxSamples);
     Tmat = repmat(T,[1,Nsamples]);
     
@@ -252,27 +247,82 @@ for iter = 1:MaxIter
             simdata = fun(params,designMat(Tmat(:),:),varargin{:});   
             fc = fc + 1;
         end
-        elapsed_time = toc(fun_clock);        
+        elapsed_time = toc(fun_clock);
     end
-    Ns = Ns + numel(T);
+    Ns = Ns + Ttrials;
     
     % Accelerated sampling
     if options.Acceleration > 0 && elapsed_time < options.AccelerationThreshold
         samples_level = samples_level*options.Acceleration;
     end
     
-    % Add new hits to old ones
-    hits_temp = all(respMat(Tmat(:),:) == simdata,2);    
-    hits_new = reshape(hits_temp,size(Tmat));
-    Nhits(T) = Nhits(T) + sum(hits_new,2);
-    rows = [1,Nsamples]+offset;     % Rows in hits matrix
-    if rows(2) > size(hits,1)       % Extend hits matrix if needed
-        hits = [hits;NaN([max(rows(2)-Nsamples,BufferSize),Ntrials])];
-    end
-    hits(rows(1):rows(2),T) = hits_new';
-    offset = offset + Nsamples;
-    lastsample(T) = offset;
+    % Check new "hits"
+    hits_temp = all(respMat(Tmat(:),:) == simdata,2);
     
+    % Build matrix of new hits (sandwich with buffer of hits, then removed)
+    hits_new = [ones(1,Ttrials);reshape(hits_temp,size(Tmat))';ones(1,Ttrials)];
+    
+    % Extract matrix of Ks from matrix of hits for this iteration
+    h = size(hits_new,1);
+    
+    % This is the comprehensible version:
+    %
+    %   for iTrial = 1:Ntrials
+    %       index = find(hits_new(iTrial,:),targetHits(iTrial));
+    %       K = diff([0 index]);
+    %       logL(iTrial) = sum(Ktab(K))/numel(index);
+    %   end
+    
+    % From now on it is going to be painful (all vectorized for speed)
+    list = find(hits_new(:) == 1)-1;
+    row = floor(list/h)+1;
+    col = mod(list,h)+1;
+    delta = diff([col;1]);
+    remidx = delta <= 0;
+    delta(remidx) = [];
+    row(remidx) = [];
+    indexcol = find(diff([0;row]));
+    col = 1 + (1:numel(row))' - indexcol(row);
+    K_iter = zeros(size(T,1),max(col));
+    K_iter(row + (col-1)*size(K_iter,1)) = delta;
+    
+    % Add still-open K to first column
+    K_iter(:,1) = K_open(T)' + K_iter(:,1);
+        
+    % Find last K position for each trial
+    [~,idx_last] = min([K_iter,zeros(Ttrials,1)],[],2);
+    idx_last = idx_last - 1;
+    ii = sub2ind(size(K_iter),(1:Ttrials)',idx_last);
+    
+    % Subtract one hit from last K (it was added)
+    K_iter(ii) = K_iter(ii) - 1;
+    K_open(T) = K_iter(ii)';
+    
+    % For each trial, ignore entries of K_iter past max # of reps
+    idx_mat = bsxfun(@plus,Ridx(T)',repmat(0:size(K_iter,2)-1,[Ttrials,1]));
+    K_iter(idx_mat > (options.Nreps)) = 0;
+    
+    % Find last K position for each trial again
+    [~,idx_last2] = min([K_iter,zeros(Ttrials,1)],[],2);
+    idx_last2 = idx_last2 - 1;
+        
+    % Add current K to full K matrix    
+    K_iter_place = bsxfun(@ge,K_place0(:,1:Ttrials),Ridx(T)) & bsxfun(@le,K_place0(:,1:Ttrials),Ridx(T) + idx_last2'- 1);
+    K_place = false(size(K_place0));
+    K_place(:,T) = K_iter_place;
+    Kt = K_iter';    
+    K_mat(K_place) = Kt(Kt > 0);
+    Ridx(T) = Ridx(T) + idx_last' - 1;
+    
+    % Compute log-likelihood only if requested
+    if isfinite(options.NegLogLikeThreshold)        
+        K_max = max(K_open(T));
+        if K_max > numel(Psi_tab)   % Fill digamma function table
+            Psi_tab = [Psi_tab, -(psi(numel(Psi_tab)+1:K_max)' - psi(1))];
+        end
+        LL_temp = Psi_tab(K_open(T));
+        Ridx(T) = Ridx(T) + (LL_temp > options.NegLogLikeThreshold);        
+    end
 end
 
 if ~isempty(T)
@@ -281,10 +331,18 @@ if ~isempty(T)
 end
     
 % Log likelihood estimate per trial and run lengths K for each repetition
-Nreps = min(targetHits,Nhits);
-[nlogL,K] = estimateLog(hits(1:offset,:),Nreps);
+Nreps = options.Nreps;
+K_max = max(K_mat(:));
+if K_max > numel(Psi_tab)   % Fill digamma function table
+    Psi_tab = [Psi_tab, -(psi(numel(Psi_tab)+1:K_max)' - psi(1))];
+end
+LL = Psi_tab(K_mat)';
+nlogL = -sum(LL,2)./Nreps;
+K = K_mat';
 
 end
+
+
 
 %--------------------------------------------------------------------------
 function [nlogL,K,Nreps,Ns,fc] = loop_ibs_sampling(fun,params,respMat,designMat,simdata0,elapsed_time0,options,varargin)
@@ -353,50 +411,6 @@ end
     
 nlogL = mean(nlogL,2);
 Nreps = options.Nreps;
-
-end
-
-%--------------------------------------------------------------------------
-function [nlogL,K] = estimateLog(hitsmat,Nreps)
-%ESTIMATELOG Estimate negative log-likelihood from matrix of hits.
-%
-%   [NLOGL,K] = ESTIMATELOG(HITSMAT,NREPS) estimates negative log-likelihood
-%   via inverse binomial sampling using matrix of hits/misses HITSMAT.
-%   HITSMAT is a binary matrix where each row is a trial, 0 stand for
-%   misses and 1 for hits. NREPS is an array of requested number of
-%   independent estimates per trial. NLOGL is a column array of negative 
-%   log-likelihood estimates per trial. K is a matrix where each row is a 
-%   trial and each column contains the number of samples needed to achieve 
-%   a hit for that estimate. The columns of K are padded with NaNs if NREPS 
-%   is unequal between trials.
-
-[h,Ntrials] = size(hitsmat);
-
-% This is the comprehensible version:
-%
-%   for iTrial = 1:Ntrials
-%       index = find(hits(iTrial,:),targetHits(iTrial));
-%       K = diff([0 index]);
-%       logL(iTrial) = sum(Ktab(K))/numel(index);
-%   end
-
-% This is the efficient one, without for loops:
-list = find(hitsmat(:) == 1)-1;
-row = floor(list/h)+1;
-col = mod(list,h)+1;
-delta = diff([col;1]);
-remidx = delta <= 0;
-delta(remidx) = [];
-row(remidx) = [];
-indexcol = find(diff([0;row]));
-col = 1 + (1:numel(row))' - indexcol(row);
-K = ones(Ntrials,max(col));
-K(row + (col-1)*size(K,1)) = delta;
-Ktab = -(psi(1:max(K(:)))' - psi(1));   % Precompute digamma function   
-mask = bsxfun(@le,repmat(1:size(K,2),[Ntrials,1]),Nreps);
-K = max(mask.*K,1);
-LL = Ktab(K);
-nlogL = -sum(mask.*LL,2)./Nreps;
 
 end
 

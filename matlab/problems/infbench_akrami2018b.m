@@ -264,15 +264,10 @@ else
         LL = akrami2018_llfun(x_orig,infprob.Data);
         y_std = 0;
     else        
-        Nibs = infprob.Data.IBSNreps/50;
-        IBSNreps = 50; % Split to avoid memory errors (should fix ibslike)
+        IBSNreps = infprob.Data.IBSNreps;
         ibs_opts = struct('Nreps',IBSNreps,...
-            'ReturnPositive',true,'ReturnStd',false);        
-        for iter = 1:Nibs
-            [LL(iter),y_var(iter)] = ibslike(@akrami2018_gendata,x_orig,infprob.Data.y,[],ibs_opts,infprob.Data);
-        end
-        LL = mean(LL);
-        y_std = sqrt(mean(y_var)/Nibs);
+            'ReturnPositive',true,'ReturnStd',true);        
+        [LL,y_std] = ibslike(@akrami2018_gendata,x_orig,infprob.Data.y,[],ibs_opts,infprob.Data);
     end
     y = LL + dy;
     
