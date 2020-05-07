@@ -95,9 +95,17 @@ if nargout <= 1 && (nargin == 0 || (nargin == 1 && ischar(fun) && strcmpi(fun,'d
     return;
 end
 
-%% If called with one argument which is 'test', run test
-if nargout <= 1 && nargin == 1 && ischar(fun) && strcmpi(fun,'test')
-    nlogL = runtest();
+%% If called with the first argument as 'test', run test
+if ischar(fun) && strcmpi(fun,'test')
+    if nargin < 2; options = []; else; options = params; end
+    figure; 
+    subplot(1,3,1);
+    exitflag(1) = runtest1(options);
+    subplot(1,3,2);
+    exitflag(2) = runtest2(options);
+    subplot(1,3,3);
+    exitflag(3) = runtest3(options);
+    nlogL = any(exitflag);
     return;
 end
 
@@ -168,9 +176,6 @@ end
 
 % OUTPUT structure with additional information
 if nargout > 2
-    % output.Hits = hits;
-    % output.TrialCount = sum(~isnan(hits(:)));
-    % output.TargetHits = targetHits;
     output.funcCount = funcCount;
     output.NsamplesPerTrial = Ns/Ntrials;
     output.nlogL_trials = nlogL;
@@ -261,19 +266,12 @@ for iter = 1:MaxIter
     
     % Build matrix of new hits (sandwich with buffer of hits, then removed)
     hits_new = [ones(1,Ttrials);reshape(hits_temp,size(Tmat))';ones(1,Ttrials)];
+            
+    % Warning: from now on it's going to be incomprehensible 
+    % (all vectorized for speed)
     
     % Extract matrix of Ks from matrix of hits for this iteration
     h = size(hits_new,1);
-    
-    % This is the comprehensible version:
-    %
-    %   for iTrial = 1:Ntrials
-    %       index = find(hits_new(iTrial,:),targetHits(iTrial));
-    %       K = diff([0 index]);
-    %       logL(iTrial) = sum(Ktab(K))/numel(index);
-    %   end
-    
-    % From now on it is going to be painful (all vectorized for speed)
     list = find(hits_new(:) == 1)-1;
     row = floor(list/h)+1;
     col = mod(list,h)+1;
@@ -285,6 +283,15 @@ for iter = 1:MaxIter
     col = 1 + (1:numel(row))' - indexcol(row);
     K_iter = zeros(size(T,1),max(col));
     K_iter(row + (col-1)*size(K_iter,1)) = delta;
+
+    % This is the comprehensible version that we want to get to:
+    %
+    %   for iTrial = 1:Ntrials
+    %       index = find(hits_new(iTrial,:),targetHits(iTrial));
+    %       K = diff([0 index]);
+    %       logL(iTrial) = sum(Ktab(K))/numel(index);
+    %   end
+    
     
     % Add still-open K to first column
     K_iter(:,1) = K_open(T)' + K_iter(:,1);
@@ -314,14 +321,17 @@ for iter = 1:MaxIter
     K_mat(K_place) = Kt(Kt > 0);
     Ridx(T) = Ridx(T) + idx_last' - 1;
     
-    % Compute log-likelihood only if requested
-    if isfinite(options.NegLogLikeThreshold)        
-        K_max = max(K_open(T));
-        if K_max > numel(Psi_tab)   % Fill digamma function table
-            Psi_tab = [Psi_tab, -(psi(numel(Psi_tab)+1:K_max)' - psi(1))];
+    % Compute log-likelihood only if requested for thresholding
+    if isfinite(options.NegLogLikeThreshold)
+        Rmin = min(Ridx(T));    % Find repeat still ongoing
+        if Rmin > size(K_mat,1); continue; end
+        [LL_temp,Psi_tab] = get_LL_from_K(Psi_tab,K_mat(Rmin,:));
+        nLL_temp = -sum(LL_temp,2);
+        if nLL_temp > options.NegLogLikeThreshold
+            idx_move = Ridx == Rmin;
+            Ridx(idx_move) = Rmin+1;
+            K_open(idx_move) = 0;
         end
-        LL_temp = Psi_tab(K_open(T));
-        Ridx(T) = Ridx(T) + (LL_temp > options.NegLogLikeThreshold);        
     end
 end
 
@@ -331,13 +341,9 @@ if ~isempty(T)
 end
     
 % Log likelihood estimate per trial and run lengths K for each repetition
-Nreps = options.Nreps;
-K_max = max(K_mat(:));
-if K_max > numel(Psi_tab)   % Fill digamma function table
-    Psi_tab = [Psi_tab, -(psi(numel(Psi_tab)+1:K_max)' - psi(1))];
-end
-LL = Psi_tab(K_mat)';
-nlogL = -sum(LL,2)./Nreps;
+Nreps = sum(K_mat > 0,1)';
+[LL_mat,Psi_tab] = get_LL_from_K(Psi_tab,K_mat);
+nlogL = sum(-LL_mat',2)./Nreps;
 K = K_mat';
 
 end
@@ -351,17 +357,16 @@ Ntrials = size(respMat,1);
 Trials = (1:Ntrials)';
 MaxIter = options.MaxIter;
 
-nlogL = NaN(Ntrials,options.Nreps);
 K = NaN(Ntrials,options.Nreps);
 Ns = 0;
 fc = 0;
+Psi_tab = [];
 
 for iRep = 1:options.Nreps
     
     offset = 1;
-    nlogL_sum = 0;
-    
     hits = zeros(Ntrials,1);
+    
     for iter = 1:MaxIter
         % Pick trials that need more hits, sample multiple times
         T = Trials(hits < 1);
@@ -381,25 +386,18 @@ for iRep = 1:options.Nreps
         hits_new = all(respMat(T(:),:) == simdata,2);    
         hits(T) = hits(T) + hits_new;
         
-        K(T(hits_new),iRep) = offset; 
-        nlogLs = (psi(K(T(hits_new),iRep)) - psi(1));
-        
-        nlogL(T(hits_new),iRep) = nlogLs;        
-        nlogL_sum = nlogL_sum + sum(nlogLs);
-        
+        K(T(hits_new),iRep) = offset;        
         offset = offset + 1;
         
         % Terminate if negative log likelihood is above a given threshold
-        if nlogL_sum > options.NegLogLikeThreshold
-            T = Trials(hits < 1);
-            if ~isempty(T)
-                %K(T(hits_new),iRep) = offset; 
-                %nlogL(T(hits_new),iRep) = psi(K(T(hits_new),iRep)) - psi(1);
-                K(T,iRep) = offset;
-                nlogL(T,iRep) = psi(K(T,iRep)) - psi(1);
+        if isfinite(options.NegLogLikeThreshold)
+            K(hits < 1,iRep) = offset;
+            [LL_mat,Psi_tab] = get_LL_from_K(Psi_tab,K(:,iRep));
+            nlogL_sum = -sum(LL_mat,1);            
+            if nlogL_sum > options.NegLogLikeThreshold
+                T = [];
+                break;
             end
-            T = [];
-            break;
         end
     end    
 end
@@ -409,13 +407,93 @@ if ~isempty(T)
         'Maximum number of iterations reached and algorithm did not converge. Check FUN and DATA.');
 end
     
-nlogL = mean(nlogL,2);
 Nreps = options.Nreps;
+[LL_mat,Psi_tab] = get_LL_from_K(Psi_tab,K);
+nlogL = sum(-LL_mat,2)./Nreps;
+
+end
+
+
+%--------------------------------------------------------------------------
+function [LL_mat,Psi_tab] = get_LL_from_K(Psi_tab,K_mat)
+%GET_LL_FROM_K Convert matrix of K values into log-likelihoods.
+
+K_max = max(1,max(K_mat(:)));
+if K_max > numel(Psi_tab)   % Fill digamma function table
+    Psi_tab = [Psi_tab; (psi(1) - psi(numel(Psi_tab)+1:K_max)')];
+end
+LL_mat = Psi_tab(max(1,K_mat));
 
 end
 
 %--------------------------------------------------------------------------
-function exitflag = runtest()
+function exitflag = runtest1(options)
+
+Nreps = 1e3;
+RMSE_tol = 2/sqrt(Nreps);
+
+% Binomial probability model
+p_model = exp(linspace(log(1e-3),log(1),10));
+fun = @(x,dmat) rand(size(dmat)) < x;   % Simulating function
+rmat = fun(1,NaN);
+
+fprintf('\n');
+fprintf('TEST 1: Using IBS to compute log(p) of Bernoulli distributions with %d repeats.\n',Nreps);
+fprintf('We consider p = %s.\n',mat2str(p_model,3));
+
+options.Nreps = Nreps;
+options.NegLogLikeThreshold = Inf;
+
+nlogL = zeros(1,numel(p_model));
+nlogLvar = zeros(1,numel(p_model));
+for iter = 1:numel(p_model)
+    [nlogL(iter),nlogLvar(iter)] = ibslike(fun,p_model(iter),rmat,[],options);
+end
+
+% We expect the true value to be almost certainly (> 99.99%) in this range
+LL_min = (-nlogL - 4*sqrt(nlogLvar));
+LL_max = (-nlogL + 4*sqrt(nlogLvar));
+
+exitflag = any(log(p_model) < LL_min) | any(log(p_model) > LL_max);
+
+rmse = sqrt(mean((-nlogL - log(p_model)).^2));
+fprintf('Average RMSE of log(p) estimates across p: %.4f.\n',rmse);
+
+exitflag = exitflag | (rmse > RMSE_tol);
+
+if exitflag
+    fprintf('Test FAILED. Something might be wrong.\n');    
+else
+    fprintf('Test PASSED. IBS estimates are calibrated and close to ground truth.\n');    
+end
+
+% Plot figure
+xx = log(p_model);
+h(1) = plot(xx,xx,'k-','LineWidth',2); hold on;
+
+yy = -nlogL;
+xxerr = [xx, fliplr(xx)];
+yyerr_down = yy - 1.96*sqrt(nlogLvar);
+yyerr_up = yy + 1.96*sqrt(nlogLvar);
+yyerr = [yyerr_down, fliplr(yyerr_up)];
+fill(xxerr, yyerr,'b','FaceAlpha',0.5,'LineStyle','none'); hold on;
+h(2) = plot(xx,yy,'b-','LineWidth',2); hold on;
+
+box off;
+set(gca,'TickDir','out');
+set(gcf,'Color','w');
+xlabel('True log(p)');
+ylabel('Estimated log(p)')
+%xlim([-5 5]);
+hl = legend(h,'True log(p)','IBS estimate (95% CI)');
+set(hl,'Location','NorthWest','Box','off');
+title('IBS estimation test');
+
+end
+
+
+%--------------------------------------------------------------------------
+function exitflag = runtest2(options)
 
 % Binomial probability model
 Ntrials = 100;                  
@@ -424,10 +502,17 @@ p_model = 0.9*rand() + 0.05;            % Model probability
 fun = @(x,dmat) rand(size(dmat)) < x;   % Simulating function
 Nexps = 2e3;
 
+options.NegLogLikeThreshold = Inf;
+
+fprintf('\n');
+fprintf('TEST 2: Using IBS to compute the log-likelihood of a binomial distribution.\n');
+fprintf('Parameters: p_true=%.2g, p_model=%.2g, %d trials per experiment.\n',p_true,p_model,Ntrials);
+fprintf('The distribution of z-scores should approximate a standard normal distribution (mean 0, SD 1).\n');
+
 zscores = zeros(1,Nexps);
 for iter = 1:Nexps
     rmat = fun(p_true,NaN(Ntrials,1));            % Generate data
-    [nlogL,nlogLvar] = ibslike(fun,p_model,rmat);
+    [nlogL,nlogLvar] = ibslike(fun,p_model,rmat,[],options);
     nlogL_exact = -log(p_model)*sum(rmat == 1) - log(1-p_model)*sum(rmat == 0);
     zscores(iter) = (nlogL_exact - nlogL)/sqrt(nlogLvar);
 end
@@ -447,25 +532,98 @@ ylabel('pdf')
 xlim([-5 5]);
 hl = legend(h,'z-scores histogram','expected pdf');
 set(hl,'Location','NorthEast','Box','off');
-
-fprintf('\n');
-fprintf('Using IBS to compute the log-likelihood of a binomial distribution.\n');
-fprintf('Parameters: p_true=%.2g, p_model=%.2g, %d trials per experiment.\n',p_true,p_model,Ntrials);
-fprintf('The distribution of z-scores should approximate a standard normal distribution (mean 0, SD 1).\n');
+title('Calibration test');
 
 exitflag = abs(mean(zscores)) > 0.15 || abs(std(zscores) - 1) > 0.1;
 
-fprintf('\n');
+fprintf('Distribution of z-scores (%d experiments). Mean: %.4g. Standard deviation: %.4g.\n',Nexps,mean(zscores),std(zscores));
 if exitflag
     fprintf('Test FAILED. Something might be wrong.\n');    
 else
     fprintf('Test PASSED. We verified that IBS is unbiased (~zero mean) and calibrated (SD ~1).\n');
 end
-fprintf('Distribution of z-scores (%d experiments). Mean: %.4g. Standard deviation: %.4g.\n',Nexps,mean(zscores),std(zscores));
-fprintf('\n');
-
 
 end
+
+%--------------------------------------------------------------------------
+function exitflag = runtest3(options)
+
+Nreps = 100;
+RMSE_tol = 4/sqrt(Nreps);
+
+% Binomial probability model
+p_model = exp(linspace(log(1e-3),log(0.1),10));
+fun = @(x,dmat) rand(size(dmat)) < x;   % Simulating function
+rmat = fun(1,NaN);
+thresh = -log(0.01);
+p_target = max(p_model,exp(-thresh));
+
+fprintf('\n');
+fprintf('TEST 3: Log-likelihood thresholding at log(p) = %.3f.\n',-thresh);
+fprintf('Using IBS to compute thresholded log(p) of Bernoulli distributions with %d repeats.\n',Nreps);
+fprintf('We consider p = %s.\n',mat2str(p_model,3));
+
+options.Nreps = Nreps;
+options.NegLogLikeThreshold = thresh;
+options.Acceleration = 1;
+
+nlogL = zeros(1,numel(p_model));
+nlogLvar = zeros(1,numel(p_model));
+for iter = 1:numel(p_model)
+    [nlogL(iter),nlogLvar(iter)] = ibslike(fun,p_model(iter),rmat,[],options);
+end
+
+% We expect the true value to be almost certainly (> 99.99%) in this range
+LL_min = (-nlogL - 4*sqrt(nlogLvar));
+LL_max = (-nlogL + 4*sqrt(nlogLvar));
+
+% We expect the estimates to be (almost) correct away from the threshold
+idx = log(p_model) > -thresh*0.75;
+exitflag = any(log(p_model(idx)) < LL_min(idx)) | any(log(p_model(idx)) > LL_max(idx));
+
+% We expect the estimates to be above the true value below the threshold
+LL_thresh = (-nlogL - sqrt(nlogLvar));
+idx_below = log(p_model) < -thresh;
+exitflag = exitflag | any(log(p_model(idx_below)) > LL_thresh(idx_below));
+% exitflag = any(log(p_target) < LL_min) | any(log(p_target) > LL_max);
+
+rmse = sqrt(mean((-nlogL(idx) - log(p_target(idx))).^2));
+fprintf('Average RMSE of log(p) estimates across p: %.4f.\n',rmse);
+
+exitflag = exitflag | (rmse > RMSE_tol);
+
+if exitflag
+    fprintf('Test FAILED. Something might be wrong.\n');    
+else
+    fprintf('Test PASSED. IBS estimates are calibrated and close to (thresholded) ground truth.\n');    
+end
+
+% Plot figure
+xx = log(p_model);
+h(1) = plot(xx,xx,'k-','LineWidth',2); hold on;
+
+yy = -nlogL;
+xxerr = [xx, fliplr(xx)];
+yyerr_down = yy - 1.96*sqrt(nlogLvar);
+yyerr_up = yy + 1.96*sqrt(nlogLvar);
+yyerr = [yyerr_down, fliplr(yyerr_up)];
+fill(xxerr, yyerr,'b','FaceAlpha',0.5,'LineStyle','none'); hold on;
+
+h(2) = plot(xx,yy,'b-','LineWidth',2); hold on;
+h(3) = plot([xx(1),xx(end)],-thresh*[1 1],'k:','LineWidth',2);
+
+box off;
+set(gca,'TickDir','out');
+set(gcf,'Color','w');
+xlabel('True log(p)');
+ylabel('Estimated log(p) with thresholding')
+%xlim([-5 5]);
+hl = legend(h,'True log(p)','IBS estimate (95% CI)','Threshold');
+set(hl,'Location','NorthWest','Box','off');
+title('Thresholded IBS test');
+
+end
+
 
 %   TODO:
 %   - Fix help and documentation
