@@ -214,7 +214,7 @@ if isempty(x)
         if n > 100
             data.IBSNreps = 0; % Deterministic problems            
         else
-            data.IBSNreps = 150; % Reps used for IBS estimator
+            data.IBSNreps = 300; % Reps used for IBS estimator
         end
         
         % Read marginals from file
