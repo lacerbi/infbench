@@ -214,7 +214,7 @@ if isempty(x)
         if n > 100
             data.IBSNreps = 0; % Deterministic problems            
         else
-            data.IBSNreps = 300; % Reps used for IBS estimator
+            data.IBSNreps = 500; % Reps used for IBS estimator
         end
         
         % Read marginals from file
@@ -244,8 +244,11 @@ else
     else
         IBSNreps = infprob.Data.IBSNreps;
         ibs_opts = struct('Nreps',IBSNreps,...
-            'ReturnPositive',true,'ReturnStd',true);        
-        [LL,y_std] = ibslike(@timer_gendata,x_orig,infprob.Data.R,[],ibs_opts,infprob.Data);
+            'ReturnPositive',true,'ReturnStd',true,'MaxTime',60);        
+        [LL,y_std,exitflag] = ibslike(@timer_gendata,x_orig,infprob.Data.R,[],ibs_opts,infprob.Data);
+        if exitflag == 2
+            fprintf('IBS call terminated for exceeding maximum runtime.\n')
+        end
     end
     y = LL + dy;
     
