@@ -336,6 +336,7 @@ switch algoset
     case {276,'viqrnogp'}; algoset = 'viqrnogp';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
     case {277,'viqrnogplate'}; algoset = 'viqrnogplate'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxMain = 0;
     case {278,'viqr2gp'}; algoset = 'viqr2gp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.DoubleGP = true;
+    case {279,'viqrnegquadmix'}; algoset = 'renewdefvarimiqrpluswup5fast';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.gpMeanFun = 'negquadmix';
         
         
 
