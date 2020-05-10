@@ -3,10 +3,10 @@ PROJECT="infbench"
 SHORTNAME=IB
 BASEDIR="${HOME}/${PROJECT}/matlab"
 SOURCEDIR="${BASEDIR}/"
-JOBSCRIPT="${BASEDIR}/scripts/job_akrami2018bmcmc.sh"
+JOBSCRIPT="${BASEDIR}/scripts/job_acerbi2012mcmc.sh"
 
 #Job parameters
-RUNTIME=2:00:00
+RUNTIME=4:00:00
 MAXRT=NaN
 VERBOSE=0
 SAMPLES=1000
@@ -16,7 +16,7 @@ PPN="1"
 MEM="4000MB"
 RESOURCES="nodes=${NODES}:ppn=${PPN},mem=${MEM},walltime=${RUNTIME}"
 
-RUN="akrami2018bmcmc"
+RUN="acerbi2012mcmc"
 
 #if [[ -z ${1} ]]; then
         JOBLIST="$1"
@@ -39,3 +39,6 @@ JOBNAME=${SHORTNAME}${RUN}
 
 # running on Prince
 sbatch --error=slurm-%A_%a.err --verbose --array=${JOBLIST} --mail-type=FAIL --mail-user=${USER}@nyu.edu --mem=${MEM} --time=${RUNTIME} --nodes=${NODES} --ntasks-per-node=${PPN} --export=PROJECT=${PROJECT},RUN=${RUN},WORKDIR=$WORKDIR,USER=$USER,SAMPLES=$SAMPLES --job-name=${JOBNAME} ${JOBSCRIPT}
+
+
+

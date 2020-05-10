@@ -33,9 +33,10 @@ ALGOS="{'vbmc'}"
 ALGOSET="'base'"
 IDS="{'1:2','3:4','5:6','7:8','9:10','11:12','13:14','15:16','17:18','19:20'}"
 IDS_SINGLE="{'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20'}"
+IDS_THIRTY="{'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'}"
 IDS_FIFTY="{'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50'}"
 IDS_CENTO="{'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95','96','97','98','99','100'}"
-TEMP_ALGO="{'vbmc@renewdefimiqrvppluswup5'}"
+TEMP_ALGO="{'vbmc@viqrnogplate'}"
 
 case "${1}" in
 	0)      PROBS="{'lumpy'}"
@@ -489,6 +490,50 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
+	555)    PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        555b)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@renewdefimiqrplus5longvpgps'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        555c)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'parallelgp@v3'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        555d)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@renewdefimiqrpluswup5noacq'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        555e)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@viqrnorminv'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        555f)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc@renewdefmipluswup4gpsvp'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+
+
 	560)    PROBSET="{'vbmc20'}"
                 PROBS="{'acerbidokka2018'}"
                 ALGOS="{'parallelgp'}"
@@ -618,6 +663,52 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
+
+
+        755)    PROBSET="{'vbmc20'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        755b)   PROBSET="{'vbmc20'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc@renewdefimiqrplus5longvpgps'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        755c)   PROBSET="{'vbmc20'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast','vbmc@renewdefimiqrplus5longvpgps','parallelgp@v3','vbmc@renewdefimiqrpluswup5noacq','vbmc@renewdefmipluswup4gpsvp','wsabiplus@ldet'}"
+                DIMS="{'101'}"
+                IDS=$IDS_FIFTY
+                NOISE="{'[]','n1','n2','n3.5','n5','n7'}"
+                ;;
+        755d)   PROBSET="{'vbmc20'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc@renewdefimiqrpluswup5noacq'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        755e)   PROBSET="{'vbmc20'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc@viqrnorminv'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        755f)   PROBSET="{'vbmc20'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc@renewdefmipluswup4gpsvp'}"
+                DIMS="{'101','102'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+
+
         760)    PROBSET="{'vbmc20'}"
                 PROBS="{'krajbich2010'}"
                 ALGOS="{'parallelgp'}"
@@ -636,7 +727,7 @@ case "${1}" in
         805)    PROBSET="{'vbmc20'}"
                 PROBS="{'goris2015b'}"
                 ALGOS=${TEMP_ALGO}
-                DIMS="{'7','8'}"
+                DIMS="{'107','108'}"
                 IDS=$IDS_CENTO
                 NOISE="'me'"
                 ;;
@@ -689,6 +780,36 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 NOISE="'me'"
                 ;;
+        810)    PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast','vbmc@renewdefimiqrplus5longvpgps','vbmc@renewdefimiqrpluswup5noacq'}"
+                DIMS="{'107','108'}"
+                IDS=$IDS_CENTO
+                NOISE="'me'"
+                ;;
+        811)    PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'parallelgp@v3'}"
+                DIMS="{'107','108'}"
+                IDS=$IDS_CENTO
+                NOISE="'me'"
+                ;;
+        812)    PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc@renewdefmipluswup4gpsvp'}"
+                DIMS="{'107','108'}"
+                IDS=$IDS_CENTO
+                NOISE="'me'"
+                ;;
+        813)    PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'wsabiplus@base','wsabiplus@ldet'}"
+                DIMS="{'107','108'}"
+                IDS=$IDS_CENTO
+                NOISE="'me'"
+                ;;
+
+
         830)    PROBSET="{'vbmc20'}"
                 PROBS="{'goris2015b'}"
                 ALGOS="{'parallelgp'}"
@@ -724,6 +845,30 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
                 ;;
+        855)    PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast','vbmc@renewdefimiqrplus5longvpgps','parallelgp@v3','vbmc@renewdefimiqrpluswup5noacq','vbmc@renewdefmipluswup4gpsvp'}"
+                DIMS="{'107'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        855b)   PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast','vbmc@renewdefimiqrplus5longvpgps','parallelgp@v3','vbmc@renewdefimiqrpluswup5noacq','vbmc@renewdefmipluswup4gpsvp'}"
+                DIMS="{'108'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        855c)   PROBSET="{'vbmc20'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast','vbmc@renewdefimiqrplus5longvpgps','parallelgp@v3','vbmc@renewdefimiqrpluswup5noacq','vbmc@renewdefmipluswup4gpsvp','wsabiplus@ldet'}"
+                DIMS="{'108'}"
+                IDS=$IDS_FIFTY
+                NOISE="{'[]','n1','n2','n3.5','n5','n7'}"
+                ;;
+
+
+
         860)    PROBSET="{'vbmc20'}"
                 PROBS="{'goris2015b'}"
                 ALGOS="{'parallelgp'}"
@@ -866,6 +1011,79 @@ case "${1}" in
                 DIMS="{'1'}"
                 IDS=$IDS_CENTO
                 NOISE="'[]'"
+                ;;
+        1055)    PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast'}"
+                DIMS="{'101'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        1055b)   PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'vbmc@renewdefimiqrplus5longvpgps'}"
+                DIMS="{'101'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        1055c)   PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'parallelgp@v3'}"
+                DIMS="{'101'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        1055d)  PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'vbmc@renewdefimiqrpluswup5noacq'}"
+                DIMS="{'101'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        1055e)  PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'vbmc@viqrnorminv'}"
+                DIMS="{'101'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        1055f)  PROBSET="{'vbmc20'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'vbmc@renewdefmipluswup4gpsvp'}"
+                DIMS="{'101'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+	
+
+
+        1110)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast','vbmc@renewdefimiqrplus5longvpgps','vbmc@renewdefimiqrpluswup5noacq','vbmc@renewdefmipluswup4gpsvp','parallelgp@v3'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        1111)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'wsabiplus@base','wsabiplus@ldet'}"
+                DIMS="{'1'}"
+                IDS=$IDS_CENTO
+                NOISE="'[]'"
+                ;;
+        1155)   PROBSET="{'vbmc20'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast','vbmc@renewdefimiqrplus5longvpgps','parallelgp@v3','vbmc@renewdefimiqrpluswup5noacq','vbmc@renewdefmipluswup4gpsvp'}"
+                DIMS="{'101'}"
+                IDS=$IDS_SINGLE
+                NOISE="{'[]','n0.5','n1','n2','n3','n4','n5'}"
+                ;;
+        1155c)  PROBSET="{'vbmc20'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'vbmc@renewdefvarimiqrpluswup5fast','vbmc@renewdefimiqrplus5longvpgps','parallelgp@v3','vbmc@renewdefimiqrpluswup5noacq','vbmc@renewdefmipluswup4gpsvp','wsabiplus@ldet'}"
+                DIMS="{'101'}"
+                IDS=$IDS_FIFTY
+                NOISE="{'[]','n1','n2','n3.5','n5','n7'}"
                 ;;
 
 
