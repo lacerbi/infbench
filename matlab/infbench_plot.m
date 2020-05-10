@@ -351,6 +351,7 @@ for iFig = 1:nfigs
 %                     benchdatanew.(field1).(field2).(field3).Zscores = Zscores(:);
 %                     benchdatanew.(field1).(field2).(field3).Errs = Errs(:);
 
+                    if isempty(yybnd); yybnd = [Inf,-Inf]; end
                     yybnd = [min(min(yy(:)),yybnd(1)),max(max(yy(:)),yybnd(2))];
 
                 end
@@ -451,9 +452,14 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
                 yy = median(y,1);
 
                 if options.BootStrap > 0
-                    yy_boot = bootstrp(options.BootStrap,@median,y);
-                    yyerr_up = quantile(yy_boot,0.975,1);
-                    yyerr_down = quantile(yy_boot,0.025,1);
+                    try
+                        yy_boot = bootstrp(options.BootStrap,@median,y);
+                        yyerr_up = quantile(yy_boot,0.975,1);
+                        yyerr_down = quantile(yy_boot,0.025,1);
+                    catch
+                        yyerr_up = NaN(size(yy));
+                        yyerr_down = NaN(size(yy));
+                    end
                 else
                     yyerr_up = quantile(y,options.Quantiles(2),1);
                     yyerr_down = quantile(y,options.Quantiles(1),1);
@@ -547,6 +553,8 @@ function [xlims,ylims] = panelIterations(iRow,iCol,nrows,ncols,dimrows,dimcols,x
             text(-1/6*(dimcols+1),0.9,textstr,'Units','Normalized','Rotation',0,'FontWeight','bold','HorizontalAlignment','center');
         end
     end
+    
+    if isempty(xx); xx = [0,eps]; end
     
     xlims = [min(xx,[],2) max(xx,[],2)];
     if xlims(2) >= 400
