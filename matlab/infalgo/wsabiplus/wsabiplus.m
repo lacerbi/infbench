@@ -508,8 +508,16 @@ for t = 1:numSamples
             % Take best point
             [strtFval,idx] = min(aval);
             strtSamp = Xsearch(idx,:);
-
-            insigma = 0.1*sqrt(diag(cma_Sigma));
+            
+            % Fix starting INSIGMA
+            if ~isempty(cma_Sigma)
+                diag_sigma = sqrt(diag(cma_Sigma));
+                diag_sigma = min(diag_sigma,10*sqrt(BB(:)));
+                diag_sigma = max(diag_sigma,max(diag_sigma)/1e5);
+                insigma = 0.1*diag_sigma;
+            else
+                insigma = [];
+            end
         else
             if rand < 1.1 % Sample starting location for search from prior.
                 strtSamp = mvnrnd(bb,diag(BB),1);
