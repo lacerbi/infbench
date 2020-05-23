@@ -41,6 +41,7 @@ defopts.EnhanceLine = 0;        % Enhance one plotted line
 defopts.FunEvalsPerD = 500;
 defopts.Metric = 'nlZ';
 defopts.DisplayLegend = true;
+defopts.BaseQuantile = 0.5;
 defopts.Quantiles = [0.25,0.75];    % Confidence intervals quantiles
 defopts.PlotType = 'errorbar';
 defopts.BootStrap = 1e3;        % # samples for bootstrap
@@ -242,7 +243,7 @@ for iFig = 1:nfigs
 
                     MMTVs_new = [];
                     if isfield(history{i}.Output,'MTV')
-                        MMTVs_new = mean(history{i}.Output.MTV(idx_valid,:),2)';
+                        MMTVs_new = min(mean(history{i}.Output.MTV(idx_valid,:),2)',1);
                     end
 
                     lnZ_true = history{i}.lnZpost_true;                
@@ -449,11 +450,11 @@ function [xx,yy,yyerr_up,yyerr_down] = plotIterations(x,y,iLayer,arglayer,option
                 for i = 1:numel(qq); yy(i,:) = quantile(y,qq(i)); end                
                 yy = y;
             else
-                yy = median(y,1);
+                yy = quantile(y,options.BaseQuantile,1);
 
                 if options.BootStrap > 0
                     try
-                        yy_boot = bootstrp(options.BootStrap,@median,y);
+                        yy_boot = bootstrp(options.BootStrap,@(x)quantile(x,options.BaseQuantile),y);
                         yyerr_up = quantile(yy_boot,0.975,1);
                         yyerr_down = quantile(yy_boot,0.025,1);
                     catch
