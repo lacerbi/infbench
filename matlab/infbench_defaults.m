@@ -24,6 +24,7 @@ switch lower(type)
         defaults.ForceFiniteBounds = 0;  % By default do not force finite bounds
         defaults.MaxStoredSamples = 5e3; % Stored posterior MCMC samples
         defaults.Debug = 0;              % Debug mode
+        defaults.SkipEval = false;
     
         defaults.LineStyle = {'-','-','-','-','-.','-.','-.','-.','-.','-.','-.','-','-.','-','-','-','-','-'};
         % defaults.LineStyle = {'-','-.','-','-','-','-','-','-','-','-'};
@@ -61,7 +62,6 @@ switch lower(type)
         defaults.VariableComputationTime = false;   % For most problems, computation time is (virtually) constant
         defaults.NonAdmissibleFuncValue = log(realmin);
         defaults.AddLogPrior = false;
-        defaults.SkipEval = false;
         
     case {'plot'}
         defaults.BestOutOf = 1;
