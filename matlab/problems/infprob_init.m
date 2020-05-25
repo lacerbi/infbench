@@ -177,8 +177,12 @@ if isempty(probstruct.InitPoint)
 end
 
 % Compute evaluation time and function noise
-tic; f1 = infbench_func(probstruct.InitPoint,probstruct,1); toc
-tic; f2 = infbench_func(probstruct.InitPoint,probstruct,1); toc
+if options.SkipEval
+    f1 = NaN;   f2 = NaN;
+else
+    tic; f1 = infbench_func(probstruct.InitPoint,probstruct,1); toc
+    tic; f2 = infbench_func(probstruct.InitPoint,probstruct,1); toc
+end
 % [f1 f2]
 
 % Assess whether function is intrinsically noisy

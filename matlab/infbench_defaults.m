@@ -61,6 +61,7 @@ switch lower(type)
         defaults.VariableComputationTime = false;   % For most problems, computation time is (virtually) constant
         defaults.NonAdmissibleFuncValue = log(realmin);
         defaults.AddLogPrior = false;
+        defaults.SkipEval = false;
         
     case {'plot'}
         defaults.BestOutOf = 1;
