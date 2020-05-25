@@ -147,6 +147,7 @@ switch lower(type)
                     case {'renewdefmipluswup4gpsvp'}; defaults.color = [166,206,227]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-.'; defaults.name = 'vbmc-eig';
                     case {'renewdefimiqrpluswup5noacq'}; defaults.color = [178,223,138]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-npro';
                     case {'renewdefimiqrplus5longvpgps'}; defaults.color = [31,120,180]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = ':'; defaults.name = 'vbmc-imiqr';
+                    case {'viqrnotrim'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 3; defaults.linestyle = '-';
                         
                     otherwise
                         defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 3; defaults.linestyle = '-.';
