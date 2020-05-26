@@ -5,6 +5,7 @@ function [post,mcmc_diag] = post_from_gp_surrogate(th_grid,sim_model,gp,gp_opt,l
 mcmc_diag = [];
 d = th_grid.dim;
 if ~isfield(mcmc_opt,'always_mcmc'); mcmc_opt.always_mcmc = 0; end
+if ~isfield(mcmc_opt,'method'); mcmc_opt.method = 'dram'; end
 
 if d <= 2 && ~mcmc_opt.always_mcmc
     if d == 1
@@ -102,63 +103,94 @@ else % dim > 2
         params{i} = {sprintf('\\theta_{%d}',i),init(i),th_grid.theta(i,1),th_grid.theta(i,end)};
     end
     
-    % Additional MCMC settings
-    options.nsimu = mcmc_opt.nsimu;
-    options.qcov = 1/10^2*diag((th_grid.theta(:,1)-th_grid.theta(:,end)).^2);
-    options.method = 'am';
-    options.updatesigma = 0;
-    options.verbosity = ~strcmp(display_type,'off'); % no printing from mcmc
-    options.waitbar = 0;
-    %options.burnintime = 1000; % what is this number actually here?
+    switch lower(mcmc_opt.method)
+        case 'dram'
     
-    % Initialize results
-    samples_all = NaN(mcmc_opt.nsimu,npar,mcmc_opt.nchains);
-    results_all = cell(mcmc_opt.nchains,1);
-    
-    % Run MCMC chains!
-    for i = 1:mcmc_opt.nchains
-        if ~strcmp(display_type,'off')
-            if i == 1
-                disp('Running MCMC...');
+            % Additional MCMC settings
+            options.nsimu = mcmc_opt.nsimu;
+            options.qcov = 1/10^2*diag((th_grid.theta(:,1)-th_grid.theta(:,end)).^2);
+            options.method = 'am';
+            options.updatesigma = 0;
+            options.verbosity = ~strcmp(display_type,'off'); % no printing from mcmc
+            options.waitbar = 0;
+            %options.burnintime = 1000; % what is this number actually here?
+
+            % Initialize results
+            samples_all = NaN(mcmc_opt.nsimu,npar,mcmc_opt.nchains);
+            results_all = cell(mcmc_opt.nchains,1);
+
+            % Run MCMC chains!
+            for i = 1:mcmc_opt.nchains
+                if ~strcmp(display_type,'off')
+                    if i == 1
+                        disp('Running MCMC...');
+                    end
+                    if mcmc_opt.nchains > 1
+                        disp(['Chain ', num2str(i), '/', num2str(mcmc_opt.nchains)]);
+                    end
+                end
+                [results,samples] = mcmcrun(model,data,params,options);
+                results_all{i} = results;
+                samples_all(:,:,i) = samples;
+                if i == mcmc_opt.nchains && ~strcmp(display_type,'off')
+                    disp('Done.');
+                end
             end
-            if mcmc_opt.nchains > 1
-                disp(['Chain ', num2str(i), '/', num2str(mcmc_opt.nchains)]);
+
+            % Leave out burn-in (e.g. the first half of each chain)
+            cl = size(samples_all,1);
+            samples_all = samples_all(ceil(cl/2:cl),:,:);
+
+            % Assess the convergence
+            % psrf is taken from GPstuff/diag
+            [R,neff,Vh,W,B,tau,thin] = psrf(samples_all);
+            mcmc_diag.R = R;
+            mcmc_diag.neff = neff;
+            mcmc_diag.is_converged = (max(abs(R-1)) < 0.1); % one number summary of convergence assessment
+            if ~strcmp(display_type,'off')
+                disp(['nr chains = ', num2str(mcmc_opt.nchains)]);
+                disp(['R = ',num2str(R)]);
+                disp(['neff = ', num2str(neff)]);
             end
-        end
-        [results,samples] = mcmcrun(model,data,params,options);
-        results_all{i} = results;
-        samples_all(:,:,i) = samples;
-        if i == mcmc_opt.nchains && ~strcmp(display_type,'off')
-            disp('Done.');
-        end
-    end
+            if mcmc_diag.is_converged ~= 1
+                warning('Convergence not reached when sampling from the model-based posterior estimate.');
+            end
+
+            % Add the chains together
+            cl = size(samples_all,1);
+            samples = NaN(mcmc_opt.nchains*cl,npar);
+            for i = 1:mcmc_opt.nchains
+                samples(1 + (i-1)*cl:i*cl,:) = samples_all(:,:,i);
+            end
     
-    % Leave out burn-in (e.g. the first half of each chain)
-    cl = size(samples_all,1);
-    samples_all = samples_all(ceil(cl/2:cl),:,:);
-    
-    % Assess the convergence
-    % psrf is taken from GPstuff/diag
-    [R,neff,Vh,W,B,tau,thin] = psrf(samples_all);
-    mcmc_diag.R = R;
-    mcmc_diag.neff = neff;
-    mcmc_diag.is_converged = (max(abs(R-1)) < 0.1); % one number summary of convergence assessment
-    if ~strcmp(display_type,'off')
-        disp(['nr chains = ', num2str(mcmc_opt.nchains)]);
-        disp(['R = ',num2str(R)]);
-        disp(['neff = ', num2str(neff)]);
+        case 'slicesample'  % Parallel/ensemble slice sampling            
+            
+            Ns_total = mcmc_opt.nsimu*mcmc_opt.nchains;
+            Ns = ceil(Ns_total*2/3);
+            
+            options.Burnin = floor(Ns_total/3);
+            options.Thin = 1;
+            options.Display = 'off';
+            options.Diagnostics = false;
+            options.VarTransform = false;
+            options.InversionSample = false;
+            options.FitGMM = false;
+                                    
+            widths = std(th_tr);
+            D = size(th_tr,2);
+            W = 2*(D+1);
+            LB = th_grid.range(:,1)';
+            UB = th_grid.range(:,2)';
+            
+            % Take starting points from high posterior density region
+            logPfuns = @(th) log_post_point_estim(th,th_tr,log_lik_tr,gp,P,sim_model);    
+            f_all = logPfuns(th_tr);
+            [~,ord] = sort(f_all,'descend');
+            x0 = th_tr(ord(1:min(W,size(th_tr,1))),:);
+            
+            samples = eissample_lite(logPfuns,x0,Ns,W,widths,LB,UB,options);
     end
-    if mcmc_diag.is_converged ~= 1
-        warning('Convergence not reached when sampling from the model-based posterior estimate.');
-    end
-    
-    % Add the chains together
-    cl = size(samples_all,1);
-    samples = NaN(mcmc_opt.nchains*cl,npar);
-    for i = 1:mcmc_opt.nchains
-        samples(1 + (i-1)*cl:i*cl,:) = samples_all(:,:,i);
-    end
-    
+            
     % Thin to final length (to reduce the save size of the samples-matrix)
     final_cl = min(mcmc_opt.nfinal,size(samples,1));
     samples = samples(floor(linspace(1,size(samples,1),final_cl)),:);

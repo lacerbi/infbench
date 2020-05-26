@@ -569,6 +569,8 @@ function [samples, acqs] = sample_from_acq(f, th_grid, th_tr, acq_opt)
 % NOTE: f must a handle to function that computes the negative log of the acq surface 
 % interpreted as a pdf. 
 
+if ~isfield(acq_opt.exp,'method'); acq_opt.exp.method = 'dram'; end
+
 % Set up variables and options for MCMC 
 display_type = acq_opt.display_type;
 npar = th_grid.dim;
@@ -592,67 +594,100 @@ for i = 1:npar
     params{i} = {sprintf('\\theta_{%d}',i), init(i), th_grid.theta(i,1), th_grid.theta(i,end)};
 end
 
-% Additional MCMC settings
 nfinal = acq_opt.exp.is_samples;
 nchains = acq_opt.exp.nchains;
-options.nsimu = acq_opt.exp.nsimu;
-options.qcov = 1/10^2*diag((th_grid.theta(:,1)-th_grid.theta(:,end)).^2);
-options.method = 'am';
-options.updatesigma = 0;
-options.verbosity = ~strcmp(display_type,'off'); % no printing from mcmc
-options.waitbar = 0;
 
-% Initialize results
-samples_all = NaN(options.nsimu,npar,nchains);
-acqs_all = NaN(options.nsimu,nchains);
-results_all = cell(nchains,1);
+switch lower(acq_opt.exp.method)
+    case 'dram'
 
-% Run MCMC chains!
-for i = 1:nchains
-    if ~strcmp(display_type,'off')
-        if i == 1
-            disp('Running MCMC for sampling from acq...');
+        % Additional MCMC settings
+        options.nsimu = acq_opt.exp.nsimu;
+        options.qcov = 1/10^2*diag((th_grid.theta(:,1)-th_grid.theta(:,end)).^2);
+        options.method = 'am';
+        options.updatesigma = 0;
+        options.verbosity = ~strcmp(display_type,'off'); % no printing from mcmc
+        options.waitbar = 0;
+
+        % Initialize results
+        samples_all = NaN(options.nsimu,npar,nchains);
+        acqs_all = NaN(options.nsimu,nchains);
+        results_all = cell(nchains,1);
+
+        % Run MCMC chains!
+        for i = 1:nchains
+            if ~strcmp(display_type,'off')
+                if i == 1
+                    disp('Running MCMC for sampling from acq...');
+                end
+                if nchains > 1
+                    disp(['Chain ', num2str(i), '/', num2str(nchains)]);
+                end
+            end
+            [results,samples,~,acqs] = mcmcrun(model,data,params,options);
+            results_all{i} = results;
+            samples_all(:,:,i) = samples;
+            acqs_all(:,i) = acqs;
+            if i == nchains && ~strcmp(display_type,'off')
+                disp('Done.');
+            end
         end
-        if nchains > 1
-            disp(['Chain ', num2str(i), '/', num2str(nchains)]);
+
+        % Leave out burn-in (e.g. the first half of each chain)
+        cl = size(samples_all,1);
+        samples_all = samples_all(ceil(cl/2:cl),:,:);
+        acqs_all = acqs_all(ceil(cl/2:cl),:);
+
+        % Assess the convergence
+        % psrf is taken from GPstuff/diag
+        [R,neff,Vh,W,B,tau,thin] = psrf(samples_all);
+        mcmc_diag.R = R;
+        mcmc_diag.neff = neff;
+        mcmc_diag.is_converged = (max(abs(R-1)) < 0.1); % one number summary of convergence assessment
+        if ~strcmp(display_type,'off')
+            disp(['nr chains = ', num2str(nchains)]);
+            disp(['R = ',num2str(R)]);
+            disp(['neff = ', num2str(neff)]);
         end
-    end
-    [results,samples,~,acqs] = mcmcrun(model,data,params,options);
-    results_all{i} = results;
-    samples_all(:,:,i) = samples;
-    acqs_all(:,i) = acqs;
-    if i == nchains && ~strcmp(display_type,'off')
-        disp('Done.');
-    end
-end
+        if mcmc_diag.is_converged ~= 1
+            warning('Convergence not reached when sampling from the acq pdf.');
+        end
 
-% Leave out burn-in (e.g. the first half of each chain)
-cl = size(samples_all,1);
-samples_all = samples_all(ceil(cl/2:cl),:,:);
-acqs_all = acqs_all(ceil(cl/2:cl),:);
+        % Add the chains together
+        cl = size(samples_all,1);
+        samples = NaN(nchains*cl,npar);
+        for i = 1:nchains
+            samples(1 + (i-1)*cl:i*cl,:) = samples_all(:,:,i);
+        end
+        acqs = acqs_all(:);
 
-% Assess the convergence
-% psrf is taken from GPstuff/diag
-[R,neff,Vh,W,B,tau,thin] = psrf(samples_all);
-mcmc_diag.R = R;
-mcmc_diag.neff = neff;
-mcmc_diag.is_converged = (max(abs(R-1)) < 0.1); % one number summary of convergence assessment
-if ~strcmp(display_type,'off')
-    disp(['nr chains = ', num2str(nchains)]);
-    disp(['R = ',num2str(R)]);
-    disp(['neff = ', num2str(neff)]);
-end
-if mcmc_diag.is_converged ~= 1
-    warning('Convergence not reached when sampling from the acq pdf.');
-end
+    case 'slicesample'  % Parallel/ensemble slice sampling            
 
-% Add the chains together
-cl = size(samples_all,1);
-samples = NaN(nchains*cl,npar);
-for i = 1:nchains
-    samples(1 + (i-1)*cl:i*cl,:) = samples_all(:,:,i);
+        Ns_total = acq_opt.exp.nsimu*nchains;
+        Ns = ceil(Ns_total*2/3);
+
+        options.Burnin = floor(Ns_total/3);
+        options.Thin = 1;
+        options.Display = 'off';
+        options.Diagnostics = false;
+        options.VarTransform = false;
+        options.InversionSample = false;
+        options.FitGMM = false;
+
+        widths = std(th_tr);
+        D = size(th_tr,2);
+        W = 2*(D+1);
+        LB = th_grid.range(:,1)';
+        UB = th_grid.range(:,2)';
+
+        % Take starting points from high posterior density region
+        logPfuns = @(th) -f(th);    
+        f_all = logPfuns(th_tr);
+        [~,ord] = sort(f_all,'descend');
+        x0 = th_tr(ord(1:min(W,size(th_tr,1))),:);
+
+        [samples,acqs] = eissample_lite(logPfuns,x0,Ns,W,widths,LB,UB,options);
+        acqs = -2*acqs; % Map acqs to deviance
 end
-acqs = acqs_all(:);
 
 % Thin to final length (to reduce the save size of the samples-matrix)
 final_cl = min(nfinal,size(samples,1));

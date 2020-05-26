@@ -19,6 +19,8 @@ algoptions.NsamplesIS = 500;    % how many samples from the importance distribut
 algoptions.GridSizeD2 = 2500;   % # grid points for 2D integral
 algoptions.GPUpdateFreq = 1;    % How often GP hyperparameters are updated via MAP estimation
 algoptions.Version = 'v2';      % Original version tested
+algoptions.MCMCmethod = 'dram'; % Default MCMC sampler
+algoptions.AcqOptMCMCmethod = 'dram'; % Default MCMC sampler for importance sampling
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -33,6 +35,7 @@ switch algoset
     case {3,'fast'}; algoset = 'fast'; algoptions.AcqOptInit = 500; algoptions.AcqOptNstarts = 3; algoptions.AcqOptMCMCnchains = 3; algoptions.AcqOptMCMCnsamples = 1e3; algoptions.NsamplesIS = 200; algoptions.GridSizeD2 = 500;
     case {4,'fast2'}; algoset = 'fast2'; algoptions.AcqOptInit = 500; algoptions.AcqOptNstarts = 3; algoptions.AcqOptMCMCnchains = 3; algoptions.AcqOptMCMCnsamples = 1e3; algoptions.NsamplesIS = 200; algoptions.GridSizeD2 = 500; algoptions.GPUpdateFreq = 5;
     case {101,'v3'}; algoset = 'v3'; algoptions.Version = 'v3';
+    case {102,'v3ss'}; algoset = 'v3ss'; algoptions.Version = 'v3'; algoptions.MCMCmethod = 'slicesample'; algoptions.MCMCnchains = 3; algoptions.AcqOptMCMCmethod = 'slicesample'; algoptions.AcqOptMCMCnchains = 2;
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);
@@ -86,6 +89,7 @@ acq_opt.exp.nr_grid.dim1 = 100; % number of grid points for grid integration
 acq_opt.exp.nr_grid.dim2 = ceil(sqrt(algoptions.GridSizeD2));
 acq_opt.exp.nchains = algoptions.AcqOptMCMCnchains;
 acq_opt.exp.nsimu = algoptions.AcqOptMCMCnsamples;
+acq_opt.exp.method = algoptions.AcqOptMCMCmethod;
 acq_opt.display_type = 'off';
 
 %% MCMC settings (for sampling from GP-based posterior when dim > 2, grid-based computations always used when dim <= 2)
@@ -94,6 +98,7 @@ mcmc_opt.nsimu = algoptions.MCMCnsamples; % how many samples for each chain
 mcmc_opt.nfinal = Inf; % final amount of samples after concatenating the chains and thinning
 mcmc_opt.display_type = 'off';
 mcmc_opt.always_mcmc = 1; % Always do MCMC (instead of gridding)
+mcmc_opt.method = algoptions.MCMCmethod; % MCMC sampler
 
 [grid_th,sim_model] = get_model(probstruct,algoptions);
 
