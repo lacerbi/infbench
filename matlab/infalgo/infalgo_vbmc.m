@@ -74,6 +74,9 @@ algoptions.ActiveSampleFullUpdatePastWarmup = 2;
 algoptions.ActiveSampleFullUpdateThreshold = 3;
 algoptions.RecomputeLCBmax = false;
 algoptions.ActiveSamplefESSThresh = 1;
+algoptions.NoiseShaping = false;
+algoptions.NoiseShapingThreshold = 10*probstruct.D;
+algoptions.NoiseShapingFactor = 0.05;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -341,6 +344,8 @@ switch algoset
     case {281,'eignotrim'}; algoset = 'eignotrim';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqmi_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf;        
     case {282,'npronotrim'}; algoset = 'npronotrim';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf;        
     case {283,'imiqrnotrim'}; algoset = 'imiqrnotrim';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf; algoptions.ActiveImportanceSamplingMCMCThin = 5;
+    case {284,'viqrnotrimshape'}; algoset = 'viqrnotrimshape';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf; algoptions.NoiseShaping = 1;
+    case {285,'viqrt2'}; algoset = 'viqrt2';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.Temperature = 2;
 
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
