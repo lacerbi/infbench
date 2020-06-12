@@ -1,14 +1,29 @@
-function stats = vbmc_film2d(fun,stats,plotbnd,options)
+function stats = vbmc2020_film2d(fun,stats,plotbnd,options)
 %VBMC_DEMO2D Demo movie of VBMC at work (only for 2D problems).
 
-if nargin < 4 || isempty(options); options{1} = []; end
+if nargin < 4; options = []; end
+if isempty(options)
+    options{1}.MaxFunEvals = 150;
+    options{1}.MinFunEvals = 150;
+    options{1}.MinFinalComponents = 0;
+    options{1}.WarpRotoScaling = false;
+    options{1}.SearchAcqFcn = @acqfsn2_vbmc;
+%    options{1}.SearchAcqFcn = @acqviqr_vbmc;
+    options{1}.Text = 'OLD';
+    
+    options{2} = options{1};
+%    options{2}.WarpRotoScaling = true;    
+    options{2}.SearchAcqFcn = @acqviqr_vbmc;    
+    options{2}.Text = 'NEW';
+end
+
 if isstruct(options); options = {options}; end
 if isstruct(stats); stats = {stats}; end
 
 Nalgos = max(numel(stats),numel(options));
 
 if nargin < 1 || isempty(fun)
-    llfun = @(x) rosenbrock_test(x,1);
+    llfun = @(x) rosenbrock_test(x,2);
     prior_mu = zeros(1,2);
     prior_var = 3^2*ones(1,2);
     lpriorfun = @(x) ...
@@ -33,7 +48,7 @@ noisy_flag = (y1 ~= y2);
 
 if nargin < 2 || isempty(stats)
     for iAlgo = 1:Nalgos
-        rng(0);
+        rng(1);
         options{iAlgo}.SpecifyTargetNoise = noisy_flag;
         [~,~,~,~,~,~,~,stats{iAlgo}] = vbmc(fun,[-1 -1],-Inf,Inf,-3,3,options{iAlgo});
     end
@@ -104,7 +119,7 @@ for iIter = 0:Niters
                 titlestr = [titlestr ' (warm-up)'];
             end
             if isfield(options{min(end,iPlot)},'Text') && ~isempty(options{min(end,iPlot)}.Text)
-                titlestr = ['VBMC+' options{min(end,iPlot)}.Text];
+                titlestr = ['VBMC (' options{min(end,iPlot)}.Text ')'];
             end            
         elseif iPlot == Nalgos + 1
             lnyy = zeros(size(xx,1),1);
@@ -195,7 +210,7 @@ for iIter = 0:Niters
                     legtext{iAlgo} = 'ELBO';
                 end
             end
-            legtext{end+1} = 'LML';
+            legtext{Nalgos+1} = 'LML';
             hll = legend(hl,legtext{:});        
             set(hll,'Location',loc,'Box','off');
             box off;
@@ -268,7 +283,7 @@ for iIter = 0:Niters
         figname = ['demo_' num2str(iIter)];
         saveas(gcf,[mypath filesep() figname '.pdf']);
     else
-        endIters = 6;
+        endIters = max(3,floor(Niters/2));
         f = getframe(gcf);
         if iIter == 0
             [im,map] = rgb2ind(f.cdata,256,'nodither');
@@ -277,15 +292,17 @@ for iIter = 0:Niters
             im(:,:,1,iIter+1) = rgb2ind(f.cdata,map,'nodither');
         end
         if iIter == Niters
-            axes(h(1));            
-            titlestr = ['Iteration ' num2str(iIter) ' (stable)'];
-            title(titlestr);
-            drawnow;            
+            if Nalgos == 1
+                axes(h(1));    
+                titlestr = ['Iteration ' num2str(iIter) ' (stable)'];
+                title(titlestr);
+                drawnow;
+            end
             f = getframe(gcf);
             for iFinal = 1:endIters
                 im(:,:,1,Niters+1+iFinal) = rgb2ind(f.cdata,map,'nodither');
             end
-            filename = 'vbmc_demo';
+            filename = 'vbmc2020_demo';
             imwrite(im,map,[filename '.gif'],'DelayTime',0,'LoopCount',inf);
         end
     end

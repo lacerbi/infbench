@@ -5,7 +5,9 @@ function data = get_krajbich2010_data(subjid,test_flag)
 if nargin < 1 || isempty(subjid); subjid = 13; end
 if nargin < 2 || isempty(test_flag); test_flag = false; end
 
-mat = csvread('krajbichetal2010_data.csv',1);
+% Load only the two subjects datasets used for the benchmark
+%mat = csvread('krajbichetal2010_data.csv',1);
+mat = csvread('krajbichetal2010_2subjs.csv',1);
 mat = mat(mat(:,1) == subjid,:);
 
 dt = 0.1;   % 100 ms time bins
