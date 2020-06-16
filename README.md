@@ -14,7 +14,7 @@ Our first benchmark shows that existing inference algorithms perform quite poorl
 
 Our second benchmark shows that the latest version of VBMC (v1.0, June 2020) beats other state-of-the-art methods when dealing with *noisy* log-likelihood evaluations, such as those arising from simulation-based estimation techniques [[3](#reference)].
 
-## How to run the noiseless benchmark (`vbmc18`)
+## How to run the original benchmark (`vbmc18`)
 
 You can run the benchmark on one test problem in the `vbmc18` problem set as follows:
 ```
@@ -34,7 +34,9 @@ The outputs are:
 - `probstruct` (struct) describes the current problem in detail.
 - `history` (struct array) summary statistics of the run for each id.
 
-## How to run the noisy benchmark (`vbmc20`)
+## How to run the extensive benchmark (`vbmc20`)
+
+The `vbm20` benchmark includes a number of real, challenging models and data largely from computational and cognitive neuroscience, from `D = 3` to `D = 9`. The benchmark is mostly designed to test methods that deal with *noisy* log-likelihood evaluations.
 
 
 
