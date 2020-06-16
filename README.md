@@ -1,4 +1,4 @@
-- This repository contains code for the inference benchmark reported in the paper *Variational Bayesian Monte Carlo* [[1](#reference)], to appear at [NIPS 2018](https://nips.cc/Conferences/2018/Schedule?showEvent=11786). 
+- This repository contains code for the inference benchmarks and results reported in several papers on *Variational Bayesian Monte Carlo* (VBMC) [[1,2,3](#references)]. 
 
 - The Variational Bayesian Monte Carlo (VBMC) algorithm is available at [this repository](https://github.com/lacerbi/vbmc).
 
@@ -31,9 +31,11 @@ The outputs are:
 - `history` (struct array) summary statistics of the run for each id.
 
 
-## Reference
+## References
 
-1. Acerbi, L. (2018). Variational Bayesian Monte Carlo. To appear in *Advances in Neural Information Processing Systems 31*. [arXiv preprint](https://arxiv.org/abs/1810.05558) arXiv:1810.05558
+1. Acerbi, L. (2018). Variational Bayesian Monte Carlo. In *Advances in Neural Information Processing Systems 31*: 8222-8232. ([paper + supplement on arXiv](https://arxiv.org/abs/1810.05558), [NeurIPS Proceedings](https://papers.nips.cc/paper/8043-variational-bayesian-monte-carlo))
+2. Acerbi, L. (2019). An Exploration of Acquisition and Mean Functions in Variational Bayesian Monte Carlo. In *Proc. Machine Learning Research* 96: 1-10. 1st Symposium on Advances in Approximate Bayesian Inference, Montréal, Canada. ([paper in PMLR](http://proceedings.mlr.press/v96/acerbi19a.html))
+3. Acerbi, L. (2020). Variational Bayesian Monte Carlo with Noisy Likelihoods. arXiv preprint (to appear).
 
 ### Contact
 
