@@ -45,13 +45,13 @@ You can run the benchmark on one test problem in the `vbmc20` problem set as fol
 ```
 The arguments are:
 
-- `testfun` (string) indicates the tested model, which can be `'wood2010'` (Ricker), `'krajbich2010'` (aDDM), `'acerbi2012'` (Timing), `'acerbidokka2018'` (Multisensory), `'goris2015b'` (Neuronal), `'akrami2018b'` (Rodent).
-- `D` (integer) is the dataset, with `D = 1` for Ricker, Timing, Rodent; `D = 1` or `D = 2` for aDDM and Multisensory; `D = 7` or `D = 8` for Neuronal.
+- `testfun` (string) indicates the tested model, which can be `'wood2010'` (Ricker), `'krajbich2010'` (aDDM), `'acerbi2012'` (Timing), `'acerbidokka2018'` (Multisensory), `'goris2015b'` (Neuronal), `'akrami2018b'` (Rodent). The additional model presented in the Supplement is `'price2018'` (g-and-k).
+- `D` (integer) is the dataset, with `D = 1` for Ricker, Timing, Rodent, g-and-k; `D = 1` or `D = 2` for aDDM and Multisensory; `D = 7` or `D = 8` for Neuronal.
 - `algo` (string) is the inference algorithm being tested. For the algorithms tested in the paper [[3](#references)], use `'vbmc@imiqr'`, `'vbmc@viqr'`, `'vbmc@npro'`, `'vbmc@eig'`, `'parallelgp@v3'`, `'wsabiplus@ldet'`.
 
 For the other input and output arguments, see [above](#how-to-run-the-original-benchmark-vbmc18).
 
-Code used to generate figures in the paper [[3](#references)] is available in [this folder](https://github.com/lacerbi/infbench/tree/master/matlab/figs/vbmc_paper2020). However, you will first need to run the benchmark (due to file size limitations, we cannot upload the bulk of the numerical results here).
+Code used to generate figures in the paper [[3](#references)] is available in [this folder](https://github.com/lacerbi/infbench/tree/master/matlab/figs/vbmc_paper2020). However, you will first need to run the benchmark (due to space limitations, we cannot upload the bulk of the numerical results here).
 
 ## References
 
