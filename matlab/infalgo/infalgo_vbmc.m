@@ -272,9 +272,7 @@ switch algoset
     % Final testing
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
-    case {103,'renewdef'}; algoset = 'renewdef'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
-    case {104,'renewdefup'}; algoset = 'renewdefup'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0; algoptions.ActiveSampleFullUpdate = 3; algoptions.ActiveSampleFullUpdatePastWarmup = 2; algoptions.ActiveSampleFullUpdateThreshold = 3;
-    case {105,'renewdefplus'}; algoset = 'renewdefplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSampleFullUpdate = 3; algoptions.ActiveSampleFullUpdatePastWarmup = 2; algoptions.ActiveSampleFullUpdateThreshold = 3;
+    case {103,'renewdef'}; algoset = 'renewdef'; algoptions = renewdefaults;
         
     % New defaults
     case {150,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -284,7 +282,6 @@ switch algoset
     case {160,'newdefdebug'}; algoset = 'newdefdebug'; algoptions = newdefaults; algoptions.MinFinalComponents = 0;
 
     % Renew defaults
-    case {170,'renewdef'}; algoset = 'renewdef'; algoptions = renewdefaults;        
         
     % Noisy paper (base and variants)
     case {201,'eig'}; algoset = 'eig';      algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc;             algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
