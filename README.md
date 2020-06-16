@@ -51,6 +51,8 @@ The arguments are:
 
 For the other input and output arguments, see [above](#how-to-run-the-original-benchmark-vbmc18).
 
+Code used to generate figures in the paper [[3](#references)] is available in [this folder](https://github.com/lacerbi/infbench/tree/master/matlab/figs/vbmc_paper2020). However, you will first need to run the benchmark (due to file size limitations, we cannot upload the bulk of the numerical results here).
+
 ## References
 
 1. Acerbi, L. (2018). Variational Bayesian Monte Carlo. In *Advances in Neural Information Processing Systems 31*: 8222-8232. ([paper + supplement on arXiv](https://arxiv.org/abs/1810.05558), [NeurIPS Proceedings](https://papers.nips.cc/paper/8043-variational-bayesian-monte-carlo))
