@@ -49,7 +49,7 @@ The arguments are:
 - `D` (integer) is the dataset, with `D = 1` for Ricker, Timing, Rodent; `D = 1` or `D = 2` for aDDM and Multisensory; `D = 7` or `D = 8` for Neuronal.
 - `algo` (string) is the inference algorithm being tested. For the algorithms tested in the paper [[3](#references)], use `'vbmc@imiqr'`, `'vbmc@viqr'`, `'vbmc@npro'`, `'vbmc@eig'`, `'parallelgp@v3'`, `'wsabiplus@ldet'`.
 
-For the other input and output arguments, see [above]().
+For the other input and output arguments, see [above](#how-to-run-the-original-benchmark-vbmc18).
 
 ## References
 
