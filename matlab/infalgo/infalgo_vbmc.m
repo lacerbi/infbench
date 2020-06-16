@@ -280,8 +280,6 @@ switch algoset
     case {152,'newdef3'}; algoset = 'newdef3'; algoptions = newdefaults;
     case {154,'newdef4'}; algoset = 'newdef4'; algoptions = newdefaults; algoptions.Plot = 1;
     case {160,'newdefdebug'}; algoset = 'newdefdebug'; algoptions = newdefaults; algoptions.MinFinalComponents = 0;
-
-    % Renew defaults
         
     % Noisy paper (base and variants)
     case {201,'eig'}; algoset = 'eig';      algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc;             algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
