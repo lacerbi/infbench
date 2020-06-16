@@ -1,16 +1,20 @@
-- This repository contains code for the inference benchmarks and results reported in several papers on *Variational Bayesian Monte Carlo* (VBMC) [[1,2,3](#references)]. 
+# Introduction
 
-- The Variational Bayesian Monte Carlo (VBMC) algorithm is available at [this repository](https://github.com/lacerbi/vbmc).
+This repository contains code for the inference benchmarks and results reported in several papers on *Variational Bayesian Monte Carlo* (VBMC) [[1,2,3](#references)]. 
+
+The Variational Bayesian Monte Carlo (VBMC) algorithm is available at [this repository](https://github.com/lacerbi/vbmc).
 
 # Inference benchmark (`infbench`)
 
-The goal of `infbench` is to compare various sample-efficient approximate inference algorithms which have been proposed in the machine learning literature so as to deal with (moderately) expensive likelihoods. In particular, we want to infer the posterior over model parameters and (an approximation of) the model evidence or marginal likelihood, that is the normalization constant of the posterior. Crucially, we assume that the budget of likelihood evaluations is of the order of a few or several hundreds.
+The goal of `infbench` is to compare various sample-efficient approximate inference algorithms which have been proposed in the machine learning literature so as to deal with (moderately) expensive and potentially noisy likelihoods. In particular, we want to infer the posterior over model parameters and (an approximation of) the model evidence or marginal likelihood, that is the normalization constant of the posterior. Crucially, we assume that the budget is of the order of up to several hundreds likelihood evaluations.
 
 Notably, this goal is more ambitious than simply finding the maximum of the posterior (MAP), problem that we previously tackled with [Bayesian Adaptive Direct Search](https://github.com/lacerbi/bads) (aka BADS).
 
-Our first benchmark shows that existing inference algorithms perform quite poorly at reconstructing posteriors (or evaluating their normalization constant) with both syntethic and real pdfs that have moderately challenging features, showing that this is a much harder problem [[1](#reference)].
+Our first benchmark shows that existing inference algorithms perform quite poorly at reconstructing posteriors (or evaluating their normalization constant) with both syntethic and real pdfs that have moderately challenging features, showing that this is a much harder problem [[1,2](#reference)].
 
-## How to run the benchmark (`vbmc18`)
+Our second benchmark shows that the latest version of VBMC (v1.0, June 2020) beats other state-of-the-art methods when dealing with *noisy* log-likelihood evaluations, such as those arising from simulation-based estimation techniques [[3](#reference)].
+
+## How to run the noiseless benchmark (`vbmc18`)
 
 You can run the benchmark on one test problem in the `vbmc18` problem set as follows:
 ```
@@ -29,6 +33,9 @@ The outputs are:
 
 - `probstruct` (struct) describes the current problem in detail.
 - `history` (struct array) summary statistics of the run for each id.
+
+## How to run the noisy benchmark (`vbmc20`)
+
 
 
 ## References
