@@ -181,6 +181,7 @@ renewdefaults.StableGPvpK = Inf;
 renewdefaults.WarmupKeepThreshold = '10*D';
 renewdefaults.RecomputeLCBmax = true;
 renewdefaults.MinFinalComponents = 50;
+renewdefaults.WarpRotoScaling = true;
 
 % Changing these options reduces performance on noisy datasets (for
 % uncertainty sampling acquisition function)
@@ -286,7 +287,7 @@ switch algoset
     case {202,'npro'}; algoset = 'npro';    algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc;            algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {203,'viqr'}; algoset = 'viqr';    algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;            algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
     case {204,'imiqr'}; algoset = 'imiqr';  algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc;           algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.ActiveImportanceSamplingMCMCThin = 5;
-    case {211,'viqrnoroto'}; algoset = 'viqrnoroto'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;   algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
+    case {211,'viqrnoroto'}; algoset = 'viqrnoroto'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;   algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {212,'viqrnogp'}; algoset = 'viqrnogp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;       algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
 
     % Old names
