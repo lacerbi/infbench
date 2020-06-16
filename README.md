@@ -38,7 +38,18 @@ The outputs are:
 
 The `vbm20` benchmark includes a number of real, challenging models and data largely from computational and cognitive neuroscience, from `D = 3` to `D = 9`. The benchmark is mostly designed to test methods that deal with *noisy* log-likelihood evaluations.
 
+You can run the benchmark on one test problem in the `vbmc20` problem set as follows:
+```
+> options = struct('SpeedTests',false);
+> [probstruct,history] = infbench_run('vbmc20',testfun,D,[],algo,id,options);
+```
+The arguments are:
 
+- `testfun` (string) indicates the tested model, which can be `'wood2010'` (Ricker), `'krajbich2010'` (aDDM), `'acerbi2012'` (Timing), `'acerbidokka2018'` (Multisensory), `'goris2015b'` (Neuronal), `'akrami2018b'` (Rodent).
+- `D` (integer) is the dataset, with `D = 1` for Ricker, Timing, Rodent; `D = 1` or `D = 2` for aDDM and Multisensory; `D = 7` or `D = 8` for Neuronal.
+- `algo` (string) is the inference algorithm being tested. For the algorithms tested in the paper [[3](#references)], use `'vbmc@imiqr'`, `'vbmc@viqr'`, `'vbmc@npro'`, `'vbmc@eig'`, `'parallelgp@v3'`, `'wsabiplus@ldet'`.
+
+For the other input and output arguments, see [above]().
 
 ## References
 
