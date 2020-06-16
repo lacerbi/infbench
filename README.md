@@ -10,9 +10,9 @@ The goal of `infbench` is to compare various sample-efficient approximate infere
 
 Notably, this goal is more ambitious than simply finding the maximum of the posterior (MAP), problem that we previously tackled with [Bayesian Adaptive Direct Search](https://github.com/lacerbi/bads) (aka BADS).
 
-Our first benchmark shows that existing inference algorithms perform quite poorly at reconstructing posteriors (or evaluating their normalization constant) with both syntethic and real pdfs that have moderately challenging features, showing that this is a much harder problem [[1,2](#reference)].
+Our [first benchmark](#how-to-run-the-original-benchmark-vbmc18) shows that existing inference algorithms perform quite poorly at reconstructing posteriors (or evaluating their normalization constant) with both syntethic and real pdfs that have moderately challenging features, showing that this is a much harder problem [[1,2](#reference)].
 
-Our second benchmark shows that the latest version of VBMC (v1.0, June 2020) beats other state-of-the-art methods when dealing with *noisy* log-likelihood evaluations, such as those arising from simulation-based estimation techniques [[3](#reference)].
+Our [second extensive benchmark](#how-to-run-the-extensive-benchmark-vbmc20) shows that the latest version of VBMC (v1.0, June 2020) beats other state-of-the-art methods on real computational problems when dealing with *noisy* log-likelihood evaluations, such as those arising from simulation-based estimation techniques [[3](#reference)].
 
 ## How to run the original benchmark (`vbmc18`)
 
