@@ -180,7 +180,7 @@ renewdefaults.GPSampleThin = 5;
 renewdefaults.StableGPvpK = Inf;
 renewdefaults.WarmupKeepThreshold = '10*D';
 renewdefaults.RecomputeLCBmax = true;
-%renewdefaults.MinFinalComponents = 50;
+renewdefaults.MinFinalComponents = 50;
 
 % Changing these options reduces performance on noisy datasets (for
 % uncertainty sampling acquisition function)
@@ -284,13 +284,19 @@ switch algoset
     case {160,'newdefdebug'}; algoset = 'newdefdebug'; algoptions = newdefaults; algoptions.MinFinalComponents = 0;
                 
     % Noisy paper (base and variants)
+    case {201,'eig'}; algoset = 'eig';      algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc;             algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {202,'npro'}; algoset = 'npro';    algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc;            algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {203,'viqr'}; algoset = 'viqr';    algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;            algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
+    case {204,'imiqr'}; algoset = 'imiqr';  algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc;           algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.ActiveImportanceSamplingMCMCThin = 5;
+    case {211,'viqrnoroto'}; algoset = 'viqrnoroto'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;   algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
+    case {212,'viqrnogp'}; algoset = 'viqrnogp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;       algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+
+    % Old names
     case {251,'renewdefmipluswup4gpsvp'}; algoset = 'renewdefmipluswup4gpsvp';          algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc;          algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {260,'renewdefimiqrpluswup5noacq'}; algoset = 'renewdefimiqrpluswup5noacq';    algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc;        algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
     case {259,'renewdefvarimiqrpluswup5fast'}; algoset = 'renewdefvarimiqrpluswup5fast';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
     case {264,'renewdefimiqrplus5longvpgps'}; algoset = 'renewdefimiqrplus5longvpgps';  algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc;       algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.ActiveImportanceSamplingMCMCThin = 5;
-    case {273,'viqrnoroto'}; algoset = 'viqrnoroto';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
-    case {276,'viqrnogp'}; algoset = 'viqrnogp';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
-
+        
     % Noise
     case {201,'acqsn2'}; algoset = 'acqsn2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1;
     % case {202,'heur'}; algoset = 'heur'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2regtrheur_vbmc; algoptions.Plot = 1; algoptions.ActiveSampleFullUpdate = 1;
@@ -397,9 +403,10 @@ probstruct.AddLogPrior = true;
 algo_timer = tic;
 MinFinalComponents = algoptions.MinFinalComponents; % Skip final boosting here, do it later
 algoptions.MinFinalComponents = 0;
-[vp,elbo,elbo_sd,exitflag,~,gp,output,stats] = ...
+[vp,elbo,elbo_sd,exitflag,~,output,stats] = ...
     vbmc(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
+gp = vp.gp;
 algoptions.MinFinalComponents = MinFinalComponents;
 
 % Get preprocessed OPTIONS struct

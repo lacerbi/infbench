@@ -33,7 +33,7 @@ if isempty(vp) || isempty(stats)
     for iAcq = 1:numel(AcqFuns)
         rng(iAcq);
         options.SearchAcqFcn = AcqFuns{iAcq};    
-        [vp{iAcq},~,~,~,~,~,~,stats{iAcq}] = vbmc(fun,x0,-Inf,Inf,PLB,PUB,options);
+        [vp{iAcq},~,~,~,~,~,stats{iAcq}] = vbmc(fun,x0,-Inf,Inf,PLB,PUB,options);
         % xx = vbmc_rnd(vp{iAcq},1e6);
         % cornerplot(xx);
     end
