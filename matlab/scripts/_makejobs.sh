@@ -92,7 +92,7 @@ case "${1}" in
         4j)     ALGOSET="{'trim100roto'}"
                 IDS=${IDS_SINGLE}
                 ;;
-        4k)     ALGOSET="{'acqmitr'}"
+        4k)     ALGOSET="{'renewdef'}"
                 IDS=${IDS_SINGLE}
                 ;;
         4l)     ALGOSET="{'up3'}"
@@ -327,7 +327,7 @@ case "${1}" in
                 IDS=$IDS_CENTO
                 ;;
         104k)   PROBS="{'goris2015'}"
-                ALGOS="{'vbmc@acqmitr'}"
+                ALGOS="{'vbmc@renewdef'}"
                 DIMS="{'S7','S8'}"
                 IDS=$IDS_CENTO
                 ;;
