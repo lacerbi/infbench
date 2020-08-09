@@ -127,7 +127,7 @@ switch lower(type)
 %                     case 'acqfregvlnn'; defaults.color = [80 0 250]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'a-ln';
 %                     case 'acqfregvsqrtn'; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'a-sqrt';
                     case 'control'; defaults.color = [120 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-control';
-                    case {'newdef'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-new';
+                    case {'newdef','newdef2'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-new';
                     case {'oldsettings'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = ':'; defaults.name = 'vbmc-old';
                     case {'renewdefimiqrpluswup4'}; defaults.color = [180 0 180]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':';
                     case {'new2','acqimiqrnoiseup','renewdefimiqrpluswup'}; defaults.color = [180 0 100]/255; defaults.marker = '^'; defaults.linewidth = 2; defaults.linestyle = '-';

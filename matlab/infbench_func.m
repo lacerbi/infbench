@@ -78,6 +78,11 @@ if isempty(history)     % First function call, initialize log
     else
         history.NoiseIncrement = 0;        
     end
+    if isfield(probstruct,'NoiseEstimateJitter') && ~isempty(probstruct.NoiseEstimateJitter)
+        history.NoiseEstimateJitter = probstruct.NoiseEstimateJitter;
+    else
+        history.NoiseEstimateJitter = 0;        
+    end
     history.Func = probstruct.func;
     history.FuncHandle = str2func(probstruct.func);     % Removed later
     history.Mode = probstruct.Mode;
@@ -216,6 +221,11 @@ if ~debug
     if sigma > 0
         fval = fval + randn()*sigma;
         fsd = sqrt(fsd^2 + sigma^2);
+    end
+    
+    % Add jitter to estimated noise
+    if history.NoiseEstimateJitter > 0
+        fsd = fsd*exp(history.NoiseEstimateJitter*randn());
     end
 end
 

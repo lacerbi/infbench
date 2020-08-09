@@ -1,6 +1,16 @@
 function probstruct = infprob_init(probset,prob,subprob,noise,id,options)
 %INFPROB_INIT Initialize inference problem structure.
 
+
+% Separate noise
+if ischar(noise) && any(noise == 'j')
+    idx = find(noise == 'j',1);
+    NoiseEstimateJitter = str2double(noise(idx+1:end));
+    noise = noise(1:idx-1);
+else
+    NoiseEstimateJitter = 0;
+end
+
 % Initialize current problem
 problemfun = str2func(['infprob_' probset]);
 probstruct = problemfun(prob,subprob,noise,id,options);
@@ -36,6 +46,7 @@ probstruct.Debug = options.Debug;
 
 % Simulated noise
 probstruct.NoiseIncrement = 0;  % Default noise is homoskedastic
+probstruct.NoiseEstimateJitter = NoiseEstimateJitter;   % Jitter to estimated noise
 if isempty(probstruct.NoiseSigma)
     if isempty(probstruct.Noise)
         probstruct.NoiseSigma = 0; % No noise
