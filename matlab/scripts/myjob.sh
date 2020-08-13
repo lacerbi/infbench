@@ -40,7 +40,7 @@ echo ${PARAMS} ${VERBOSE} ${USEPRIOR}
 cat<<EOF | matlab -nodisplay
 %addpath(genpath('${HOME}/MATLAB'));
 cd('${WORKDIR}');
-options=struct('RootDirectory','${WORKDIR}','Display',${VERBOSE},'MaxFunEvalMultiplier',${MAXFUNMULT},'ProblemDirectory',${PROBLEMFOLDER});
+options=struct('RootDirectory','${WORKDIR}','Display',${VERBOSE},'MaxFunEvalMultiplier',${MAXFUNMULT},'ProblemDirectory',${PROBLEMFOLDER},'MaxStoredSamples',${MAXSAMPLES});
 ${PARAMS}
 infbench_run(${PARAMS},options);
 EOF
