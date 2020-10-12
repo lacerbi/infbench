@@ -58,8 +58,7 @@ Code used to generate figures in the paper [[3](#references)] is available in [t
 
 1. Acerbi, L. (2018). Variational Bayesian Monte Carlo. In *Advances in Neural Information Processing Systems 31*: 8222-8232. ([paper + supplement on arXiv](https://arxiv.org/abs/1810.05558), [NeurIPS Proceedings](https://papers.nips.cc/paper/8043-variational-bayesian-monte-carlo))
 2. Acerbi, L. (2019). An Exploration of Acquisition and Mean Functions in Variational Bayesian Monte Carlo. In *Proc. Machine Learning Research* 96: 1-10. 1st Symposium on Advances in Approximate Bayesian Inference, Montréal, Canada. ([paper in PMLR](http://proceedings.mlr.press/v96/acerbi19a.html))
-3. Acerbi, L. (2020). Variational Bayesian Monte Carlo with Noisy Likelihoods. arXiv preprint (to appear).
-
+3. Acerbi, L. (2020). Variational Bayesian Monte Carlo with Noisy Likelihoods. To appear in *Advances in Neural Information Processing Systems 33*. arXiv preprint arXiv:2006.08655 ([preprint on arXiv](https://arxiv.org/abs/2006.08655)).
 ### Contact
 
 This repository is currently actively used for research, stay tuned for updates:
