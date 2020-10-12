@@ -64,7 +64,7 @@ Code used to generate figures in the paper [[3](#references)] is available in [t
 This repository is currently actively used for research, stay tuned for updates:
 
 - [Follow me on Twitter](https://twitter.com/AcerbiLuigi) for updates about my work on model inference and other projects I am involved with;
-- If you have questions or comments about this work, get in touch at <luigi.acerbi@unige.ch> (putting 'infbench' in the subject of the email).
+- If you have questions or comments about this work, get in touch at <luigi.acerbi@helsinki.fi> (putting 'infbench' in the subject of the email).
 
 ### License
 
