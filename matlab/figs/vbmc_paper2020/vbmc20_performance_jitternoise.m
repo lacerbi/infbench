@@ -43,6 +43,8 @@ out = infbench_collect(prob_list,algo_list,basefolder,Nmax);
 ytick = [0.0001,0.001,0.01,0.1,1,10,1e2,1e3,1e4];
 yticklabel = {'10^{-4}','10^{-3}','0.01','0.1','1','10','100','10^3','10^4'};
 
+xticklabel = {'0','.1','.2','.3','.4','.5','.6','.7'};
+
 switch metric_idx
     case 1; ylims = [0.01,1e3]; ystring = 'LML loss'; logy_flag = true;
     case 2; ylims = [0,1]; ystring = 'MMTV'; ytick = 0:0.2:1; yticklabel = []; logy_flag = false;
@@ -88,11 +90,12 @@ set(gca,'Xlim',xlims,'Ylim',ylims,'YTick',ytick);
 if logy_flag
     set(gca,'Yscale','log','YMinorTick','off');
 end
+if ~isempty(xticklabel); set(gca,'XTickLabel',xticklabel); end
 if ~isempty(yticklabel); set(gca,'YTickLabel',yticklabel); end
 set(gca,'TickDir','out','TickLength',3*get(gca,'TickLength')); 
 set(gca,'XTick',jitter_levels,'FontSize',axesfontsize);
 box off;
-xlabel('Log-likelihood noise \sigma_{obs}','FontSize',fontsize);
+xlabel('Noise-estimation noise \sigma_\sigma','FontSize',fontsize);
 ylabel(ystring,'FontSize',fontsize);
 set(gcf,'Color','w');
 drawnow;
