@@ -353,6 +353,9 @@ switch algoset
     % Integrated mean function (tried a lot of variants - all unstable)
 %    case {400,'intmean'}; algoset = 'intmean'; algoptions = newdefaults; algoptions.gpIntMeanFun = 3; algoptions.gpMeanFun = 'zero'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 0;
 
+    % Extra stuff
+    case {401,'t2'}; algoset = 't2'; algoptions = renewdefaults; algoptions.Temperature = 2;
+
     % Tests
     case {501,'imiqrplusfit'}; algoset = 'imiqrplusfit'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.FitnessShaping = true; algoptions.OutwarpThreshBase = '20*(nvars+1)';
     
