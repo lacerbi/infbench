@@ -355,6 +355,7 @@ switch algoset
 
     % Extra stuff
     case {401,'t2'}; algoset = 't2'; algoptions = renewdefaults; algoptions.Temperature = 2;
+    case {402,'t2viqr'}; algoset = 't2viqr'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.Temperature = 2;
 
     % Tests
     case {501,'imiqrplusfit'}; algoset = 'imiqrplusfit'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.FitnessShaping = true; algoptions.OutwarpThreshBase = '20*(nvars+1)';
