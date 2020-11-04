@@ -444,10 +444,15 @@ if ~ControlRunFlag
         % Compute variational solution that VBMC would return at a given iteration
         t = tic();
         [vp,~,~,idx_best] = ...
-            best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack,algoptions.RankCriterion);                
+            best_vbmc(stats,idx,algoptions.BestSafeSD,algoptions.BestFracBack,algoptions.RankCriterion,0);
         [vp,elbo,elbo_sd] = ...
             finalboost_vbmc(vp,idx_best,[],stats,options_vbmc);
         gp = stats.gp(idx_best);    % Get GP corresponding to chosen iter
+        
+        % Convert training variational posterior to real variational posterior
+        vp = vptrain2real(vp,1);
+        elbo = vp.stats.elbo;
+        elbo_sd = vp.stats.elbo_sd;
         
         % Take actual runtime at the end of each iteration and add boost time
         history.ElapsedTime(iIter) = stats.timer(idx).totalruntime + toc(t);
