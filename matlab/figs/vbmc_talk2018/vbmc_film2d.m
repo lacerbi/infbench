@@ -35,7 +35,7 @@ if nargin < 2 || isempty(stats)
     for iAlgo = 1:Nalgos
         rng(0);
         options{iAlgo}.SpecifyTargetNoise = noisy_flag;
-        [~,~,~,~,~,~,stats{iAlgo}] = vbmc(fun,[-1 -1],-Inf,Inf,-3,3,options{iAlgo});
+        [~,~,~,~,~,~,~,stats{iAlgo}] = vbmc(fun,[-1 -1],-Inf,Inf,-3,3,options{iAlgo});
     end
 end
 if nargin < 3 || isempty(plotbnd)

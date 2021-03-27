@@ -77,6 +77,8 @@ algoptions.ActiveSamplefESSThresh = 1;
 algoptions.NoiseShaping = false;
 algoptions.NoiseShapingThreshold = 10*probstruct.D;
 algoptions.NoiseShapingFactor = 0.05;
+algoptions.WarpTolImprovement = 0.1;
+algoptions.WarpUndoCheck = true;
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -274,6 +276,7 @@ switch algoset
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
     case {103,'renewdef'}; algoset = 'renewdef'; algoptions = renewdefaults;
+    case {104,'renewdefnoroto'}; algoset = 'renewdef'; algoptions = renewdefaults; algoptions.WarpRotoScaling = false;
         
     % New defaults
     case {150,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -406,7 +409,7 @@ probstruct.AddLogPrior = true;
 algo_timer = tic;
 MinFinalComponents = algoptions.MinFinalComponents; % Skip final boosting here, do it later
 algoptions.MinFinalComponents = 0;
-[vp,elbo,elbo_sd,exitflag,~,output,stats] = ...
+[vp,elbo,elbo_sd,exitflag,~,~,output,stats] = ...
     vbmc(@(x) infbench_func(x,probstruct),x0,LB,UB,PLB,PUB,algoptions);
 TotalTime = toc(algo_timer);
 gp = vp.gp;
