@@ -111,7 +111,7 @@ switch lower(type)
             case 'vbmc'
                 switch algoset
                     % VBMC main paper
-                    case {'base','acqproreg'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-P';
+                    case {'base','acqproreg','renewdef'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-P';
                     case {'acqus','acqusreg'}; defaults.color = [180 0 80]/255; defaults.marker = '*'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-U';
                     case 'acqf2reg'; defaults.color = [0 100 140]/255; defaults.marker = 'o'; defaults.linewidth = 2; defaults.linestyle = '-'; defaults.name = 'vbmc-F';
                     case 'se'; defaults.color = [60 60 60]/255; defaults.marker = '*'; defaults.linewidth = 2; defaults.linestyle = ':';
