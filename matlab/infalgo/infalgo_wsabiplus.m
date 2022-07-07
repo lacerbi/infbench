@@ -15,6 +15,7 @@ algoptions.MaxFunEvals = probstruct.MaxFunEvals;
 algoptions.IgnoreNoise = false;
 algoptions.LCBFactor = 2; % Lower Confidence Bound parameter
 algoptions.PreciseSearch = true; % Assume zero noise during active search
+algoptions.BoundedTransform = 'logit';
 
 % Options from current problem
 switch algoset
@@ -22,6 +23,7 @@ switch algoset
     case {1,'base'}; algoset = 'base';           % Use defaults
     case {2,'mm'}; algoset = 'mm'; algoptions.Method = 'M';
     case {3,'ldet'}; algoset = 'ldet'; algoptions.Method = 'L'; algoptions.IgnoreNoise = true;        
+    case {4,'probit'}; algoset = 'probit'; algoptions.BoundedTransform = 'probit';
         
     otherwise
         error(['Unknown algorithm setting ''' algoset ''' for algorithm ''' algo '''.']);

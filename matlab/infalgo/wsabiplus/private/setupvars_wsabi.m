@@ -26,7 +26,17 @@ optimState.UBeps_orig = UB - (UB - LB)*options.TolBoundX;
 
 
 %% Transform variables
-trinfo = warpvars_wsabi(nvars,LB,UB,PLB,PUB);
+% Transform variables
+switch lower(options.BoundedTransform)
+    case 'logit'
+        trinfo = warpvars_wsabi(nvars,LB,UB,PLB,PUB,3);
+    case {'norminv','probit'}
+        trinfo = warpvars_wsabi(nvars,LB,UB,PLB,PUB,12);
+    case 'student4'
+        trinfo = warpvars_wsabi(nvars,LB,UB,PLB,PUB,13);
+    otherwise
+        error('wsabi:UnknwonBoundedTransform','Unknown bounded transform.');
+end
 trinfo.x0_orig = x0;
 if ~isfield(trinfo,'R_mat'); trinfo.R_mat = []; end
 if ~isfield(trinfo,'scale'); trinfo.scale = []; end

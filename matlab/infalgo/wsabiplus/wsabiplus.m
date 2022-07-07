@@ -43,6 +43,7 @@ defopts.PriorMean       = [];               % Gaussian prior mean
 defopts.PriorCov        = [];               % Gaussian prior covariance
 defopts.LCBFactor       = 0;                % Lower Confidence Bound parameter
 defopts.PreciseSearch   = true;             % Assume zero noise during active search?
+defopts.BoundedTransform = 'logit';         % Input transform for bounded variables
 
 for f = fields(defopts)'
     if ~isfield(options,f{:}) || isempty(options.(f{:}))
@@ -454,7 +455,7 @@ for t = 1:numSamples
         else
             s2hat_search = s2hat;
         end
-        acqfun = @(x) acqfun_name( transp(x), s2hat_search, lambda, VV, ...
+        acqfun = @(x) acqfun_name( x', s2hat_search, lambda, VV, ...
             lHatD, xxIterScaled, invKxx, jitterNoise, bb, BB, aa );
 
         if Nsearch > 0
