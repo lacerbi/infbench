@@ -8,7 +8,7 @@ module purge
 #. /etc/profile.d/modules.sh
 
 # Use Intel compiler
-module load matlab/2017a
+module load ${MATLAB_MODULE}
 source ${HOME}/MATLAB/setpath.sh
 export MATLABPATH=${MATLABPATH}
 WORKDIR="${SCRATCH}/${PROJECT}"

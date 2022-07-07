@@ -10,7 +10,7 @@ RUN=${1}
 INPUTFILE="${SCRATCH}/${PROJECT}/joblist-${1}.txt"
 MAXID=$(sed -n $= ${INPUTFILE})
 
-RUNTIME=18:00:00
+RUNTIME=2:00:00
 MAXRT=NaN
 VERBOSE=0
 MAXFUNMULT="[]"
@@ -41,9 +41,11 @@ cd ${WORKDIR}
 
 JOBNAME=${SHORTNAME}${RUN}
 
+#Submit jobs based on cluster name (defined in .bashrc)
 if [ ${CLUSTER} = "Prince" ]; then
-        # running on Prince
-        sbatch --error=slurm-%A_%a.err --verbose --array=${JOBLIST} --mail-type=FAIL --mail-user=${USER}@nyu.edu --mem=${MEM} --time=${RUNTIME} --nodes=${NODES} --ntasks-per-node=${PPN} --export=PROJECT=${PROJECT},RUN=${RUN},MAXID=$MAXID,WORKDIR=$WORKDIR,USER=$USER,MAXRT=$MAXRT,MAXSAMPLES=${MAXSAMPLES},INPUTFILE=${INPUTFILE},VERBOSE=${VERBOSE},MAXFUNMULT=${MAXFUNMULT} --job-name=${JOBNAME} ${JOBSCRIPT}
+        sbatch --error=slurm-%A_%a.err --verbose --array=${JOBLIST} --mail-type=FAIL --mail-user=${USEREMAIL} --mem=${MEM} --time=${RUNTIME} --nodes=${NODES} --ntasks-per-node=${PPN} --export=PROJECT=${PROJECT},MATLAB_MODULE=${MATLAB_MODULE},RUN=${RUN},MAXID=$MAXID,WORKDIR=$WORKDIR,USER=$USER,MAXRT=$MAXRT,MAXSAMPLES=${MAXSAMPLES},INPUTFILE=${INPUTFILE},VERBOSE=${VERBOSE},MAXFUNMULT=${MAXFUNMULT} --job-name=${JOBNAME} ${JOBSCRIPT}
+elif [ ${CLUSTER} = "Turso" ]; then
+        sbatch --error=slurm-%A_%a.err --verbose --array=${JOBLIST} --clusters=ukko,vorna --partition=short,medium --mail-type=FAIL --mail-user=${USEREMAIL} --mem=${MEM} --time=${RUNTIME} --nodes=${NODES} --ntasks-per-node=${PPN} --export=PROJECT=${PROJECT},MATLAB_MODULE=${MATLAB_MODULE},RUN=${RUN},MAXID=$MAXID,WORKDIR=$WORKDIR,USER=$USER,MAXRT=$MAXRT,MAXSAMPLES=${MAXSAMPLES},INPUTFILE=${INPUTFILE},VERBOSE=${VERBOSE},MAXFUNMULT=${MAXFUNMULT} --job-name=${JOBNAME} ${JOBSCRIPT}
 else
 	qsub -t ${JOBLIST} -q normal -v PROJECT=${PROJECT},RUN=${RUN},MAXID=$MAXID,WORKDIR=$WORKDIR,USER=$USER,MAXRT=$MAXRT,MAXSAMPLES=${MAXSAMPLES},INPUTFILE=${INPUTFILE},VERBOSE=${VERBOSE},USEPRIOR=${USEPRIOR},TOLFUN=${TOLFUN},MAXFUNMULT=${MAXFUNMULT},STOPSUCCRUNS=${STOPSUCCRUNS} -l ${RESOURCES} -M ${USER}@nyu.edu -N ${JOBNAME} ${JOBSCRIPT}
 fi
