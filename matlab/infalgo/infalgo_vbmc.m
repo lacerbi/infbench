@@ -1,17 +1,30 @@
-function [history,post,algoptions] = infalgo_vbmc(algo,algoset,probstruct)
+function [history,post,algoptions] = infalgo_vbmc(algo,algoset,probstruct,getoptions)
+
+if nargin < 4 || isempty(getoptions)
+    getoptions = false;
+end
 
 algoptions = vbmc('all');                   % Get default settings
 
 ControlRunFlag = false;     % Do NOT run in control mode
 
-algoptions.MinFunEvals = probstruct.MaxFunEvals;
-algoptions.MaxFunEvals = probstruct.MaxFunEvals;
+if nargin < 3 || isempty(probstruct)
+    probstruct.MinFunEvals = algoptions.MinFunEvals;
+    probstruct.MaxFunEvals = algoptions.MaxFunEvals;
+    probstruct.D = 5;
+    probstruct.Debug = false;
+    probstruct.InitPoint = zeros(1,probstruct.D);
+    probstruct.Noise = [];
+    probstruct.IntrinsicNoisy = false;
+else
+    algoptions.MinFunEvals = probstruct.MaxFunEvals;
+    algoptions.MaxFunEvals = probstruct.MaxFunEvals;
+end
 
-% VBMC old defaults -- some of these may have changed
+% Default VBMC options as of 1.0.9
 algoptions.FunEvalsPerIter = 5;
 algoptions.AcqFcn = '@vbmc_acqskl';
 algoptions.SearchAcqFcn = '@acqf_vbmc';
-algoptions.gpMeanFun = 'negquad';
 algoptions.SearchOptimizer = 'cmaes';
 algoptions.MinIter = 0;     % No limits on iterations
 algoptions.MaxIter = Inf;
@@ -22,63 +35,71 @@ algoptions.BestFracBack = 0.25;
 algoptions.Diagnostics = 'on';
 algoptions.InitDesign = 'plausible';    % Initial design uniform in plausible box
 algoptions.EmpiricalGPPrior = 'yes';
-algoptions.WarmupNoImproThreshold = Inf; 
 algoptions.TolStableWarmup = 15;
 algoptions.TolStableExceptions = 1/8;
-algoptions.TolStableCount = 40;
-algoptions.WarmupCheckMax = false;
-algoptions.SGDStepSize = 0.01;
-algoptions.RankCriterion = false;
+algoptions.RankCriterion = true;
 algoptions.EmpiricalGPPrior = true;
 algoptions.gpQuadraticMeanBound = false;
 algoptions.WarmupOptions = [];
-algoptions.WarmupKeepThreshold = '10*nvars';
-algoptions.PruningThresholdMultiplier = 1;
-algoptions.NSent = @(K) 100*K;
-algoptions.NSentFast = @(K) 100*K;
-algoptions.NSentFine = @(K) 2^15*K;
-algoptions.NSentBoost = [];
 algoptions.NSentFastBoost = [];
 algoptions.NSentFineBoost = [];
 algoptions.ActiveVariationalSamples = 0;
 algoptions.GPTrainNinit = 1024;
-algoptions.GPTrainNinitFinal = 1024;
 algoptions.DetEntropyAlpha = 0;
-algoptions.GPTrainInitMethod = 'sobol';
 algoptions.VariationalInitRepo = false;
-algoptions.MaxIterStochastic = Inf;
-algoptions.GPSampleThin = 5;
-algoptions.GPTolOpt = 1e-6;
-algoptions.GPTolOptMCMC = 0.1;
-algoptions.StopWarmupReliability = Inf;
-algoptions.WarmupKeepThresholdFalseAlarm = [];
-algoptions.SearchMaxFunEvals = Inf;
 algoptions.UpperGPLengthFactor = 0;
 algoptions.TolGPVarMCMC = 1e-4;
-algoptions.StableGPvpK = Inf;
-algoptions.SkipActiveSamplingAfterWarmup = true;
 algoptions.PosteriorMCMC = 0;
 algoptions.VarThresh = Inf;
-algoptions.TolGPNoise = 1e-3;
-algoptions.GPLengthPriorMean = 0.05;
-algoptions.GPLengthPriorStd = log(10);
-algoptions.ActiveSearchBound = Inf;
-algoptions.BoxSearchFrac = 0;
 algoptions.ActiveImportanceSamplingMCMCSamples = 100;
 algoptions.MaxRepeatedObservations = 0;
-algoptions.WarpRotoScaling = false;
 algoptions.WarpMinK = 5;
 algoptions.ActiveSampleVPUpdate = false;
 algoptions.ActiveSampleGPUpdate = false;
 algoptions.ActiveSampleFullUpdatePastWarmup = 2;
 algoptions.ActiveSampleFullUpdateThreshold = 3;
-algoptions.RecomputeLCBmax = false;
 algoptions.ActiveSamplefESSThresh = 1;
 algoptions.NoiseShaping = false;
 algoptions.NoiseShapingThreshold = 10*probstruct.D;
 algoptions.NoiseShapingFactor = 0.05;
 algoptions.WarpTolImprovement = 0.1;
 algoptions.WarpUndoCheck = true;
+algoptions.PruningThresholdMultiplier = @(K) 1/sqrt(K);
+algoptions.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
+algoptions.TolStableExcptFrac = 0.2;
+algoptions.TolStableCount = 60;
+algoptions.WarmupCheckMax = true;
+algoptions.SGDStepSize = 0.005;
+algoptions.NSentFine = '@(K) 2^12*K';
+algoptions.NSentFast = 0;
+algoptions.gpMeanFun = 'negquad';
+algoptions.GPTrainInitMethod = 'rand';
+algoptions.GPTrainNinitFinal = 64;
+algoptions.StopWarmupReliability = 100;
+algoptions.WarmupKeepThresholdFalseAlarm = '100*(D+2)';
+algoptions.NSentActive = '@(K) 20*K.^(2/3)';
+algoptions.NSentBoost = '@(K) 200*K.^(2/3)';
+algoptions.SkipActiveSamplingAfterWarmup = 0;
+algoptions.TolGPNoise = sqrt(1e-5);
+algoptions.WarpRotoCorrThresh = 0.05;
+algoptions.EmpiricalGPPrior = 0;
+algoptions.GPLengthPriorMean = 'sqrt(D/6)';
+algoptions.GPLengthPriorStd = 0.5*log(1e3);
+algoptions.ActiveSearchBound = 2; 
+algoptions.BoxSearchFrac = 0.25;
+algoptions.GPTolOpt = 1e-5;
+algoptions.GPTolOptMCMC = 1e-2;
+algoptions.gpQuadraticMeanBound = 1;
+algoptions.NSent = '@(K) 100*K.^(2/3)';
+algoptions.MaxIterStochastic = '100*(2+nvars)';
+algoptions.SearchMaxFunEvals = '500*(D+2)';
+algoptions.GPSampleThin = 5;
+algoptions.StableGPvpK = Inf;
+algoptions.WarmupKeepThreshold = '10*D';
+algoptions.RecomputeLCBmax = true;
+algoptions.MinFinalComponents = 50;
+algoptions.WarpRotoScaling = true;
+algoptions.BoundedTransform = 'logit';
 
 if probstruct.Debug
     algoptions.TrueMean = probstruct.Post.Mean;
@@ -108,89 +129,11 @@ if numel(algoset) >= 3 && strcmpi(algoset(1:3),'vas')
     algoptions.FunEvalsPerIter = 1;
 end
 
-% New VBMC defaults (need to be set manually here)
-newdefaults = algoptions;
-newdefaults.MinFinalComponents = 50;
-newdefaults.WarmupKeepThreshold = '100*(D+2)';
-newdefaults.PruningThresholdMultiplier = @(K) 1/sqrt(K);
-newdefaults.gpQuadraticMeanBound = 1;
-newdefaults.EmpiricalGPPrior = 0;
-newdefaults.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
-newdefaults.TolStableExcptFrac = 0.2;
-newdefaults.TolStableCount = 50;
-newdefaults.WarmupCheckMax = true;
-newdefaults.SGDStepSize = 0.005;
-newdefaults.NSentFine = '@(K) 2^12*K';
-newdefaults.NSentFast = 0;
-newdefaults.gpMeanFun = 'negquad';
-newdefaults.GPTrainInitMethod = 'rand';
-newdefaults.GPTrainNinitFinal = 64;
-newdefaults.MaxIterStochastic = '100*(2+nvars)';
-newdefaults.GPTolOpt = 1e-5;
-newdefaults.GPTolOptMCMC = 1e-2;
-newdefaults.StopWarmupReliability = 100;
-newdefaults.WarmupKeepThresholdFalseAlarm = '100*(D+2)';
-newdefaults.SearchMaxFunEvals = '500*(D+2)';
-newdefaults.NSentActive = '@(K) 20*K.^(2/3)';
-newdefaults.NSent = '@(K) 100*K.^(2/3)';
-newdefaults.NSentBoost = '@(K) 200*K.^(2/3)';
-newdefaults.SkipActiveSamplingAfterWarmup = 0;
-newdefaults.TolGPNoise = sqrt(1e-5);
-newdefaults.GPLengthPriorMean = 'sqrt(D/6)';
-newdefaults.GPLengthPriorStd = 0.5*log(1e3);
-newdefaults.ActiveSearchBound = 2; 
-newdefaults.BoxSearchFrac = 0.25;
-newdefaults.WarpRotoCorrThresh = 0.05;
-%newdefaults.GPSampleThin = 1;
-%newdefaults.StableGPvpK = 10;
-newdefaults.GPSampleThin = 5;
-newdefaults.StableGPvpK = Inf;
-newdefaults.RecomputeLCBmax = true;
-
-% Restart setting VBMC defaults (need to be set manually here)
-renewdefaults = algoptions;
-renewdefaults.PruningThresholdMultiplier = @(K) 1/sqrt(K);
-renewdefaults.WarmupNoImproThreshold = 20 + 5*numel(probstruct.InitPoint);
-renewdefaults.TolStableExcptFrac = 0.2;
-renewdefaults.TolStableCount = 60;
-renewdefaults.WarmupCheckMax = true;
-renewdefaults.SGDStepSize = 0.005;
-renewdefaults.NSentFine = '@(K) 2^12*K';
-renewdefaults.NSentFast = 0;
-renewdefaults.gpMeanFun = 'negquad';
-renewdefaults.GPTrainInitMethod = 'rand';
-renewdefaults.GPTrainNinitFinal = 64;
-renewdefaults.StopWarmupReliability = 100;
-renewdefaults.WarmupKeepThresholdFalseAlarm = '100*(D+2)';
-renewdefaults.NSentActive = '@(K) 20*K.^(2/3)';
-renewdefaults.NSentBoost = '@(K) 200*K.^(2/3)';
-renewdefaults.SkipActiveSamplingAfterWarmup = 0;
-renewdefaults.TolGPNoise = sqrt(1e-5);
-renewdefaults.WarpRotoCorrThresh = 0.05;
-renewdefaults.EmpiricalGPPrior = 0;
-renewdefaults.GPLengthPriorMean = 'sqrt(D/6)';
-renewdefaults.GPLengthPriorStd = 0.5*log(1e3);
-renewdefaults.ActiveSearchBound = 2; 
-renewdefaults.BoxSearchFrac = 0.25;
-renewdefaults.GPTolOpt = 1e-5;
-renewdefaults.GPTolOptMCMC = 1e-2;
-renewdefaults.gpQuadraticMeanBound = 1;
-renewdefaults.NSent = '@(K) 100*K.^(2/3)';
-renewdefaults.MaxIterStochastic = '100*(2+nvars)';
-renewdefaults.SearchMaxFunEvals = '500*(D+2)';
-renewdefaults.GPSampleThin = 5;
-renewdefaults.StableGPvpK = Inf;
-renewdefaults.WarmupKeepThreshold = '10*D';
-renewdefaults.RecomputeLCBmax = true;
-renewdefaults.MinFinalComponents = 50;
-renewdefaults.WarpRotoScaling = true;
-
 % Changing these options reduces performance on noisy datasets (for
 % uncertainty sampling acquisition function)
-%renewdefaults.StableGPvpK = 10;
-%renewdefaults.GPSampleThin = 3;
-%renewdefaults.WarmupKeepThreshold = '100*(D+2)';
-
+% algoptions.StableGPvpK = 10;
+% algoptions.GPSampleThin = 3;
+% algoptions.WarmupKeepThreshold = '100*(D+2)';
 
 % Options from current problem
 switch algoset
@@ -275,8 +218,8 @@ switch algoset
     % Final testing
     case {101,'oldsettings'}; algoset = 'oldsettings';
     case {102,'newbase'}; algoset = 'newbase'; algoptions = newdefaults; algoptions.SearchAcqFcn = '@acqf_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
-    case {103,'renewdef'}; algoset = 'renewdef'; algoptions = renewdefaults;
-    case {104,'renewdefnoroto'}; algoset = 'renewdef'; algoptions = renewdefaults; algoptions.WarpRotoScaling = false;
+    case {103,'renewdef'}; algoset = 'renewdef'; algoptions = algoptions;
+    case {104,'renewdefnoroto'}; algoset = 'renewdef'; algoptions = algoptions; algoptions.WarpRotoScaling = false;
         
     % New defaults
     case {150,'newdef'}; algoset = 'newdef'; algoptions = newdefaults;
@@ -286,60 +229,60 @@ switch algoset
     case {160,'newdefdebug'}; algoset = 'newdefdebug'; algoptions = newdefaults; algoptions.MinFinalComponents = 0;
         
     % Noisy paper (base and variants)
-    case {201,'eig'}; algoset = 'eig';      algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc;             algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {202,'npro'}; algoset = 'npro';    algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc;            algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {203,'viqr'}; algoset = 'viqr';    algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;            algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
-    case {204,'imiqr'}; algoset = 'imiqr';  algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc;           algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.ActiveImportanceSamplingMCMCThin = 5;
-    case {211,'viqrnoroto'}; algoset = 'viqrnoroto'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;   algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
-    case {212,'viqrnogp'}; algoset = 'viqrnogp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;       algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
+    case {201,'eig'}; algoset = 'eig';      algoptions.SearchAcqFcn = @acqeig_vbmc;             algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {202,'npro'}; algoset = 'npro';    algoptions.SearchAcqFcn = @acqfsn2_vbmc;            algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {203,'viqr'}; algoset = 'viqr';    algoptions.SearchAcqFcn = @acqviqr_vbmc;            algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
+    case {204,'imiqr'}; algoset = 'imiqr';  algoptions.SearchAcqFcn = @acqimiqr_vbmc;           algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.ActiveImportanceSamplingMCMCThin = 5;
+    case {211,'viqrnoroto'}; algoset = 'viqrnoroto'; algoptions.SearchAcqFcn = @acqviqr_vbmc;   algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+    case {212,'viqrnogp'}; algoset = 'viqrnogp'; algoptions.SearchAcqFcn = @acqviqr_vbmc;       algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0;
 
     % Old names
-    case {251,'renewdefmipluswup4gpsvp'}; algoset = 'renewdefmipluswup4gpsvp';          algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc;          algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {260,'renewdefimiqrpluswup5noacq'}; algoset = 'renewdefimiqrpluswup5noacq';    algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc;        algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {259,'renewdefvarimiqrpluswup5fast'}; algoset = 'renewdefvarimiqrpluswup5fast';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
-    case {264,'renewdefimiqrplus5longvpgps'}; algoset = 'renewdefimiqrplus5longvpgps';  algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc;       algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.ActiveImportanceSamplingMCMCThin = 5;
+    case {251,'renewdefmipluswup4gpsvp'}; algoset = 'renewdefmipluswup4gpsvp';          algoptions = algoptions; algoptions.SearchAcqFcn = @acqeig_vbmc;          algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {260,'renewdefimiqrpluswup5noacq'}; algoset = 'renewdefimiqrpluswup5noacq';    algoptions = algoptions; algoptions.SearchAcqFcn = @acqfsn2_vbmc;        algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {259,'renewdefvarimiqrpluswup5fast'}; algoset = 'renewdefvarimiqrpluswup5fast';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100;
+    case {264,'renewdefimiqrplus5longvpgps'}; algoset = 'renewdefimiqrplus5longvpgps';  algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqr_vbmc;       algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.ActiveImportanceSamplingMCMCThin = 5;
         
     % Noise
     case {231,'acqsn2'}; algoset = 'acqsn2'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2reg_vbmc; algoptions.Plot = 0; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupKeepThreshold = '1e3*(nvars+2)'; algoptions.WarmupKeepThresholdFalseAlarm = '1e3*(nvars+2)'; algoptions.MaxRepeatedObservations = 0; algoptions.PosteriorMCMC = 2e4; algoptions.VarThresh = 1;
     % case {202,'heur'}; algoset = 'heur'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2regtrheur_vbmc; algoptions.Plot = 1; algoptions.ActiveSampleFullUpdate = 1;
     case {235,'acqnoise'}; algoset = 'acqnoise'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1;
     case {237,'acqnoisemcmc'}; algoset = 'acqnoisemcmc'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.PosteriorMCMC = 2e4;    
-    case {238,'renewdefnoise'}; algoset = 'renewdefnoise'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
-    case {239,'renewdefnoiseplus'}; algoset = 'renewdefnoiseplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSampleFullUpdate = 2;
+    case {238,'renewdefnoise'}; algoset = 'renewdefnoise'; algoptions = algoptions; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 0; algoptions.MinFinalComponents = 0;
+    case {239,'renewdefnoiseplus'}; algoset = 'renewdefnoiseplus'; algoptions = algoptions; algoptions.SearchAcqFcn = '@acqfsn2_vbmc'; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSampleFullUpdate = 2;
 
-    case {240,'renewdefimiqrplus'}; algoset = 'renewdefimiqrplus'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {241,'renewdefimiqrpluswup'}; algoset = 'renewdefimiqrpluswup'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupOptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;        
-    case {248,'renewdefmipluswup4'}; algoset = 'renewdefmipluswup4'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {249,'renewdefmipluswup4gps'}; algoset = 'renewdefmipluswup4gps'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {250,'renewdefmipluswup4vp'}; algoset = 'renewdefmipluswup4'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {254,'renewdefmipluswup4gpsvplcbmix'}; algoset = 'renewdefmipluswup4gpsvp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.RecomputeLCBmax = true;
-    case {256,'renewdefimiqrpluswup5'}; algoset = 'renewdefimiqrpluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {257,'renewdefimiqrvppluswup5'}; algoset = 'renewdefimiqrvppluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqrvp_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {258,'renewdefvarimiqrpluswup5vp'}; algoset = 'renewdefvarimiqrpluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {240,'renewdefimiqrplus'}; algoset = 'renewdefimiqrplus'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {241,'renewdefimiqrpluswup'}; algoset = 'renewdefimiqrpluswup'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.WarmupOptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;        
+    case {248,'renewdefmipluswup4'}; algoset = 'renewdefmipluswup4'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqeig_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {249,'renewdefmipluswup4gps'}; algoset = 'renewdefmipluswup4gps'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqeig_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {250,'renewdefmipluswup4vp'}; algoset = 'renewdefmipluswup4'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqeig_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {254,'renewdefmipluswup4gpsvplcbmix'}; algoset = 'renewdefmipluswup4gpsvp'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqeig_vbmc; algoptions.WarmupOptions.SearchAcqFcn = @acqfsn2_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.RecomputeLCBmax = true;
+    case {256,'renewdefimiqrpluswup5'}; algoset = 'renewdefimiqrpluswup5'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {257,'renewdefimiqrvppluswup5'}; algoset = 'renewdefimiqrvppluswup5'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqrvp_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {258,'renewdefvarimiqrpluswup5vp'}; algoset = 'renewdefvarimiqrpluswup5'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
         
-    case {261,'renewdefvarimiqrpluswup5vpfmincon'}; algoset = 'renewdefvarimiqrpluswup5'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSsearch = 2^11;
-    case {262,'renewdefimiqrplus5long'}; algoset = 'renewdefimiqrplus5long'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500; algoptions.ActiveImportanceSamplingMCMCThin = 11;
-    case {263,'renewdefimiqrplus5longvp'}; algoset = 'renewdefimiqrplus5long'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500; algoptions.ActiveImportanceSamplingMCMCThin = 11;
-    case {265,'renewdeffimiqrpluswup5vp'}; algoset = 'renewdeffimiqrpluswup5vp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCThin = 5;
-    case {266,'renewdeffimiqrpluswup5vpfess'}; algoset = 'renewdeffimiqrpluswup5vpfess'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCThin = 5; algoptions.ActiveSamplefESSThresh = 0.75;
-    case {267,'renewdefvarimiqrmixpluswup5vp'}; algoset = 'renewdefvarimiqrmixpluswup5vp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqvarimiqrmix_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
-    case {268,'renewdefvarimiqrpluswup5fastfess'}; algoset = 'renewdefvarimiqrpluswup5fastfess'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSamplefESSThresh = 0.75;
+    case {261,'renewdefvarimiqrpluswup5vpfmincon'}; algoset = 'renewdefvarimiqrpluswup5'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSsearch = 2^11;
+    case {262,'renewdefimiqrplus5long'}; algoset = 'renewdefimiqrplus5long'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500; algoptions.ActiveImportanceSamplingMCMCThin = 11;
+    case {263,'renewdefimiqrplus5longvp'}; algoset = 'renewdefimiqrplus5long'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500; algoptions.ActiveImportanceSamplingMCMCThin = 11;
+    case {265,'renewdeffimiqrpluswup5vp'}; algoset = 'renewdeffimiqrpluswup5vp'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqfimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCThin = 5;
+    case {266,'renewdeffimiqrpluswup5vpfess'}; algoset = 'renewdeffimiqrpluswup5vpfess'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqfimiqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCThin = 5; algoptions.ActiveSamplefESSThresh = 0.75;
+    case {267,'renewdefvarimiqrmixpluswup5vp'}; algoset = 'renewdefvarimiqrmixpluswup5vp'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqvarimiqrmix_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {268,'renewdefvarimiqrpluswup5fastfess'}; algoset = 'renewdefvarimiqrpluswup5fastfess'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveSamplefESSThresh = 0.75;
 
-    case {270,'viqrnorminv'}; algoset = 'viqrnorminv';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.BoundedTransform = 'norminv';
-    case {271,'viqrstudent4'}; algoset = 'viqrstudent4';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.BoundedTransform = 'student4';
-    case {272,'viqr500'}; algoset = 'viqr500';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500;
-    case {274,'viqrlaplace'}; algoset = 'viqrlaplace'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.GPHypSampler = 'laplace';
-    case {275,'viqrnpv'}; algoset = 'viqrnpv'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.GPHypSampler = 'npv';
-    case {277,'viqrnogplate'}; algoset = 'viqrnogplate'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxMain = 0;
-    case {278,'viqr2gp'}; algoset = 'viqr2gp'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.DoubleGP = true;
-    case {279,'viqrnegquadmix'}; algoset = 'renewdefvarimiqrpluswup5fast';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.gpMeanFun = 'negquadmix';
-    case {280,'viqrnotrim'}; algoset = 'viqrnotrim';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf;        
-    case {281,'eignotrim'}; algoset = 'eignotrim';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqeig_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf;        
-    case {282,'npronotrim'}; algoset = 'npronotrim';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqfsn2_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf;        
-    case {283,'imiqrnotrim'}; algoset = 'imiqrnotrim';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf; algoptions.ActiveImportanceSamplingMCMCThin = 5;
-    case {284,'viqrnotrimshape'}; algoset = 'viqrnotrimshape';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf; algoptions.NoiseShaping = 1;
-    case {285,'viqrt2'}; algoset = 'viqrt2';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.Temperature = 2;
-    case {286,'viqrelcbo'}; algoset = 'viqrelcbo';algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.OptimisticVariationalBound = 0.6745; algoptions.ELCBOWeight = -0.6745;
+    case {270,'viqrnorminv'}; algoset = 'viqrnorminv';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.BoundedTransform = 'norminv';
+    case {271,'viqrstudent4'}; algoset = 'viqrstudent4';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.BoundedTransform = 'student4';
+    case {272,'viqr500'}; algoset = 'viqr500';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 500;
+    case {274,'viqrlaplace'}; algoset = 'viqrlaplace'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.GPHypSampler = 'laplace';
+    case {275,'viqrnpv'}; algoset = 'viqrnpv'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.GPHypSampler = 'npv';
+    case {277,'viqrnogplate'}; algoset = 'viqrnogplate'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.NSgpMaxMain = 0;
+    case {278,'viqr2gp'}; algoset = 'viqr2gp'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.DoubleGP = true;
+    case {279,'viqrnegquadmix'}; algoset = 'renewdefvarimiqrpluswup5fast';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.gpMeanFun = 'negquadmix';
+    case {280,'viqrnotrim'}; algoset = 'viqrnotrim';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf;        
+    case {281,'eignotrim'}; algoset = 'eignotrim';algoptions = algoptions; algoptions.SearchAcqFcn = @acqeig_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf;        
+    case {282,'npronotrim'}; algoset = 'npronotrim';algoptions = algoptions; algoptions.SearchAcqFcn = @acqfsn2_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf;        
+    case {283,'imiqrnotrim'}; algoset = 'imiqrnotrim';algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf; algoptions.ActiveImportanceSamplingMCMCThin = 5;
+    case {284,'viqrnotrimshape'}; algoset = 'viqrnotrimshape';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.WarmupKeepThresholdFalseAlarm = Inf; algoptions.WarmupKeepThreshold = Inf; algoptions.NoiseShaping = 1;
+    case {285,'viqrt2'}; algoset = 'viqrt2';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.Temperature = 2;
+    case {286,'viqrelcbo'}; algoset = 'viqrelcbo';algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc;    algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.OptimisticVariationalBound = 0.6745; algoptions.ELCBOWeight = -0.6745;
 
     % Information-theoretic
     case {302,'acqmi'}; algoset = 'acqmi'; algoptions = newdefaults; algoptions.SearchAcqFcn = @acqmireg_vbmc; algoptions.ActiveSampleFullUpdate = 1; % Needs to be rerun on base/no-noise
@@ -357,20 +300,21 @@ switch algoset
 %    case {400,'intmean'}; algoset = 'intmean'; algoptions = newdefaults; algoptions.gpIntMeanFun = 3; algoptions.gpMeanFun = 'zero'; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.Plot = 0;
 
     % Extra stuff
-    case {401,'t2'}; algoset = 't2'; algoptions = renewdefaults; algoptions.Temperature = 2;
-    case {402,'t2viqr'}; algoset = 't2viqr'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.Temperature = 2;
+    case {401,'t2'}; algoset = 't2'; algoptions = algoptions; algoptions.Temperature = 2;
+    case {402,'t2viqr'}; algoset = 't2viqr'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.ActiveImportanceSamplingMCMCSamples = 100; algoptions.Temperature = 2;
 
     % Tests
-    case {501,'imiqrplusfit'}; algoset = 'imiqrplusfit'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.FitnessShaping = true; algoptions.OutwarpThreshBase = '20*(nvars+1)';
+    case {501,'imiqrplusfit'}; algoset = 'imiqrplusfit'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqimiqr_vbmc; algoptions.NSgpMaxWarmup = 0; algoptions.NSgpMaxMain = 0; algoptions.ActiveSampleFullUpdate = 2; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50; algoptions.FitnessShaping = true; algoptions.OutwarpThreshBase = '20*(nvars+1)';
 
     % Tests 2022
-    case {601,'probit'}; algoset = 'probit'; algoptions = renewdefaults; algoptions.BoundedTransform = 'probit';
+    case {600,'basenew'}; algoset = 'basenew';
+    case {601,'probit'}; algoset = 'probit'; algoptions.BoundedTransform = 'probit';
                     
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
     
     % New features    
-    case {10000,'newfeat'}; algoset = 'newfeat'; algoptions = renewdefaults; algoptions.SearchAcqFcn = @acqbald_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
+    case {10000,'newfeat'}; algoset = 'newfeat'; algoptions = algoptions; algoptions.SearchAcqFcn = @acqbald_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.WarpRotoScaling = 1; algoptions.MinFinalComponents = 50;
         
         
     otherwise
@@ -398,6 +342,13 @@ if ~isempty(probstruct.Noise) || probstruct.IntrinsicNoisy
     % algoptions.TolStableWarmup = algoptions.TolStableWarmup*2;    
 else
     algoptions.UncertaintyHandling = 'off';
+end
+
+% If GETOPTIONS is true, just return the algorithm options
+if getoptions
+    history = algoptions;
+    post = probstruct;
+    return;
 end
 
 PLB = probstruct.PLB;
