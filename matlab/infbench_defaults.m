@@ -138,7 +138,7 @@ switch lower(type)
                     %case {'renewdefvarimiqrpluswup5vp'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-viqr';
                     case {'renewdefvarimiqrpluswup5fast'}; defaults.color = [0 0 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-viqr';
                     case {'viqrnorminv'}; defaults.color = [70 70 200]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-viqr (norminv)';
-                    case {'newbase'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = '-';
+                    case {'newbase','basenew'}; defaults.color = [180 0 80]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = '-'; defaults.name = 'vbmc-base';
 %                    case {'renewdefmipluswup4gpsvp'}; defaults.color = [180 100 0]/255; defaults.marker = ''; defaults.linewidth = 3; defaults.linestyle = '-.'; defaults.name = 'vbmc-eig';
                     case {'acqmidtstep1_100','ent2','renewdefnoise'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = '-';
                     case {'viqrnogp'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':'; defaults.name = 'vbmc-map';
@@ -149,6 +149,7 @@ switch lower(type)
                     case {'renewdefimiqrplus5longvpgps'}; defaults.color = [31,120,180]/255; defaults.marker = '^'; defaults.linewidth = 3; defaults.linestyle = ':'; defaults.name = 'vbmc-imiqr';
                     case {'viqrnotrim'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 3; defaults.linestyle = '-';
                     case {'viqrnoroto'}; defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 3; defaults.linestyle = '--'; defaults.name = 'vbmc-nowv';
+                    case {'probit'}; defaults.color = [250 0 80]/255; defaults.marker = '+'; defaults.linewidth = 2; defaults.linestyle = ':'; defaults.name = 'vbmc-probit';
                         
                     otherwise
                         defaults.color = [0 80 250]/255; defaults.marker = '+'; defaults.linewidth = 3; defaults.linestyle = '-.';
