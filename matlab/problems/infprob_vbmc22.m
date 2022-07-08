@@ -1,7 +1,7 @@
 function probstruct = infprob_vbmc22(prob,subprob,noise,id,options)
 
 % Problem names (ordered)
-problist = {'beta'};
+problist = {'beta','conbananas'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
@@ -26,6 +26,7 @@ probstruct.PriorType = 'uniform';   % Use uniform prior
 
 switch prob
     case 'beta'
+    case 'conbananas'
     otherwise
 end
 
