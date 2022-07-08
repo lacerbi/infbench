@@ -309,7 +309,9 @@ switch algoset
     % Tests 2022
     case {600,'basenew'}; algoset = 'basenew';
     case {601,'probit'}; algoset = 'probit'; algoptions.BoundedTransform = 'probit';
-                    
+    case {602,'noisynew'}; algoset = 'noisynew'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
+    case {603,'noisyprobit'}; algoset = 'noisyprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
+             
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
     
