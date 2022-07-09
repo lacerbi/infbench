@@ -394,6 +394,9 @@ if ~ControlRunFlag
     fprintf('%d..',0);
     [post.gsKL,post.Mean,post.Cov,post.Mode,post.MTV,post.samples,post.Test] = ...
         computeStats(vp,gp,probstruct,algoptions.PosteriorMCMC,algoptions.VarThresh);
+    
+    % Store final VP (includes final GP)
+    post.vp = vp;
 
     % Return estimate, SD of the estimate, and gauss-sKL with true moments
     Nticks = numel(history.SaveTicks);
@@ -497,8 +500,13 @@ for i = 1:numel(stats.gp)
     end
 end
 stats.gpHypFull = [];   % Too bulky
-    
-history.Output.stats = stats;
+
+% Save VBMC statistics only in debug mode (too bulky otherwise)
+if probstruct.Debug
+    history.Output.stats = stats;
+else
+    history.Output.stats = [];
+end
 
 end
 
