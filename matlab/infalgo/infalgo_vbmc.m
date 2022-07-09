@@ -313,6 +313,7 @@ switch algoset
     case {603,'noisyprobit'}; algoset = 'noisyprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
              
     case {610,'acqfnpprobit'}; algoset = 'acqfnpprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfnp_vbmc;
+    case {611,'acqfsn2npprobit'}; algoset = 'acqfsn2npprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfsn2np_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
         
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
