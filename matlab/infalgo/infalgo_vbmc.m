@@ -312,6 +312,8 @@ switch algoset
     case {602,'noisynew'}; algoset = 'noisynew'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
     case {603,'noisyprobit'}; algoset = 'noisyprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
              
+    case {610,'acqfnpprobit'}; algoset = 'acqfnpprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfnp_vbmc;
+        
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
     
