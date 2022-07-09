@@ -47,15 +47,30 @@ case "${1}" in
 		ALGOS="{'vbmc'}"
 		ALGOSET="{'basenew','probit'}"
 		DIMS="{'P411','P431','P461','P491','P433'}"
-		IDS="{'1:20'}"
+		IDS=${IDS}
 		;;
         2)      PROBS="{'beta'}"
                 ALGOS="{'vbmc'}"
-                ALGOSET="{'basenew','probit'}"
+                ALGOSET="{'noisynew','noisyprobit'}"
                 DIMS="{'P411','P431','P461','P491','P433'}"
 		NOISE="{'me','hi'}"
-                IDS="{'1:5','6:10','11:15','16:20'}"
+                IDS=${IDS}
 		;;
+
+	11)     PROBS="{'conbananas'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'basenew','probit'}"
+                DIMS="{'D2','D4','D6','D8'}"
+                IDS=${IDS_SINGLE}
+                ;;
+	12)     PROBS="{'conbananas'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'noisynew','noisyprobit'}"
+                DIMS="{'D2','D4','D6','D8'}"
+		NOISE="{'me','hi'}"
+                IDS=${IDS_SINGLE}
+                ;;
+
 	
 esac
 
