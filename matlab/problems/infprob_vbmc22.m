@@ -1,7 +1,7 @@
 function probstruct = infprob_vbmc22(prob,subprob,noise,id,options)
 
 % Problem names (ordered)
-problist = {'beta','conbananas','acerbi2012'};
+problist = {'beta','conbananas','acerbi2012','acerbidokka2018'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
@@ -9,7 +9,7 @@ if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
 switch prob
     case 'beta'
         subprobString = ['P' num2str(D)];
-    case 'acerbi2012'
+    case {'acerbi2012','acerbidokka2018'}
         subprobString = ['S' num2str(D)];        
     otherwise
         subprobString = ['D' num2str(D)];
@@ -30,6 +30,7 @@ switch prob
     case 'beta'
     case 'conbananas'
     case 'acerbi2012'        
+    case 'acerbidokka2018'
     otherwise
 end
 
