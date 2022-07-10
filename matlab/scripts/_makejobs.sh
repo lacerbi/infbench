@@ -71,6 +71,73 @@ case "${1}" in
                 IDS=${IDS_SINGLE}
                 ;;
 
+	101)    PROBSET="{'vbmc22'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'vbmc'}"
+		ALGOSET="{'basenew','probit'}"
+                DIMS="{'S101'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        102)    PROBSET="{'vbmc22'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'noisynew','noisyprobit'}"
+                DIMS="{'S1'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+
+	201)    PROBSET="{'vbmc22'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'basenew','probit'}"
+                DIMS="{'S101','S102'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        202)    PROBSET="{'vbmc22'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'noisynew','noisyprobit'}"
+                DIMS="{'S1','S2'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+
+	301)    PROBSET="{'vbmc22'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'basenew','probit'}"
+                DIMS="{'S101','S102'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        302)    PROBSET="{'vbmc22'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'noisynew','noisyprobit'}"
+                DIMS="{'S1','S2'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+
+        401)    PROBSET="{'vbmc22'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'basenew','probit'}"
+                DIMS="{'S7','S8'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        402)    PROBSET="{'vbmc22'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'noisynew','noisyprobit'}"
+                DIMS="{'S7','S8'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'me'"
+                ;;
 	
 esac
 
