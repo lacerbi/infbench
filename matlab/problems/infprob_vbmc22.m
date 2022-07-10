@@ -1,7 +1,7 @@
 function probstruct = infprob_vbmc22(prob,subprob,noise,id,options)
 
 % Problem names (ordered)
-problist = {'beta','conbananas','acerbi2012','acerbidokka2018','krajbich2010','goris2015b'};
+problist = {'beta','conbananas','acerbi2012','acerbidokka2018','krajbich2010','goris2015b','akrami2018b'};
 
 % Initialize problem structure
 if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
@@ -9,7 +9,7 @@ if ischar(subprob); D = extractnum(subprob); else; D = subprob; end
 switch prob
     case 'beta'
         subprobString = ['P' num2str(D)];
-    case {'acerbi2012','acerbidokka2018','krajbich2010','goris2015b'}
+    case {'acerbi2012','acerbidokka2018','krajbich2010','goris2015b','akrami2018b'}
         subprobString = ['S' num2str(D)];        
     otherwise
         subprobString = ['D' num2str(D)];
@@ -32,6 +32,7 @@ switch prob
     case 'acerbi2012'        
     case 'acerbidokka2018'
     case 'krajbich2010'
+    case 'akrami2018b'
     case 'goris2015b'
         probstruct.OptimizeFirst = (D < 100);   % Run optimization        
     otherwise
