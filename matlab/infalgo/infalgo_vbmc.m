@@ -315,6 +315,8 @@ switch algoset
     case {610,'acqfnpprobit'}; algoset = 'acqfnpprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfnp_vbmc;
     case {611,'acqfsn2npprobit'}; algoset = 'acqfsn2npprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfsn2np_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
         
+    case {620,'probitmeans'}; algoset = 'probitmeans'; algoptions.BoundedTransform = 'probit'; algoptions.VariableMeans = false; algoptions.NSent = 0; algoptions.NSentFine = '@(K) 2^12*(K.^(2/3))'; algoptions.NSentBoost = '@(K) 100*K.^(2/3)';
+        
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
     
