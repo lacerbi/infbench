@@ -130,6 +130,10 @@ optimState.PLB = warpvars_laplace(PLB,'dir',trinfo);
 optimState.PUB = warpvars_laplace(PUB,'dir',trinfo);
 optimState.x0 = warpvars_laplace(x0,'dir',trinfo);
 
+% Fix infinities
+optimState.x0(optimState.x0 == -Inf) = -10;
+optimState.x0(optimState.x0 == Inf) = 10;
+
 optimState.trinfo = trinfo;
 
 %% Get warnings state
