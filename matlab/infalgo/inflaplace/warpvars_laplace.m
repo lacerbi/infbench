@@ -1,4 +1,5 @@
-function varargout = warpvars_wsabi(varargin)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function varargout = warpvars_laplace(varargin)
 %WARPVARS Linear and nonlinear transformation of variables.
 %
 %  TRINFO = PDFTRANS(NVARS,LB,UB) returns the transformation structure 
@@ -905,8 +906,8 @@ else
     trinfo.delta = ones(1,nvars);
     
     % Get transformed PLB and PUB
-    plb = warpvars_wsabi(plb,'d',trinfo);
-    pub = warpvars_wsabi(pub,'d',trinfo);
+    plb = warpvars_laplace(plb,'d',trinfo);
+    pub = warpvars_laplace(pub,'d',trinfo);
     
     % Center in transformed space
     for i = 1:nvars
