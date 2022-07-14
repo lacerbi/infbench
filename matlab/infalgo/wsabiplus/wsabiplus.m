@@ -490,10 +490,14 @@ for t = 1:numSamples
         hpd_frac = 0.2;
         N = numel(gp.y);
         N_hpd = min(N,max(W,round(hpd_frac*N)));
-        dy = logprior(gp.X);
-        [~,ord] = sort(gp.y + dy,'descend');                
+        yy = logpostfun(gp.X);        
+        [yy,ord] = sort(yy,'descend');                
         X_hpd = gp.X(ord(1:N_hpd),:);
-        x0 = X_hpd(randperm(N_hpd,min(W,N_hpd)),:);
+        
+        % Take only points with non-zero likelihoods
+        yy = yy(1:N_hpd);
+        X_hpd = X_hpd(isfinite(yy), :);                
+        x0 = X_hpd(randperm(size(X_hpd,1),min(W,size(X_hpd,1))),:);
 
         try
             ss = eissample_lite(logpostfun,x0,NMCMCsamples,W,widths,-Inf,Inf,sampleopts);
