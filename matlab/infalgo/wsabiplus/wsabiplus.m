@@ -127,8 +127,6 @@ options1.AlwaysHonorConstraints = 'true';
 
 % Minimiser options (CMAES for active sampling)
 opts                            = cmaes_modded('defaults');
-opts.LBounds                    = range(1,:)';
-opts.UBounds                    = range(2,:)';
 opts.DispModulo                 = Inf;
 opts.DispFinal                  = 'off';
 opts.SaveVariables              = 'off';
@@ -152,7 +150,7 @@ optimState.X = zeros(numSamples,D);
 optimState.X(1,:) = optimState.x0;
 
 for t = 1:numSamples
-    
+        
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Pre-process new samples -- i.e. convert to log space etc.
     
@@ -176,6 +174,14 @@ for t = 1:numSamples
         fval = fval + 0.5*sum(((xx - bb).^2)./BB,2) + optimState.priorLogNorm;
     end
     loglHatD_0_tmp(t) = fval;
+    
+    % Move prior mean to maximum point seen so far
+    if optimState.removePrior
+        tmp = loglHatD_0_tmp(1:t) - 0.5*sum(((xxIter - bb).^2)./BB,2);        
+        [~,idx_max] = max(tmp);
+        bb = xxIter(idx_max,:);
+        loglHatD_0_tmp(1:t) = tmp + 0.5*sum(((xxIter - bb).^2)./BB,2);        
+    end
     
     % Rescaling factor
     if options.SpecifyTargetNoise
@@ -206,6 +212,14 @@ for t = 1:numSamples
     else
         s2hat = jitterNoise;
     end
+    
+    % Update (expand) search bounds
+    xx_min = min(xxIter,[],1);
+    xx_max = max(xxIter,[],1);
+    diam = xx_max - xx_min;
+    optimState.LB_search = min(optimState.LB_search, xx_min - 0.1*diam);
+    optimState.UB_search = max(optimState.UB_search, xx_max + 0.1*diam);
+    range = [optimState.LB_search; optimState.UB_search];    
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% ML-II On GP Likelihood model hyperparameters
@@ -606,6 +620,10 @@ for t = 1:numSamples
         % Using global optimiser (cmaes):
         % insigma = exp((log(VV) + log(BB))/4);
         % if size(xxIter,1) > dim; insigma = std(xxIter); end
+        
+        % Set search bounds
+        opts.LBounds = range(1,:)';
+        opts.UBounds = range(2,:)';
         
         [newX,cmaesFval] = cmaes_modded( ['expectedVar' method(1)], strtSamp', insigma(:), opts, s2hat, lambda, VV, ...
                       lHatD, xxIterScaled, invKxx, jitterNoise, bb, BB, aa);
