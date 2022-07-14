@@ -176,11 +176,21 @@ for t = 1:numSamples
     loglHatD_0_tmp(t) = fval;
     
     % Move prior mean to maximum point seen so far
-    if optimState.removePrior
-        tmp = loglHatD_0_tmp(1:t) - 0.5*sum(((xxIter - bb).^2)./BB,2);        
+    if optimState.removePrior && 0
+        tmp = loglHatD_0_tmp(1:t) - 0.5*sum(((xxIter - bb).^2)./BB,2) - optimState.priorLogNorm;        
         [~,idx_max] = max(tmp);
         bb = xxIter(idx_max,:);
-        loglHatD_0_tmp(1:t) = tmp + 0.5*sum(((xxIter - bb).^2)./BB,2);        
+        % Update variance
+        if t > 5*D
+            [~,ord] = sort(tmp,'descend');
+            frac = ceil(0.5*t);
+            xxHPD = xxIter(ord(1:frac),:);
+            
+            BB = 0.1*optimState.priorVar + 0.9*(max(xxHPD,[],1) - min(xxHPD,[],1)).^2;
+            optimState.priorLogNorm = 0.5*sum(log(2*pi*BB));
+        end
+        
+        loglHatD_0_tmp(1:t) = tmp + 0.5*sum(((xxIter - bb).^2)./BB,2) + optimState.priorLogNorm;
     end
     
     % Rescaling factor
