@@ -495,7 +495,11 @@ for t = 1:numSamples
         X_hpd = gp.X(ord(1:N_hpd),:);
         x0 = X_hpd(randperm(N_hpd,min(W,N_hpd)),:);
 
-        ss = eissample_lite(logpostfun,x0,NMCMCsamples,W,widths,-Inf,Inf,sampleopts);
+        try
+            ss = eissample_lite(logpostfun,x0,NMCMCsamples,W,widths,-Inf,Inf,sampleopts);
+        catch
+            ss = NaN(NMCMCsamples,D);
+        end
         ss = warpvars_wsabi(ss,'inv',optimState.trinfo);
         
         if numel(mcmc_iters) == 1
