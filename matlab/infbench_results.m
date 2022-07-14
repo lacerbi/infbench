@@ -20,7 +20,11 @@ for iProb = 1:numel(prob_list)
     subprob = prob_list{iProb}{3};
     
     folder = [basefolder filesep probset '@' prob filesep subprob];
-    cd(folder);
+    try
+        cd(folder);
+    catch
+        continue;
+    end
     
     for iAlgo = 1:numel(algo_list)
         
@@ -53,7 +57,7 @@ for iProb = 1:numel(prob_list)
                % Write operations here
                lnZerr = abs(history.Output.post.lnZ - history.lnZpost_true);
                gsKL = history.Output.post.gsKL;
-               MMTV = mean(history.Output.post.gsKL);
+               MMTV = mean(history.Output.post.MTV);
 
                output.lnZerr{iProb,iAlgo} = [output.lnZerr{iProb,iAlgo}; lnZerr];
                output.gsKL{iProb,iAlgo} = [output.gsKL{iProb,iAlgo}; gsKL];
@@ -62,3 +66,5 @@ for iProb = 1:numel(prob_list)
         end
     end
 end
+
+cd(basefolder);

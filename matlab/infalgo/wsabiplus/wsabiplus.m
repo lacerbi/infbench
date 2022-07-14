@@ -1,4 +1,4 @@
-function [log_mu,log_Var,output] = wsabiplus( ...
+function [log_mu,log_Var,output,samples] = wsabiplus( ...
             loglikfun,      ... 1) Handle to log-likelihood function
             PLB,            ... 2) Plausible lower bound
             PUB,            ... 3) Plausible upper bound
@@ -44,12 +44,15 @@ defopts.PriorCov        = [];               % Gaussian prior covariance
 defopts.LCBFactor       = 0;                % Lower Confidence Bound parameter
 defopts.PreciseSearch   = true;             % Assume zero noise during active search?
 defopts.BoundedTransform = 'logit';         % Input transform for bounded variables
+defopts.NMCMCsamples    = 5e3;              % Posterior samples (via MCMC)
+defopts.SavePosterior   = Inf;              % Array of # evaluations when to save posteriors (Inf = at the end)
 
 for f = fields(defopts)'
     if ~isfield(options,f{:}) || isempty(options.(f{:}))
         options.(f{:}) = defopts.(f{:});
     end
 end
+
 
 add2path(); % Add folders to path
 
@@ -59,7 +62,7 @@ if method(1) ~= 'L' && method(1) ~= 'M'
         'Allowed values for METHOD are (L)inearized and (M)oment-matching.');
 end
 
-numSamples = options.MaxFunEvals+1;
+numSamples = options.MaxFunEvals;
 alpha = options.AlphaFactor;
 if ischar(options.Display)
     switch lower(options.Display)
@@ -135,36 +138,23 @@ opts.EvalParallel               = 'on';
 %opts.PopSize                   = 100;
 %opts.Restarts                  = 1;
 
+% MCMC sampling from posterior
+NMCMCsamples = options.NMCMCsamples;
+mcmc_flag = (nargout > 3) && NMCMCsamples > 0;
+if mcmc_flag
+    mcmc_iters = options.SavePosterior;
+    mcmc_iters(mcmc_iters == Inf) = numSamples;
+    mcmc_iters = unique(mcmc_iters);
+end
+
 % Initial Sample
 optimState.X = zeros(numSamples,D);
 optimState.X(1,:) = optimState.x0;
 
 for t = 1:numSamples
-    if prnt
-        if ~mod(t,10)
-            fprintf('Iter %d. Log Current Mean Integral: %g +/- %g.\n', ...
-                            t, log(mu(t-1)) + logscaling(t-1), ...
-                            sqrt(Var(t-1))/mu(t-1));
-        end
-        
-        if prnt == 2 && ~mod(t,10)
-            gp.method = method(1);
-            gp.lambda = lambda;
-            gp.VV = VV;
-            gp.noise = jitterNoise;
-            gp.alpha = aa;
-            gp.X = xxIter;
-            gp.y = lHatD;
-            gp.invKxx = invKxx;
-            sqrtgp_plot(gp,[],100);
-            drawnow;
-            % pause;
-        end
-                
-    end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Pre-process new samples -- i.e. convert to log space etc.
+    %% Pre-process new samples -- i.e. convert to log space etc.
     
     % Get batch of samples & variables from stack
     tmpT            = cputime; 
@@ -218,7 +208,7 @@ for t = 1:numSamples
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % ML-II On GP Likelihood model hyperparameters
+    %% ML-II On GP Likelihood model hyperparameters
     
     hyp(1)          = log(lambda);
     hyp(2:end)      = log(VV);
@@ -261,9 +251,9 @@ for t = 1:numSamples
     % Invert Gram matrix.
     invKxx = Kxx \ eye(size(Kxx));
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    %% Expected value of integral
     
-    % Expected value of integral:
     ww              = invKxx * lHatD;
     
     Yvar            = (VV.*VV + 2*VV.*BB)./VV; 
@@ -307,9 +297,8 @@ for t = 1:numSamples
         mu(t) = mu(t) + 0.5*lambda.^2 * (1/(prod(2*pi*VV)^0.5));
     end
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    % Variance of the integral, before scaling back up:
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    %% Variance of the integral, before scaling back up
     
     %---------------- Tmp Vars to calculate first term -------------------%
         
@@ -442,9 +431,86 @@ for t = 1:numSamples
         Var(t) = Var(t) + 0.5*(tmp_1 - 2*sum(tmp_2(:)) + sum(tmp_3(:)));  
     end
     
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    %% Printout every few iterations
+    if prnt
+        if ~mod(t,10)
+            fprintf('Iter %d. Log Current Mean Integral: %g +/- %g.\n', ...
+                            t, log(mu(t-1)) + logscaling(t-1), ...
+                            sqrt(Var(t-1))/mu(t-1));
+        end
+        
+        if prnt == 2 && ~mod(t,10)
+            gp.method = method(1);
+            gp.lambda = lambda;
+            gp.VV = VV;
+            gp.noise = jitterNoise;
+            gp.alpha = aa;
+            gp.X = xxIter;
+            gp.y = lHatD;
+            gp.invKxx = invKxx;
+            sqrtgp_plot(gp,[],100);
+            drawnow;
+            % pause;
+        end        
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    %% If requested, sample from GP
+    if mcmc_flag && any(t == mcmc_iters)
+    
+        % Create GP struct
+        gp.method = method(1);
+        gp.lambda = lambda;
+        gp.VV = VV;
+        gp.noise = jitterNoise;
+        gp.alpha = aa;
+        gp.X = xxIter;
+        gp.y = lHatD;
+        gp.invKxx = invKxx;
+        
+        logprior = @(x_) -0.5*sum(bsxfun(@rdivide,bsxfun(@minus,x_, bb).^2,BB),2) - optimState.priorLogNorm;
+
+        logpostfun = @(x_) log(sqrtgp_pred(gp,x_)) + logprior(x_);
+        %ss = stratais(gp.X,gp.y,ifun,2e4);            
+        %ss = warpvars_wsabi(ss,'inv',optimState.trinfo);
+        %cornerplot(ss);
+
+        sampleopts.Burnin = ceil(NMCMCsamples/2);
+        sampleopts.Thin = 1;
+        sampleopts.Display = 'off';
+        sampleopts.Diagnostics = false;
+        sampleopts.VarTransform = false;
+        sampleopts.InversionSample = false;
+        sampleopts.FitGMM = false;
+
+        widths = std(gp.X,[],1);
+        W = 2*(D+1);
+        % Take starting points from high posterior density region
+        hpd_frac = 0.2;
+        N = numel(gp.y);
+        N_hpd = min(N,max(W,round(hpd_frac*N)));
+        dy = logprior(gp.X);
+        [~,ord] = sort(gp.y + dy,'descend');                
+        X_hpd = gp.X(ord(1:N_hpd),:);
+        x0 = X_hpd(randperm(N_hpd,min(W,N_hpd)),:);
+
+        ss = eissample_lite(logpostfun,x0,NMCMCsamples,W,widths,-Inf,Inf,sampleopts);
+        ss = warpvars_wsabi(ss,'inv',optimState.trinfo);
+        
+        if numel(mcmc_iters) == 1
+            samples = ss;            
+        else
+            idx = find(t == unique(mcmc_iters),1);
+            samples{idx} = ss;
+        end
+        
+        % cornerplot(ss);
+    end    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    %% Actively select next sample point
     if t < numSamples
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Actively select next sample point:
 
         xxIterScaled = bsxfun(@rdivide,xxIter,sqrt(VV));
         
@@ -553,6 +619,14 @@ log_Var = log(Var) + 2*logscaling;
 
 % Output structure
 if nargout > 2
+
+    % Transformed space
+    output.X_transformed = xxIter;
+    output.fval_transformed = loglHatD_0_tmp(1:t);
+    if optimState.removePrior
+        output.fval_transformed = output.fval_transformed - 0.5*sum(((xxIter - bb).^2)./BB,2) - optimState.priorLogNorm;
+    end    
+    
     % Transform back to original space
     loglIter = loglHatD_0_tmp(1:t);
     loglIter = loglIter - warpvars_wsabi(xxIter,'logp',optimState.trinfo);
@@ -571,6 +645,8 @@ if nargout > 2
     output.fval_sd = lsdIter;
     output.clktime = clktime;    
     output.gp_hyp = hyp;
+    output.trinfo = optimState.trinfo;    
+    if mcmc_flag; output.mcmc_iters = mcmc_iters; end
 end
 
 end

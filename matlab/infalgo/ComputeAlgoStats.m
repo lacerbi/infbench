@@ -1,10 +1,11 @@
-function [gsKL,Mean,Cov,lnZ,lnZ_var,Mode,MTV,xx] = ComputeAlgoStats(X,y,probstruct,compute_lnZ,Ns_moments,gp,s2)
+function [gsKL,Mean,Cov,lnZ,lnZ_var,Mode,MTV,xx] = ComputeAlgoStats(X,y,probstruct,compute_lnZ,Ns_moments,gp,s2,inverse_transform)
 %COMPUTEALGOSTATS Compute GP model-based statistics from given training set.
     
 if nargin < 4 || isempty(compute_lnZ); compute_lnZ = false; end
 if nargin < 5 || isempty(Ns_moments); Ns_moments = 2e4; end
 if nargin < 6; gp = []; end
 if nargin < 7; s2 = []; end
+if nargin < 8; inverse_transform = []; end
 
 try
 
@@ -36,6 +37,12 @@ try
     else
         xx = gp;    % GP was passed as samples
     end
+    
+    % Transform back in original representation
+    if ~isempty(inverse_transform)
+        xx = inverse_transform(xx);
+    end
+    
     Mean = mean(xx,1);
     Cov = cov(xx);
     [kl1,kl2] = mvnkl(Mean,Cov,probstruct.Post.Mean,probstruct.Post.Cov);
@@ -69,6 +76,9 @@ try
     if nargout > 5
         if isstruct(gp)
             Mode = gplite_fmin(gp,[],1);    % Max flag - finds maximum
+            if ~isempty(inverse_transform)
+                Mode = inverse_transform(Mode);
+            end            
         else
             Mode = NaN(1,size(xx,2));       % No mode for now with samples
         end

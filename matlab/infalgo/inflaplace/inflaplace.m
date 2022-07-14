@@ -45,8 +45,9 @@ end
 
 % Hessian matrix
 A = -hessian(fun_warped,mu);
-lnZ = fun_warped(mu) + 0.5*D*log(2*pi) - 0.5*log(det(A));
-Sigma = inv(A);
+C = chol(A);
+lnZ = fun_warped(mu) + 0.5*D*log(2*pi) - sum(log(diag(C)));
+Sigma = C'\(C\eye(D));
 
 % OUTPUT struct
 output.trinfo = optimState.trinfo;
