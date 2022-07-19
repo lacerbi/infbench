@@ -45,7 +45,15 @@ end
 
 % Hessian matrix
 A = -hessian(fun_warped,mu);
-C = chol(A);
+[C,p] = chol(A);
+nugget = 1e-6;
+while p > 0
+    if prnt
+        fprintf('Cholesky decomposition failed. Retry with nugget = %.2g.\n', nugget);
+    end
+    [C,p] = chol(A + nugget*eye(D));
+    nugget = nugget*1.2;
+end
 lnZ = fun_warped(mu) + 0.5*D*log(2*pi) - sum(log(diag(C)));
 Sigma = C'\(C\eye(D));
 
