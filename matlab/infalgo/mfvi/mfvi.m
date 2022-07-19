@@ -7,12 +7,17 @@ defopts.BoundedTransform    = 'logit';      % Input transform for bounded variab
 defopts.Optimization        = 'bads';       % Optimization algorithm
 defopts.SamplesPerIter      = [10,50,200,500]; % Number of samples per iteration
 defopts.FinalSamples        = 1e4;          % Final samples to evaluate ELBO
+defopts.SpeedThreshold      = 0.3;          % Use "slow" options if larger than this
 
 for f = fields(defopts)'
     if ~isfield(options,f{:}) || isempty(options.(f{:}))
         options.(f{:}) = defopts.(f{:});
     end
 end
+
+% Number of samples per iteration and final
+Ns_iter = options.SamplesPerIter;
+Ns_final = options.FinalSamples;
 
 add2path(); % Add folders to path
 
@@ -31,7 +36,23 @@ optimState = setupvars_mfvi(x0,LB,UB,PLB,PUB,[],options,prnt);
 % Define function in transformed space
 fun_warped = @(x) fun(warpvars_mfvi(x,'i',optimState.trinfo)) + warpvars_mfvi(x,'logp',optimState.trinfo);
 
-% Optimization
+% Test speed
+if isfinite(options.SpeedThreshold) && options.SpeedThreshold > 0
+    timer = tic;
+    for i = 1:3; fun_warped(x0); end
+    t = toc(timer)/3;
+    if prnt
+        fprintf('Average function evaluation time: %.3f s.\n', t);
+    end
+    if t > options.SpeedThreshold
+        Ns_iter = Ns_iter(1:min(3,end));
+        if numel(Ns_iter) > 1; Ns_iter(2) = round(Ns_iter(2)*2/5); end
+        if numel(Ns_iter) > 2; Ns_iter(3) = round(Ns_iter(3)/4); end
+        Ns_final = min(1e3, Ns_final);
+    end
+end
+
+%% Optimization
 D = size(x0,2);
 
 sigmas0 = 0.05*(optimState.PUB - optimState.PLB);
@@ -42,7 +63,6 @@ ub = [optimState.UB, Inf(1,D)];
 plb = [optimState.PLB, log(1e-3*(optimState.PUB - optimState.PLB))];
 pub = [optimState.PUB, log(optimState.PUB - optimState.PLB)];
 
-Ns_iter = options.SamplesPerIter;
 xx = [];
 
 % Run variational optimization
@@ -96,7 +116,6 @@ end
 mu = phi(1:D);
 sigma = exp(phi(D+(1:D)));
 
-Ns_final = options.FinalSamples;
 elbo = -negelbo_mfvi(phi,fun_warped,Ns_final);
 
 % OUTPUT struct
