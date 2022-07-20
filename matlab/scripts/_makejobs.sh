@@ -126,7 +126,7 @@ case "${1}" in
                 PROBS="{'goris2015b'}"
                 ALGOS="{'vbmc'}"
                 ALGOSET="{'basenew','probit'}"
-                DIMS="{'S7','S8'}"
+                DIMS="{'S107','S108'}"
                 IDS=${IDS_SINGLE}
                 NOISE="'[]'"
                 ;;
@@ -134,9 +134,197 @@ case "${1}" in
                 PROBS="{'goris2015b'}"
                 ALGOS="{'vbmc'}"
                 ALGOSET="{'noisynew','noisyprobit'}"
-                DIMS="{'S7','S8'}"
+                DIMS="{'S107','S108'}"
                 IDS=${IDS_SINGLE}
                 NOISE="'me'"
+                ;;
+
+	501)    PROBSET="{'vbmc22'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'basenew','probit'}"
+                DIMS="{'S101'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        502)    PROBSET="{'vbmc22'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'noisynew','noisyprobit'}"
+                DIMS="{'S1'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+
+	601)    PROBSET="{'vbmc22'}"
+                PROBS="{'wood2010'}"
+                ALGOS="{'vbmc'}"
+                ALGOSET="{'noisynew','noisyprobit'}"
+                DIMS="{'D1'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+
+
+
+        1001)   PROBS="{'beta'}"
+                ALGOS="{'inflaplace'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'P411','P431','P461','P491','P433'}"
+                IDS="'1:20'"
+                ;;
+        1011)   PROBS="{'conbananas'}"
+                ALGOS="{'inflaplace'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'D2','D4','D6','D8'}"
+                IDS="'1:20'"
+                ;;
+        1101)   PROBSET="{'vbmc22'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'inflaplace'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101'}"
+                IDS="'1:20'"
+                NOISE="'[]'"
+                ;;
+        1201)   PROBSET="{'vbmc22'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'inflaplace'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101','S102'}"
+                IDS="'1:20'"
+                NOISE="'[]'"
+                ;;
+        1301)   PROBSET="{'vbmc22'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'inflaplace'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101','S102'}"
+                IDS=${IDS}
+                NOISE="'[]'"
+                ;;
+        1401)   PROBSET="{'vbmc22'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'inflaplace'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S107','S108'}"
+                IDS=${IDS}
+                NOISE="'[]'"
+                ;;
+        1501)   PROBSET="{'vbmc22'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'inflaplace'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="'S101'"
+                IDS=${IDS}
+                NOISE="'[]'"
+                ;;
+
+        2001)   PROBS="{'beta'}"
+                ALGOS="{'wsabiplus'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'P411','P431','P461','P491','P433'}"
+                IDS=${IDS}
+                ;;
+        2011)   PROBS="{'conbananas'}"
+                ALGOS="{'wsabiplus'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'D2','D4','D6','D8'}"
+                IDS=${IDS_SINGLE}
+                ;;
+        2101)   PROBSET="{'vbmc22'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'wsabiplus'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101'}"
+                IDS=${IDS}
+                NOISE="'[]'"
+                ;;
+        2201)   PROBSET="{'vbmc22'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'wsabiplus'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101','S102'}"
+                IDS=${IDS}
+                NOISE="'[]'"
+                ;;
+        2301)   PROBSET="{'vbmc22'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'wsabiplus'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101','S102'}"
+                IDS=${IDS}
+                NOISE="'[]'"
+                ;;
+        2401)   PROBSET="{'vbmc22'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'wsabiplus'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S107','S108'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        2501)   PROBSET="{'vbmc22'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'wsabiplus'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="'S101'"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+
+
+        3001)   PROBS="{'beta'}"
+                ALGOS="{'mfvi'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'P411','P431','P461','P491','P433'}"
+                IDS=$IDS
+                ;;
+        3011)   PROBS="{'conbananas'}"
+                ALGOS="{'mfvi'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'D2','D4','D6','D8'}"
+                IDS=$IDS
+                ;;
+        3101)   PROBSET="{'vbmc22'}"
+                PROBS="{'acerbi2012'}"
+                ALGOS="{'mfvi'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        3201)   PROBSET="{'vbmc22'}"
+                PROBS="{'acerbidokka2018'}"
+                ALGOS="{'mfvi'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101','S102'}"
+                IDS=${IDS}
+                NOISE="'[]'"
+                ;;
+        3301)   PROBSET="{'vbmc22'}"
+                PROBS="{'krajbich2010'}"
+                ALGOS="{'mfvi'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S101','S102'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        3401)   PROBSET="{'vbmc22'}"
+                PROBS="{'goris2015b'}"
+                ALGOS="{'mfvi'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="{'S107','S108'}"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
+                ;;
+        3501)   PROBSET="{'vbmc22'}"
+                PROBS="{'akrami2018b'}"
+                ALGOS="{'mfvi'}"
+                ALGOSET="{'base','probit'}"
+                DIMS="'S101'"
+                IDS=${IDS_SINGLE}
+                NOISE="'[]'"
                 ;;
 	
 esac
