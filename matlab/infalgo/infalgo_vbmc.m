@@ -317,6 +317,9 @@ switch algoset
         
     case {620,'probitmeans'}; algoset = 'probitmeans'; algoptions.BoundedTransform = 'probit'; algoptions.VariableMeans = false; algoptions.NSent = 0; algoptions.NSentFine = '@(K) 2^12*(K.^(2/3))'; algoptions.NSentBoost = '@(K) 100*K.^(2/3)';
         
+    case {630,'fminunc'}; algoset = 'fminunc'; algoptions.StochasticOptimizer = 'fminunc';
+    case {631,'fminuncprobit'}; algoset = 'fminuncprobit'; algoptions.BoundedTransform = 'probit'; algoptions.StochasticOptimizer = 'fminunc';
+        
     % Variational active sampling
     case {1000,'vas'}; algoset = 'vas'; 
     
