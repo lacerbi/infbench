@@ -101,6 +101,48 @@ switch method
         end
         x0 = bsxfun(@min,bsxfun(@max,x0,LB),UB);
         Xs = eissample_lite(logPfuns,x0,Ns,W,widths,LB,UB,sampleopts);
+        
+        
+    case 'importancesample'
+        X = gp.X;
+        y = gp.y;
+        N = size(gp.X,1);
+        [~,ord] = sort(y,'descend');
+        X = X(ord,:);
+        Ns_is = max(1e4, Ns*10);
+        
+        Nslices = max(1,min(floor(N/(2*D)),10));
+        Ns_slice = ceil(Ns_is/Nslices);
+        ss = [];
+        
+        for iSlice = 1:Nslices
+            idx = (round((iSlice-1)*(N/Nslices))+1:round(iSlice*(N/Nslices)));
+            Xi = X(idx,:);
+            mu(iSlice,:) = mean(Xi,1);
+            Sigma(:,:,iSlice) = cov(Xi);
+            
+            ss = [ss; mvnrnd(mu(iSlice,:), Sigma(:,:,iSlice), Ns_slice)];
+        end
+        
+        if ~isempty(proppdf)
+            ss = [ss; proprnd(size(ss,1))];
+        end
+        
+        pdf = zeros(size(ss,1),1);
+        
+        for iSlice = 1:Nslices
+            pdf = pdf + 1/Nslices*mvnpdf(ss,mu(iSlice,:),Sigma(:,:,iSlice));            
+        end
+        
+        if ~isempty(proppdf)
+            pdf = 0.5*pdf + 0.5*proppdf(ss);
+        end
+        
+        lnw = log(pdf) - logpfun(ss);
+        lnw = lnw - max(lnw);
+        w = exp(lnw)./sum(exp(lnw));
+        
+        Xs = ss(randsample(size(ss,1),Ns,true,w),:);
 end
 
 end
