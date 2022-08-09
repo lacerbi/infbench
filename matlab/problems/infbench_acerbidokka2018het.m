@@ -83,7 +83,7 @@ if isempty(x)
                 
                 W = 2*(infprob.D+1);    % Number of walkers
                 
-                sampleopts.Thin = 23;
+                sampleopts.Thin = 97;
                 sampleopts.Burnin = Ns*sampleopts.Thin;
                 sampleopts.Display = 'off';
                 sampleopts.Diagnostics = false;
