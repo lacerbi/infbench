@@ -311,10 +311,13 @@ switch algoset
     case {601,'probit'}; algoset = 'probit'; algoptions.BoundedTransform = 'probit';
     case {602,'noisynew'}; algoset = 'noisynew'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
     case {603,'noisyprobit'}; algoset = 'noisyprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
+    case {604,'noisyprobitK1'}; algoset = 'noisyprobitK'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.ActiveImportanceSamplingMCMCSamples = '1e3';
+    case {605,'noisyprobitnqse'}; algoset = 'noisyprobitnqse'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqviqr_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true; algoptions.gpMeanFun = 'negquadseprop';
              
     case {610,'acqfnpprobit'}; algoset = 'acqfnpprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfnp_vbmc;
     case {611,'acqfsn2npprobit'}; algoset = 'acqfsn2npprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfsn2np_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
-    case {612,'acqaltprobit'}; algoset = 'acqaltprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqintent_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
+    case {612,'acqaltprobit'}; algoset = 'acqaltprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfsn2var_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
+    case {613,'acqalt2probit'}; algoset = 'acqalt2probit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfsn2var_vbmc;
 
         
         
