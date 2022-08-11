@@ -319,6 +319,8 @@ switch algoset
     case {612,'acqaltprobit'}; algoset = 'acqaltprobit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfsn2var_vbmc; algoptions.ActiveSampleGPUpdate = true; algoptions.ActiveSampleVPUpdate = true;
     case {613,'acqalt2probit'}; algoset = 'acqalt2probit'; algoptions.BoundedTransform = 'probit'; algoptions.SearchAcqFcn = @acqfsn2var_vbmc;
 
+    case {615,'probitaltent'}; algoset = 'probitaltent'; algoptions.BoundedTransform = 'probit'; algoptions.DetEntropyFcn = @entlbub_vbmc; algoptions.NSent = 0; algoptions.NSentFast = 0; algoptions.NSentFine = 0; algoptions.FitnessShaping = true;
+    case {616,'logitaltent'}; algoset = 'logitaltent'; algoptions.BoundedTransform = 'logit'; algoptions.DetEntropyFcn = @entlbub_vbmc; algoptions.NSent = 0; algoptions.NSentFast = 0; algoptions.NSentFine = 0;
         
         
     case {620,'probitmeans'}; algoset = 'probitmeans'; algoptions.BoundedTransform = 'probit'; algoptions.VariableMeans = false; algoptions.NSent = 0; algoptions.NSentFine = '@(K) 2^12*(K.^(2/3))'; algoptions.NSentBoost = '@(K) 100*K.^(2/3)';
